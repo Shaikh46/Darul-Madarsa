@@ -1,0 +1,222 @@
+ADD NORANI QAIDA MODULE to my Madrasa Management App with Urdu and English support.
+
+## NORANI QAIDA FEATURES
+
+### 1. QAIDA STRUCTURE (22 Lessons)
+Create complete Norani Qaida with these 22 lessons:
+
+**Lesson 1:** Arabic Alphabet (Huroof Mufradat) - حروف مفردات
+**Lesson 2:** Compound Letters (Huroof Murakkabat) - حروف مرکبات  
+**Lesson 3:** Abbreviated Letters (Huroof Muqatta'at) - حروف مقطعات
+**Lesson 4:** Movements (Harakat) - حركات (Zabar, Zer, Pesh)
+**Lesson 5:** Tanween (Double Harakat) - تنوین
+**Lesson 6:** Standing Harakat (Khara Zabar, Khara Zer, Ulta Pesh)
+**Lesson 7:** Maddah Letters - حروف مدہ
+**Lesson 8:** Leen Letters - حروف لین
+**Lesson 9:** Noon Sakinah & Tanween Rules (Izhaar) - اظہار
+**Lesson 10:** Idghaam (Madd Ghunnah) - ادغام
+**Lesson 11:** Iqlab - اقلاب
+**Lesson 12:** Ikhfaa - اخفاء
+**Lesson 13:** Meem Sakinah Rules - میم ساکنہ کے قواعد
+**Lesson 14:** Qalqalah - قلقلہ
+**Lesson 15:** Heavy & Light Letters (Tafkheem & Tarqeeq)
+**Lesson 16:** Rules of Letter Raa - ر کے قواعد
+**Lesson 17:** Madd (Prolongation) Rules - مد کے قواعد
+**Lesson 18:** Waqf (Stopping) Rules - وقف کے قواعد
+**Lesson 19:** Hamzatul Wasl - ہمزہ وصل
+**Lesson 20:** Common Words Practice - الفاظ کی مشق
+**Lesson 21:** Quranic Words Practice - قرآنی الفاظ کی مشق
+**Lesson 22:** Full Practice - مکمل مشق
+
+### 2. BILINGUAL CONTENT (Urdu + English)
+For EACH lesson, display:
+
+**In Urdu (Right side):**
+- Urdu instructions
+- Urdu explanation of rules
+- Urdu example words
+
+**In English (Left side):**
+- English instructions  
+- English explanation of rules
+- English transliteration
+
+**Language Toggle:**
+- Use existing Urdu/English toggle button
+- When English selected: Show only English content
+- When Urdu selected: Show only Urdu content
+- Arabic text remains the same in both modes
+
+### 3. LESSON DISPLAY FORMAT
+
+For each lesson, show this layout:
+┌─────────────────────────────────────────────────────┐
+│ Lesson 1: Arabic Alphabet (حروف مفردات) │
+├─────────────────────────────────────────────────────┤
+│ │
+│ ا ب ت ث ج ح خ د ذ ر ز س ش │
+│ ص ض ط ظ ع غ ف ق ك ل م ن و ه ء ي │
+│ │
+├─────────────────────────────────────────────────────┤
+│ 📖 Urdu Instructions: │
+│ حروف تہجی کو ان کے صحیح مخرج کے ساتھ پڑھیں │
+│ │
+│ 📖 English Instructions: │
+│ Read each letter with correct pronunciation (Makhraj)│
+├─────────────────────────────────────────────────────┤
+│ 🔊 Listen to Audio (if available) │
+│ [▶ Play] [⏸ Pause] [🔊 Repeat] │
+└─────────────────────────────────────────────────────┘
+
+text
+
+### 4. STUDENT PROGRESS TRACKING
+
+**Add to Student Profile:**
+- Which Qaida lesson they have completed
+- Progress percentage through Qaida
+- Last lesson studied
+- Teacher remarks on Qaida
+
+**Teacher View:**
+- See all students with their Qaida progress
+- Mark lesson as "Completed"
+- Add remarks for each lesson
+- Track reading fluency (1-5 stars)
+
+**Parent View:**
+- See child's Qaida progress
+- Which lesson they are on
+- Teacher remarks
+
+### 5. QAIDA DASHBOARD WIDGET
+
+Add on main dashboard:
+- Total students enrolled in Qaida
+- Average lesson completed
+- Students who completed full Qaida (ready for Quran)
+- Students struggling (on lesson <5 for >2 months)
+
+### 6. QAIDA EXAM / ASSESSMENT
+
+**Assessment Form:**
+- Select Student
+- Select Lesson
+- Reading Fluency (1-5 stars)
+- Tajweed Score (1-5 stars)
+- Teacher Comments
+- Pass/Fail status
+
+### 7. PDF CERTIFICATE for Qaida Completion
+
+When student completes ALL 22 lessons:
+- Generate "Norani Qaida Completion Certificate"
+- Include: Student Name, Date of Completion, Teacher Name
+- Download as PDF
+- Option to print
+
+### 8. UI DESIGN for QAIDA PAGE
+
+**Page Layout:**
+┌────────────────────────────────────────────┐
+│ [🟢 Lessons] [📊 Progress] [📝 Assessment] │
+├────────────────────────────────────────────┤
+│ │
+│ Lesson List (Left Side) Lesson Content │
+│ ┌──────────────────┐ ┌──────────────┐│
+│ │ ✓ Lesson 1 │ │ Letter Display││
+│ │ ✓ Lesson 2 │ │ Instructions ││
+│ │ ◉ Lesson 3 (current)│ │ Examples ││
+│ │ ○ Lesson 4 │ │ Audio Button ││
+│ │ ○ Lesson 5 │ └──────────────┘│
+│ └──────────────────┘ │
+└────────────────────────────────────────────┘
+
+text
+
+### 9. ADD TO NAVIGATION MENU
+
+Add new menu item: "Norani Qaida" with icon 📖
+- Accessible to: Admin, Teachers, Parents
+- Teachers can update student progress
+- Parents can only view
+
+### 10. AUDIO SUPPORT (Optional but Recommended)
+
+For each lesson, add:
+- Audio pronunciation of each letter
+- Audio example of each rule
+- Record and compare feature (for teachers)
+
+If no audio files available, show:
+"🎵 Audio coming soon - Practice with your teacher"
+
+### 11. ARABIC TEXT FORMAT
+
+Use these Arabic fonts:
+- Urdu: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq'
+- Arabic: 'Amiri', 'Scheherazade', 'Uthman Taha'
+
+### 12. PRACTICE MODE
+
+Add "Practice Mode" button:
+- Random letters from current lesson
+- Student says letter, clicks "Show Answer"
+- Track correct vs incorrect attempts
+
+### 13. TEACHER REMARKS SECTION
+
+For each student on Qaida:
+- Add remark text box
+- Save remarks per lesson
+- Show remark history
+
+### 14. BULK PROGRESS UPDATE
+
+Teacher can:
+- Select multiple students
+- Mark same lesson completion for all
+- Add common remark
+
+### 15. DEMO DATA
+
+Pre-load:
+- 3 students with partial Qaida progress (lessons 2, 5, 8)
+- Sample teacher remarks
+- Sample assessments
+
+## DATABASE STRUCTURE TO ADD
+
+```javascript
+qaida_progress: {
+  student_id: string,
+  current_lesson: number (1-22),
+  lessons_completed: [1,2,3...],
+  started_date: timestamp,
+  completed_date: timestamp (if completed),
+  status: "in_progress" | "completed" | "paused",
+  fluency_rating: number (1-5),
+  teacher_remarks: string
+}
+
+qaida_assessments: {
+  student_id: string,
+  lesson_number: number,
+  assessment_date: timestamp,
+  reading_score: number (1-5),
+  tajweed_score: number (1-5),
+  teacher_comments: string,
+  passed: boolean
+}
+DELIVERY
+Add this as a NEW MODULE to my existing app
+
+Do NOT remove any existing features
+
+Keep Urdu/English toggle working for Qaida content
+
+Make it mobile responsive
+
+ONE complete HTML file
+
+START BUILDING NOW.

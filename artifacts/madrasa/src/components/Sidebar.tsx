@@ -38,6 +38,7 @@ const navItems: NavItem[] = [
   { key: "expenses", href: "/expenses", icon: Receipt, roles: ["admin"] },
   { key: "salaries", href: "/salaries", icon: Wallet, roles: ["admin"] },
   { key: "donations", href: "/donations", icon: HeartHandshake, roles: ["admin"] },
+  { key: "noraniQaida", href: "/norani-qaida", icon: BookOpen, roles: ["admin", "teacher", "parent"] },
   { key: "islamic", href: "/islamic", icon: MoonStar, roles: ["admin", "teacher", "parent"] },
   { key: "communication", href: "/communication", icon: MessageSquare, roles: ["admin"] },
 ];

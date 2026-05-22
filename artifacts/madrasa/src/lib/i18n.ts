@@ -61,6 +61,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   overview: { en: "Overview of Madrasa activities", ur: "مدرسہ کی سرگرمیوں کا جائزہ" },
   refresh: { en: "Refresh", ur: "تازہ کریں" },
   upcomingEvents: { en: "Upcoming Events", ur: "آنے والے واقعات" },
+  noraniQaida: { en: "Norani Qaida", ur: "نورانی قاعدہ" },
   noData: { en: "No data yet", ur: "ابھی کوئی ڈیٹا نہیں" },
   pendingFees: { en: "fees pending", ur: "فیس زیر التوا" },
   salariesDue: { en: "salaries due", ur: "تنخواہیں واجب الادا" },

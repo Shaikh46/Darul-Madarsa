@@ -1,0 +1,118 @@
+Build a complete Madrasa Management Web App called "Darul Uloom Sirajul Islam Kalgaon" with these features:
+
+## USER ROLES (3 types)
+1. ADMIN - Full access to everything
+2. TEACHER - Can mark attendance, add lessons, update student progress
+3. PARENT - Can view child's profile, attendance, results, download report cards
+
+## FEATURES TO BUILD:
+
+### Dashboard (for Admin)
+- Show cards: Total Students, Present Today, Monthly Fee Collected, Pending Dues, Total Donations This Month
+- Show graph of fee collection (last 6 months)
+- Show graph of donation trend (last 6 months)
+- Quick action buttons
+
+### Student Management
+- Add student: name, father name, mother name, class, phone, address
+- Edit student details
+- Delete student
+- Search by name or class
+- Export to Excel
+
+### Attendance System
+- Teacher marks attendance (Present/Absent/Late)
+- Select date first
+- Show class students list
+- Save attendance
+- View reports (daily/weekly/monthly)
+
+### Hifz/Nazera Progress
+- Hifz: Current Juz (1-30), Current Surah, Verses Memorized, Progress %
+- Nazera: Current Page, Current Parah, Reading Quality (Excellent/Good/Needs Improvement)
+- Teacher can update
+- Show progress bar visually
+- Add teacher remarks
+
+### Exam Results & Report Cards
+- Add exam results (exam name, subject, marks obtained, total marks)
+- Auto-calculate percentage and grade (A+, A, B, C, F)
+- Show result history per student
+- Download report card as PDF
+
+### Teacher Portal
+- Teacher login
+- View assigned class students
+- Mark daily attendance
+- Add daily lesson record (subject, topic, homework)
+- Update Hifz/Nazera progress
+
+### Fee Management
+- Add fee payment (select student, month, amount, payment method)
+- Generate receipt number automatically
+- Mark as paid/pending
+- Show pending fees list
+
+### Expense Recording
+- Add expense (category, description, amount, date)
+- Categories: salary, maintenance, books, electricity, water, other
+
+### Staff Salary Management
+- Add staff (name, role, basic salary)
+- Record monthly salary payment
+- Role options: Teacher, Admin, Clerk, Security, Cook
+
+### DONATION MANAGEMENT (Important - Must Include)
+- Donation entry form with: Donor name, phone, amount, donation type (one-time/monthly/zakat/sadaqah/fitrana/construction/student-fund), payment method, transaction ID, date
+- Auto-generate receipt number (format: DSIK/DON/2026/00001)
+- Download receipt as PDF button
+- Send thank you via WhatsApp (click-to-send button)
+- Donor registry: Save donor info automatically, show donor history
+- Monthly donation tracking: Show donors who pledged monthly, mark collection
+- Donation dashboard: Total donations this month, this year, pie chart by donation type, top 5 donors list
+- Zakat tracking: Separate section for Zakat received
+- Fund balances: Student Fund, Construction Fund, General Fund
+
+### Islamic Features
+- Namaz timing: Show 5 prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha) based on Kalgaon location
+- Highlight next prayer time with countdown
+- Islamic Calendar: Show Hijri date, highlight Ramadan, Eid, Ashura dates
+
+### Communication Features
+- Push Notifications: Admin can send notification to all users
+- WhatsApp Integration: Click-to-chat button on student/parent profiles
+- Emergency Message System: Send urgent message (Push + WhatsApp)
+- Meeting Notifications: Create meeting event, send invites to teachers
+
+## DESIGN
+- Colors: Islamic Green (#008000), Gold (#FFD700), White (#FFFFFF)
+- Use Tailwind CSS for styling
+- Font Awesome icons
+- Mobile responsive (works on phone)
+- Sidebar navigation
+
+## DATABASE
+- Use localStorage first (so I can test immediately)
+- Create these data structures:
+  - students array (with 5 sample students)
+  - teachers array (with 2 sample teachers)
+  - attendance array
+  - hifz_progress array
+  - exam_results array
+  - fees array
+  - expenses array
+  - salaries array
+  - donations array
+  - donors array
+
+## DEMO LOGIN
+- Add demo login buttons: Admin Login, Teacher Login, Parent Login
+
+## DELIVERY
+- Give me ONE complete HTML file
+- All CSS and JavaScript inside
+- Nothing external except Tailwind CDN, Font Awesome CDN, Chart.js CDN
+- ALL features must work when I open in browser
+- Data must save and persist using localStorage
+
+START BUILDING NOW. Make everything functional with working buttons and forms.

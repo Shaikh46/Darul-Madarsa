@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLS } from "@/lib/storage";
 import type { Student } from "@/lib/storage";
 import { useLang } from "@/lib/i18n";
@@ -630,6 +630,60 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Floating Action Button */}
+      <FAB />
+    </div>
+  );
+}
+
+function FAB() {
+  const [, navigate] = useLocation();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const actions = [
+    { label: "Add Student", icon: Users, href: "/students", color: "bg-primary hover:bg-primary/90" },
+    { label: "Add Teacher", icon: UserCheck, href: "/teachers", color: "bg-blue-600 hover:bg-blue-700" },
+    { label: "Record Donation", icon: HeartHandshake, href: "/donations", color: "bg-accent hover:bg-accent/90" },
+    { label: "Record Fee", icon: CreditCard, href: "/fees", color: "bg-emerald-600 hover:bg-emerald-700" },
+    { label: "Add Expense", icon: FileText, href: "/expenses", color: "bg-orange-500 hover:bg-orange-600" },
+  ];
+
+  return (
+    <div ref={ref} className="fixed bottom-6 right-6 z-50 flex flex-col-reverse items-end gap-3">
+      {open && actions.map((action) => {
+        const Icon = action.icon;
+        return (
+          <div key={action.href} className="flex items-center gap-3 animate-in slide-in-from-bottom-2 fade-in duration-150">
+            <span className="bg-card text-foreground text-sm font-medium shadow-md px-3 py-1.5 rounded-lg border border-border whitespace-nowrap">
+              {action.label}
+            </span>
+            <button
+              onClick={() => { navigate(action.href); setOpen(false); }}
+              className={`w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg transition-all ${action.color}`}
+            >
+              <Icon className="w-5 h-5" />
+            </button>
+          </div>
+        );
+      })}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className={`w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-white shadow-xl flex items-center justify-center transition-all duration-200 ${open ? "rotate-45" : ""}`}
+        data-testid="fab-main"
+        aria-label="Quick add menu"
+      >
+        <Plus className="w-7 h-7" />
+      </button>
     </div>
   );
 }

@@ -5,6 +5,7 @@ export type Lang = "en" | "ur";
 export const translations: Record<string, Record<Lang, string>> = {
   dashboard: { en: "Dashboard", ur: "ڈیش بورڈ" },
   students: { en: "Students", ur: "طلباء" },
+  teachers: { en: "Teachers", ur: "اساتذہ" },
   attendance: { en: "Attendance", ur: "حاضری" },
   hifzProgress: { en: "Hifz Progress", ur: "حفظ پیشرفت" },
   results: { en: "Results", ur: "نتائج" },

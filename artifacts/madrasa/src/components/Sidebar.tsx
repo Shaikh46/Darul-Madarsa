@@ -4,6 +4,7 @@ import { useLang } from "@/lib/i18n";
 import {
   LayoutDashboard,
   Users,
+  UserCog,
   CalendarCheck,
   BookOpen,
   GraduationCap,
@@ -28,6 +29,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { key: "dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["admin"] },
   { key: "students", href: "/students", icon: Users, roles: ["admin", "teacher", "parent"] },
+  { key: "teachers", href: "/teachers", icon: UserCog, roles: ["admin"] },
   { key: "attendance", href: "/attendance", icon: CalendarCheck, roles: ["admin", "teacher", "parent"] },
   { key: "hifzProgress", href: "/hifz-progress", icon: BookOpen, roles: ["admin", "teacher", "parent"] },
   { key: "results", href: "/results", icon: GraduationCap, roles: ["admin", "teacher", "parent"] },

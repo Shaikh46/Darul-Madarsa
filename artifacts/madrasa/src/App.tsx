@@ -10,6 +10,7 @@ import { useLanguage, LangContext } from "@/lib/i18n";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Students from "@/pages/Students";
+import Teachers from "@/pages/Teachers";
 import Attendance from "@/pages/Attendance";
 import HifzProgress from "@/pages/HifzProgress";
 import Results from "@/pages/Results";
@@ -30,6 +31,7 @@ function Router() {
         <Route path="/login" component={Login} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/students" component={Students} />
+        <Route path="/teachers" component={Teachers} />
         <Route path="/attendance" component={Attendance} />
         <Route path="/hifz-progress" component={HifzProgress} />
         <Route path="/results" component={Results} />

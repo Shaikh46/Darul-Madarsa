@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Layout } from "@/components/Layout";
 import NotFound from "@/pages/not-found";
+import { useLanguage, LangContext } from "@/lib/i18n";
 
 // Pages
 import Login from "@/pages/Login";
@@ -39,7 +40,6 @@ function Router() {
         <Route path="/donations" component={Donations} />
         <Route path="/islamic" component={Islamic} />
         <Route path="/communication" component={Communication} />
-        
         <Route path="/" component={Dashboard} />
         <Route component={NotFound} />
       </Switch>
@@ -47,14 +47,25 @@ function Router() {
   );
 }
 
+function AppProviders({ children }: { children: React.ReactNode }) {
+  const langValue = useLanguage();
+  return (
+    <LangContext.Provider value={langValue}>
+      {children}
+    </LangContext.Provider>
+  );
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
+        <AppProviders>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Router />
+          </WouterRouter>
+          <Toaster />
+        </AppProviders>
       </TooltipProvider>
     </QueryClientProvider>
   );

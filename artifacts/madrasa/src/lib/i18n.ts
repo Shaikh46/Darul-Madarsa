@@ -1,0 +1,99 @@
+import { useState, useEffect, createContext, useContext } from "react";
+
+export type Lang = "en" | "ur";
+
+export const translations: Record<string, Record<Lang, string>> = {
+  dashboard: { en: "Dashboard", ur: "ڈیش بورڈ" },
+  students: { en: "Students", ur: "طلباء" },
+  attendance: { en: "Attendance", ur: "حاضری" },
+  hifzProgress: { en: "Hifz Progress", ur: "حفظ پیشرفت" },
+  results: { en: "Results", ur: "نتائج" },
+  teacherPortal: { en: "Teacher Portal", ur: "استاد پورٹل" },
+  fees: { en: "Fees", ur: "فیس" },
+  expenses: { en: "Expenses", ur: "اخراجات" },
+  salaries: { en: "Salaries", ur: "تنخواہیں" },
+  donations: { en: "Donations", ur: "عطیات" },
+  islamic: { en: "Islamic", ur: "اسلامی" },
+  communication: { en: "Communication", ur: "مواصلات" },
+  addStudent: { en: "Add Student", ur: "طالب علم شامل کریں" },
+  markAttendance: { en: "Mark Attendance", ur: "حاضری لگائیں" },
+  downloadReportCard: { en: "Download Report Card", ur: "رپورٹ کارڈ ڈاؤن لوڈ کریں" },
+  present: { en: "Present", ur: "حاضر" },
+  absent: { en: "Absent", ur: "غیر حاضر" },
+  late: { en: "Late", ur: "دیر سے آیا" },
+  save: { en: "Save", ur: "محفوظ کریں" },
+  delete: { en: "Delete", ur: "حذف کریں" },
+  edit: { en: "Edit", ur: "ترمیم کریں" },
+  search: { en: "Search", ur: "تلاش کریں" },
+  logout: { en: "Logout", ur: "لاگ آؤٹ" },
+  loggedInAs: { en: "Logged in as", ur: "لاگ ان بطور" },
+  totalStudents: { en: "Total Students", ur: "کل طلباء" },
+  presentToday: { en: "Present Today", ur: "آج حاضر" },
+  monthlyFees: { en: "Monthly Fees Collected", ur: "ماہانہ فیس" },
+  pendingDues: { en: "Pending Dues", ur: "بقایا جات" },
+  totalDonations: { en: "Total Donations", ur: "کل عطیات" },
+  feeCollectionTrend: { en: "Fee Collection Trend", ur: "فیس کا رجحان" },
+  donationByType: { en: "Donation by Type", ur: "قسم کے لحاظ سے عطیات" },
+  quickActions: { en: "Quick Actions", ur: "فوری اقدامات" },
+  addDonation: { en: "Add Donation", ur: "عطیہ شامل کریں" },
+  collectFee: { en: "Collect Fee", ur: "فیس وصول کریں" },
+  addExpense: { en: "Add Expense", ur: "اخراجات شامل کریں" },
+  sendNotification: { en: "Send Notification", ur: "اطلاع بھیجیں" },
+  generateReport: { en: "Generate Report", ur: "رپورٹ بنائیں" },
+  downloadBackup: { en: "Download Backup", ur: "بیک اپ ڈاؤن لوڈ" },
+  recentActivity: { en: "Recent Activity", ur: "حالیہ سرگرمی" },
+  topDonors: { en: "Top Donors", ur: "اعلیٰ عطیہ دہندگان" },
+  pendingTasks: { en: "Pending Tasks", ur: "زیر التوا کام" },
+  monthlySummary: { en: "Monthly Summary", ur: "ماہانہ خلاصہ" },
+  totalIncome: { en: "Total Income", ur: "کل آمدنی" },
+  totalExpense: { en: "Total Expense", ur: "کل اخراجات" },
+  netBalance: { en: "Net Balance", ur: "خالص بیلنس" },
+  hifzOverview: { en: "Hifz Overview", ur: "حفظ کا جائزہ" },
+  attendanceOverview: { en: "Today's Attendance", ur: "آج کی حاضری" },
+  goodMorning: { en: "Good Morning", ur: "صبح بخیر" },
+  goodAfternoon: { en: "Good Afternoon", ur: "دوپہر بخیر" },
+  goodEvening: { en: "Good Evening", ur: "شام بخیر" },
+  zakat: { en: "Zakat", ur: "زکوٰۃ" },
+  sadaqah: { en: "Sadaqah", ur: "صدقہ" },
+  fitrana: { en: "Fitrana", ur: "فطرانہ" },
+  assalamAlaikum: { en: "Assalamu Alaikum", ur: "السلام علیکم" },
+  overview: { en: "Overview of Madrasa activities", ur: "مدرسہ کی سرگرمیوں کا جائزہ" },
+  refresh: { en: "Refresh", ur: "تازہ کریں" },
+  upcomingEvents: { en: "Upcoming Events", ur: "آنے والے واقعات" },
+  noData: { en: "No data yet", ur: "ابھی کوئی ڈیٹا نہیں" },
+  pendingFees: { en: "fees pending", ur: "فیس زیر التوا" },
+  salariesDue: { en: "salaries due", ur: "تنخواہیں واجب الادا" },
+  meetingTomorrow: { en: "meeting tomorrow", ur: "کل میٹنگ" },
+};
+
+export function useLanguage() {
+  const [lang, setLangState] = useState<Lang>(() => {
+    return (localStorage.getItem("app_lang") as Lang) || "en";
+  });
+
+  const setLang = (l: Lang) => {
+    localStorage.setItem("app_lang", l);
+    setLangState(l);
+    document.documentElement.dir = l === "ur" ? "rtl" : "ltr";
+    document.documentElement.lang = l === "ur" ? "ur" : "en";
+  };
+
+  useEffect(() => {
+    document.documentElement.dir = lang === "ur" ? "rtl" : "ltr";
+    document.documentElement.lang = lang === "ur" ? "ur" : "en";
+  }, []);
+
+  const tr = (key: string): string => {
+    return translations[key]?.[lang] ?? key;
+  };
+
+  return { lang, setLang, tr };
+}
+
+export const LangContext = createContext<ReturnType<typeof useLanguage>>({
+  lang: "en",
+  setLang: () => {},
+  tr: (k) => k,
+});
+
+export const useLang = () => useContext(LangContext);

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -73,7 +74,6 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  /* Clean White Background */
   --background: 0 0% 100%;
   --foreground: 120 10% 15%;
 
@@ -96,18 +96,15 @@
   --popover-foreground: 120 10% 15%;
   --popover-border: 120 10% 90%;
 
-  /* Islamic Green */
   --primary: 120 100% 25%;
   --primary-foreground: 0 0% 100%;
 
-  /* Subtle Green Secondary */
   --secondary: 120 20% 92%;
   --secondary-foreground: 120 100% 25%;
 
   --muted: 120 10% 95%;
   --muted-foreground: 120 10% 40%;
 
-  /* Gold Accent */
   --accent: 51 100% 50%;
   --accent-foreground: 120 100% 15%;
 
@@ -117,7 +114,6 @@
   --input: 120 10% 85%;
   --ring: 120 100% 25%;
   
-  /* Charts - Green to Gold gradient feel */
   --chart-1: 120 100% 25%;
   --chart-2: 85 80% 35%;
   --chart-3: 51 100% 50%;
@@ -281,4 +277,21 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+}
+
+/* Urdu font class */
+.urdu-text {
+  font-family: 'Noto Nastaliq Urdu', serif;
+  line-height: 2;
+  text-align: right;
+}
+
+[dir="rtl"] nav a,
+[dir="rtl"] .sidebar-nav-item {
+  flex-direction: row-reverse;
+}
+
+/* Islamic geometric background pattern for dashboard */
+.islamic-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23008000' stroke-opacity='0.045' stroke-width='1'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M40 12 L68 40 L40 68 L12 40 Z'/%3E%3Ccircle cx='40' cy='40' r='18'/%3E%3Ccircle cx='0' cy='0' r='18'/%3E%3Ccircle cx='80' cy='0' r='18'/%3E%3Ccircle cx='0' cy='80' r='18'/%3E%3Ccircle cx='80' cy='80' r='18'/%3E%3C/g%3E%3C/svg%3E");
 }

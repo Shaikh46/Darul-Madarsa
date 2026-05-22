@@ -1,116 +1,401 @@
+import { useState, useEffect, useCallback } from "react";
+import { useLS } from "@/lib/storage";
+import type { Student } from "@/lib/storage";
+import { useLang } from "@/lib/i18n";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useLS, Student } from "@/lib/storage";
-import { Users, UserCheck, CreditCard, Receipt, HeartHandshake } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import {
+  Users,
+  UserCheck,
+  CreditCard,
+  HeartHandshake,
+  BookOpen,
+  RefreshCw,
+  Plus,
+  Bell,
+  Download,
+  FileText,
+  AlertCircle,
+  X,
+  TrendingUp,
+  TrendingDown,
+  Calendar,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
 
 const feeData = [
-  { name: 'Aug', amount: 45000 },
-  { name: 'Sep', amount: 52000 },
-  { name: 'Oct', amount: 48000 },
-  { name: 'Nov', amount: 61000 },
-  { name: 'Dec', amount: 59000 },
-  { name: 'Jan', amount: 65000 },
+  { name: "Aug", amount: 45000 },
+  { name: "Sep", amount: 52000 },
+  { name: "Oct", amount: 48000 },
+  { name: "Nov", amount: 61000 },
+  { name: "Dec", amount: 59000 },
+  { name: "Jan", amount: 65000 },
 ];
 
-const donationData = [
-  { name: 'Aug', amount: 15000 },
-  { name: 'Sep', amount: 22000 },
-  { name: 'Oct', amount: 18000 },
-  { name: 'Nov', amount: 31000 },
-  { name: 'Dec', amount: 29000 },
-  { name: 'Jan', amount: 45000 },
-];
+const PIE_COLORS = ["#008000", "#DAA520", "#2563eb", "#9333ea", "#10b981"];
+
+const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const weekAttendance = [95, 88, 92, 78, 96, 85, 91];
+
+function getHijriDate(): string {
+  const epoch = new Date(2000, 0, 1);
+  const hijriEpoch = { year: 1420, month: 9, day: 6 };
+  const today = new Date();
+  const diffMs = today.getTime() - epoch.getTime();
+  const diffDays = Math.floor(diffMs / 86400000);
+  const avgIslamicMonthDays = 29.53059;
+  const avgIslamicYearDays = avgIslamicMonthDays * 12;
+  let totalDays = diffDays + (hijriEpoch.day - 1) + (hijriEpoch.month - 1) * avgIslamicMonthDays + (hijriEpoch.year - 1) * avgIslamicYearDays;
+  const hijriYear = Math.floor(totalDays / avgIslamicYearDays) + 1;
+  totalDays = totalDays % avgIslamicYearDays;
+  const hijriMonth = Math.floor(totalDays / avgIslamicMonthDays) + 1;
+  const hijriDay = Math.floor(totalDays % avgIslamicMonthDays) + 1;
+  const months = ["Muharram", "Safar", "Rabi ul Awwal", "Rabi ul Thani", "Jamadi ul Awwal", "Jamadi ul Thani", "Rajab", "Sha'ban", "Ramadan", "Shawwal", "Dhul Qa'dah", "Dhul Hijjah"];
+  return `${hijriDay} ${months[Math.min(hijriMonth - 1, 11)]} ${hijriYear} AH`;
+}
+
+function getGreeting(lang: "en" | "ur", tr: (k: string) => string): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return tr("goodMorning");
+  if (hour < 16) return tr("goodAfternoon");
+  return tr("goodEvening");
+}
+
+function getHeatmapColor(pct: number): string {
+  if (pct >= 90) return "#008000";
+  if (pct >= 70) return "#DAA520";
+  return "#ef4444";
+}
+
+interface Donation {
+  id: string;
+  donorName: string;
+  amount: number;
+  donationType: string;
+  date: string;
+  receiptNo: string;
+}
+
+interface Fee {
+  id: string;
+  studentName?: string;
+  amount: number;
+  date: string;
+  status: string;
+  receiptNo?: string;
+}
+
+interface HifzRecord {
+  studentId: string;
+  studentName: string;
+  currentJuz: number;
+}
+
+interface Expense {
+  id: string;
+  amount: number;
+  date: string;
+}
 
 export default function Dashboard() {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [showAlert, setShowAlert] = useState(true);
   const [students] = useLS<Student[]>("students", []);
+  const [donations] = useLS<Donation[]>("donations", []);
+  const [fees] = useLS<Fee[]>("fees", []);
+  const [hifzProgress] = useLS<HifzRecord[]>("hifz_progress", []);
+  const [expenses] = useLS<Expense[]>("expenses", []);
+  const [, setLocation] = useLocation();
+  const { lang, tr } = useLang();
+  const isUrdu = lang === "ur";
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
+
+  const totalDonations = donations.reduce((s, d) => s + d.amount, 0);
+  const totalFees = fees.filter((f) => f.status === "paid").reduce((s, f) => s + f.amount, 0);
+  const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
+  const netBalance = totalFees + totalDonations - totalExpenses;
+
+  const pieData = donations.reduce(
+    (acc, curr) => {
+      const ex = acc.find((i) => i.name === curr.donationType);
+      if (ex) ex.value += curr.amount;
+      else acc.push({ name: curr.donationType, value: curr.amount });
+      return acc;
+    },
+    [] as { name: string; value: number }[]
+  );
+
+  const topDonors = [...donations]
+    .reduce(
+      (acc, d) => {
+        const ex = acc.find((i) => i.name === d.donorName);
+        if (ex) ex.total += d.amount;
+        else acc.push({ name: d.donorName, total: d.amount });
+        return acc;
+      },
+      [] as { name: string; total: number }[]
+    )
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5);
+
+  const recentActivity = [
+    ...donations.slice(0, 3).map((d) => ({
+      type: "Donation",
+      label: `${d.donorName} — ₹${d.amount}`,
+      date: d.date,
+      color: "bg-purple-100 text-purple-700",
+    })),
+    ...fees.slice(0, 2).map((f) => ({
+      type: "Fee",
+      label: `Fee collected — ₹${f.amount}`,
+      date: f.date,
+      color: "bg-blue-100 text-blue-700",
+    })),
+  ]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5);
+
+  const avgJuz =
+    hifzProgress.length > 0
+      ? (hifzProgress.reduce((s, h) => s + (h.currentJuz || 0), 0) / hifzProgress.length).toFixed(1)
+      : "0";
+
+  const leader = hifzProgress.length > 0
+    ? hifzProgress.reduce((prev, curr) => ((curr.currentJuz || 0) > (prev.currentJuz || 0) ? curr : prev))
+    : null;
+
+  const medalEmoji = (i: number) => {
+    if (i === 0) return "🥇";
+    if (i === 1) return "🥈";
+    if (i === 2) return "🥉";
+    return `${i + 1}.`;
+  };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Overview of Madrasa activities</p>
+    <div key={refreshKey} className={`space-y-6 ${isUrdu ? "urdu-text" : ""}`}>
+      {/* Header */}
+      <div className={`flex items-center justify-between ${isUrdu ? "flex-row-reverse" : ""}`}>
+        <div>
+          <h1 className={`text-3xl font-bold text-foreground ${isUrdu ? "urdu-text" : ""}`}>
+            {tr("dashboard")}
+          </h1>
+          <p className={`text-muted-foreground mt-1 ${isUrdu ? "urdu-text text-sm" : ""}`}>
+            {tr("overview")}
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={refresh}
+          className="gap-2"
+          data-testid="btn-refresh"
+        >
+          <RefreshCw className="w-4 h-4" />
+          <span className={isUrdu ? "urdu-text" : ""}>{tr("refresh")}</span>
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="p-3 bg-primary/10 text-primary rounded-lg">
-              <Users className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Total Students</p>
-              <h3 className="text-2xl font-bold">{students.length}</h3>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="p-3 bg-blue-500/10 text-blue-600 rounded-lg">
-              <UserCheck className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Present Today</p>
-              <h3 className="text-2xl font-bold">142</h3>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="p-3 bg-emerald-500/10 text-emerald-600 rounded-lg">
-              <CreditCard className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Fee Collected</p>
-              <h3 className="text-2xl font-bold">₹65,000</h3>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="p-3 bg-destructive/10 text-destructive rounded-lg">
-              <Receipt className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Pending Dues</p>
-              <h3 className="text-2xl font-bold">₹12,500</h3>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="p-3 bg-accent/20 text-yellow-600 rounded-lg">
-              <HeartHandshake className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Donations (Jan)</p>
-              <h3 className="text-2xl font-bold">₹45,000</h3>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Welcome Card */}
+      <div
+        className="relative rounded-2xl overflow-hidden p-6 text-white islamic-pattern"
+        style={{ background: "linear-gradient(135deg, #006400 0%, #008000 50%, #00a000 100%)" }}
+        data-testid="welcome-card"
+      >
+        <div className={`flex items-start justify-between ${isUrdu ? "flex-row-reverse" : ""}`}>
+          <div>
+            <p className={`text-white/70 text-sm mb-1 ${isUrdu ? "urdu-text" : ""}`}>
+              {getGreeting(lang, tr)}
+            </p>
+            <h2 className={`text-2xl font-bold mb-1 ${isUrdu ? "urdu-text" : ""}`}>
+              {tr("assalamAlaikum")}, Admin
+            </h2>
+            <p className="text-white/80 text-sm">
+              {getHijriDate()}
+            </p>
+            <p className="text-white/60 text-xs mt-0.5">
+              {currentTime.toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+            </p>
+          </div>
+          {/* Decorative star */}
+          <svg width="80" height="80" viewBox="0 0 80 80" className="opacity-20 flex-shrink-0">
+            <polygon points="40,5 49,30 76,30 54,47 62,72 40,55 18,72 26,47 4,30 31,30" fill="gold" />
+          </svg>
+        </div>
       </div>
 
+      {/* Pending Tasks Alert */}
+      {showAlert && (
+        <div className="flex items-center justify-between gap-3 p-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800">
+          <div className={`flex items-center gap-3 ${isUrdu ? "flex-row-reverse" : ""}`}>
+            <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+            <span className={`text-sm font-medium ${isUrdu ? "urdu-text" : ""}`}>
+              3 {tr("pendingFees")} &nbsp;·&nbsp; 2 {tr("salariesDue")} &nbsp;·&nbsp; 1 {tr("meetingTomorrow")}
+            </span>
+          </div>
+          <button onClick={() => setShowAlert(false)} className="text-amber-500 hover:text-amber-700" data-testid="btn-dismiss-alert">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* 4 Gradient Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Students */}
+        <div
+          className="rounded-xl p-5 text-white shadow-md"
+          style={{ background: "linear-gradient(135deg, #006400, #008000)" }}
+          data-testid="card-total-students"
+        >
+          <div className="flex items-start justify-between mb-3">
+            <Users className="w-8 h-8 opacity-80" />
+            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">+2 this month</span>
+          </div>
+          <p className={`text-3xl font-bold`}>{students.length}</p>
+          <p className={`text-white/70 text-xs mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("totalStudents")}</p>
+        </div>
+
+        {/* Present Today */}
+        <div
+          className="rounded-xl p-5 text-white shadow-md"
+          style={{ background: "linear-gradient(135deg, #b8860b, #daa520)" }}
+          data-testid="card-present-today"
+        >
+          <div className="flex items-start justify-between mb-3">
+            <UserCheck className="w-8 h-8 opacity-80" />
+            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">94%</span>
+          </div>
+          <p className="text-3xl font-bold">142</p>
+          <p className={`text-white/70 text-xs mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("presentToday")}</p>
+        </div>
+
+        {/* Monthly Fees */}
+        <div
+          className="rounded-xl p-5 text-white shadow-md"
+          style={{ background: "linear-gradient(135deg, #1e3a8a, #2563eb)" }}
+          data-testid="card-monthly-fees"
+        >
+          <div className="flex items-start justify-between mb-2">
+            <CreditCard className="w-8 h-8 opacity-80" />
+            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">80% target</span>
+          </div>
+          <p className="text-3xl font-bold">₹65,000</p>
+          <p className={`text-white/70 text-xs mt-1 mb-2 ${isUrdu ? "urdu-text" : ""}`}>{tr("monthlyFees")}</p>
+          <div className="w-full bg-white/20 rounded-full h-1.5">
+            <div className="bg-white h-1.5 rounded-full" style={{ width: "80%" }} />
+          </div>
+        </div>
+
+        {/* Total Donations */}
+        <div
+          className="rounded-xl p-5 text-white shadow-md"
+          style={{ background: "linear-gradient(135deg, #6b21a8, #9333ea)" }}
+          data-testid="card-total-donations"
+        >
+          <div className="flex items-start justify-between mb-3">
+            <HeartHandshake className="w-8 h-8 opacity-80" />
+            <TrendingUp className="w-5 h-5 opacity-70" />
+          </div>
+          <p className="text-3xl font-bold">₹{totalDonations > 0 ? totalDonations.toLocaleString() : "45,000"}</p>
+          <p className={`text-white/70 text-xs mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("totalDonations")}</p>
+        </div>
+      </div>
+
+      {/* Quick Actions Bar */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className={`text-sm font-semibold text-muted-foreground uppercase tracking-wider ${isUrdu ? "urdu-text" : ""}`}>
+            {tr("quickActions")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2 flex-wrap">
+            {[
+              { label: tr("addStudent"), icon: Plus, action: () => setLocation("/students") },
+              { label: tr("markAttendance"), icon: UserCheck, action: () => setLocation("/attendance") },
+              { label: tr("addDonation"), icon: HeartHandshake, action: () => setLocation("/donations") },
+              { label: tr("collectFee"), icon: CreditCard, action: () => setLocation("/fees") },
+              { label: tr("addExpense"), icon: FileText, action: () => setLocation("/expenses") },
+              { label: tr("sendNotification"), icon: Bell, action: () => setLocation("/communication") },
+              { label: tr("generateReport"), icon: FileText, action: () => window.print() },
+              {
+                label: tr("downloadBackup"),
+                icon: Download,
+                action: () => {
+                  const data: Record<string, unknown> = {};
+                  for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                      try { data[key] = JSON.parse(localStorage.getItem(key) || "null"); } catch { data[key] = localStorage.getItem(key); }
+                    }
+                  }
+                  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "madrasa_backup.json";
+                  a.click();
+                  URL.revokeObjectURL(url);
+                },
+              },
+            ].map(({ label, icon: Icon, action }) => (
+              <Button
+                key={label}
+                variant="outline"
+                size="sm"
+                className={`border-primary/30 text-primary hover:bg-primary/5 gap-1.5 ${isUrdu ? "urdu-text flex-row-reverse" : ""}`}
+                onClick={action}
+                data-testid={`quick-action-${label.replace(/\s+/g, "-").toLowerCase()}`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {label}
+              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Fee Collection Trend</CardTitle>
+            <CardTitle className={isUrdu ? "urdu-text" : ""}>{tr("feeCollectionTrend")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[260px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={feeData}>
+                <LineChart data={feeData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                   <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
-                  <Tooltip 
-                    cursor={{fill: 'hsl(var(--muted))'}}
-                    contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "hsl(var(--card))", borderRadius: "8px", border: "1px solid hsl(var(--border))" }}
+                    formatter={(v: number) => [`₹${v.toLocaleString()}`, "Amount"]}
                   />
-                  <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                </BarChart>
+                  <Line type="monotone" dataKey="amount" stroke="#008000" strokeWidth={2.5} dot={{ fill: "#008000", r: 4 }} activeDot={{ r: 6 }} />
+                </LineChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
@@ -118,22 +403,229 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Donation Trend</CardTitle>
+            <CardTitle className={isUrdu ? "urdu-text" : ""}>{tr("donationByType")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={donationData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
-                  <Tooltip 
-                    cursor={{fill: 'hsl(var(--muted))'}}
-                    contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
-                  />
-                  <Bar dataKey="amount" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+            {pieData.length > 0 ? (
+              <div className="h-[260px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={pieData} cx="50%" cy="50%" outerRadius={90} dataKey="value" labelLine={false}>
+                      {pieData.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(v: number) => [`₹${v.toLocaleString()}`, ""]} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-[260px] flex items-center justify-center text-muted-foreground text-sm">
+                {tr("noData")}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 3-column widgets */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Today's Attendance */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className={`text-base ${isUrdu ? "urdu-text" : ""}`}>{tr("attendanceOverview")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {[
+              { label: tr("present"), pct: 85, color: "bg-green-500" },
+              { label: tr("absent"), pct: 10, color: "bg-red-500" },
+              { label: tr("late"), pct: 5, color: "bg-yellow-500" },
+            ].map(({ label, pct, color }) => (
+              <div key={label}>
+                <div className={`flex justify-between text-sm mb-1 ${isUrdu ? "flex-row-reverse" : ""}`}>
+                  <span className={isUrdu ? "urdu-text" : ""}>{label}</span>
+                  <span className="font-medium">{pct}%</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div className={`${color} h-2 rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Monthly Summary */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className={`text-base ${isUrdu ? "urdu-text" : ""}`}>{tr("monthlySummary")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className={`flex justify-between items-center ${isUrdu ? "flex-row-reverse" : ""}`}>
+              <span className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("totalIncome")}</span>
+              <span className="font-bold text-green-600">₹{(totalFees + totalDonations || 110000).toLocaleString()}</span>
+            </div>
+            <div className={`flex justify-between items-center ${isUrdu ? "flex-row-reverse" : ""}`}>
+              <span className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("totalExpense")}</span>
+              <span className="font-bold text-red-500">₹{(totalExpenses || 45000).toLocaleString()}</span>
+            </div>
+            <div className="border-t border-border pt-3">
+              <div className={`flex justify-between items-center ${isUrdu ? "flex-row-reverse" : ""}`}>
+                <span className={`text-sm font-semibold ${isUrdu ? "urdu-text" : ""}`}>{tr("netBalance")}</span>
+                <span className={`font-bold text-lg flex items-center gap-1 ${netBalance >= 0 ? "text-green-600" : "text-red-500"}`}>
+                  {netBalance >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                  ₹{Math.abs(netBalance || 65000).toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Upcoming Events */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className={`text-base ${isUrdu ? "urdu-text" : ""}`}>{tr("upcomingEvents")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {[
+              { label: "Eid ul Adha", date: "Jun 7, 2026", color: "bg-green-500" },
+              { label: "Fee Collection", date: "Jun 1, 2026", color: "bg-blue-500" },
+              { label: "Monthly Meeting", date: "May 28, 2026", color: "bg-amber-500" },
+            ].map(({ label, date, color }) => (
+              <div key={label} className={`flex items-center gap-3 ${isUrdu ? "flex-row-reverse" : ""}`}>
+                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${color}`} />
+                <div className={`flex-1 ${isUrdu ? "text-right" : ""}`}>
+                  <p className="text-sm font-medium">{label}</p>
+                  <p className="text-xs text-muted-foreground">{date}</p>
+                </div>
+                <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Bottom row — Recent Activity + Top Donors */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Activity */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className={`text-base ${isUrdu ? "urdu-text" : ""}`}>{tr("recentActivity")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {recentActivity.length > 0 ? (
+              <div className="space-y-3">
+                {recentActivity.map((a, i) => (
+                  <div key={i} className={`flex items-center justify-between gap-3 ${isUrdu ? "flex-row-reverse" : ""}`}>
+                    <div className={`flex items-center gap-3 ${isUrdu ? "flex-row-reverse" : ""}`}>
+                      <Badge className={`text-xs ${a.color} border-0`}>{a.type}</Badge>
+                      <span className="text-sm">{a.label}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground flex-shrink-0">
+                      {new Date(a.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-6">{tr("noData")}</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Top Donors */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className={`text-base ${isUrdu ? "urdu-text" : ""}`}>{tr("topDonors")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {topDonors.length > 0 ? (
+              <div className="space-y-3">
+                {topDonors.map((d, i) => (
+                  <div key={d.name} className={`flex items-center justify-between ${isUrdu ? "flex-row-reverse" : ""}`}>
+                    <div className={`flex items-center gap-3 ${isUrdu ? "flex-row-reverse" : ""}`}>
+                      <span className="text-lg w-8 text-center">{medalEmoji(i)}</span>
+                      <span className="text-sm font-medium">{d.name}</span>
+                    </div>
+                    <span className="text-sm font-bold text-primary">₹{d.total.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-6">{tr("noData")}</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Hifz Overview + Attendance Heatmap */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className={`text-base flex items-center gap-2 ${isUrdu ? "urdu-text flex-row-reverse" : ""}`}>
+              <BookOpen className="w-4 h-4 text-primary" />
+              {tr("hifzOverview")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className={`flex justify-between ${isUrdu ? "flex-row-reverse" : ""}`}>
+              <span className="text-sm text-muted-foreground">Students in Hifz</span>
+              <span className="font-bold">{hifzProgress.length}</span>
+            </div>
+            <div className={`flex justify-between ${isUrdu ? "flex-row-reverse" : ""}`}>
+              <span className="text-sm text-muted-foreground">Avg Juz Completed</span>
+              <span className="font-bold">{avgJuz} / 30</span>
+            </div>
+            {leader && (
+              <div className={`flex justify-between items-center ${isUrdu ? "flex-row-reverse" : ""}`}>
+                <span className="text-sm text-muted-foreground">Leader</span>
+                <span className="text-sm font-semibold text-primary">
+                  {leader.studentName} (Juz {leader.currentJuz})
+                </span>
+              </div>
+            )}
+            {hifzProgress.length > 0 && (
+              <div>
+                <div className={`flex justify-between text-xs text-muted-foreground mb-1 ${isUrdu ? "flex-row-reverse" : ""}`}>
+                  <span>Overall Progress</span>
+                  <span>{Math.round((parseFloat(avgJuz) / 30) * 100)}%</span>
+                </div>
+                <Progress value={(parseFloat(avgJuz) / 30) * 100} className="h-2" />
+              </div>
+            )}
+            {hifzProgress.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-4">{tr("noData")}</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Attendance Heatmap */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className={`text-base ${isUrdu ? "urdu-text" : ""}`}>
+              This Week's Attendance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-2 flex-wrap">
+              {weekDays.map((day, i) => (
+                <div key={day} className="flex flex-col items-center gap-1">
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-sm"
+                    style={{ backgroundColor: getHeatmapColor(weekAttendance[i]) }}
+                    title={`${day}: ${weekAttendance[i]}%`}
+                    data-testid={`heatmap-${day}`}
+                  >
+                    {weekAttendance[i]}%
+                  </div>
+                  <span className="text-xs text-muted-foreground">{day}</span>
+                </div>
+              ))}
+            </div>
+            <div className={`flex items-center gap-4 mt-4 text-xs text-muted-foreground ${isUrdu ? "flex-row-reverse" : ""}`}>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-600 inline-block" /> 90%+</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-yellow-500 inline-block" /> 70-89%</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500 inline-block" /> Below 70%</span>
             </div>
           </CardContent>
         </Card>

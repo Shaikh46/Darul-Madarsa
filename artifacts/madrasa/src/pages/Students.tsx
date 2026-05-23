@@ -49,8 +49,6 @@ function validate(form: Omit<Student, "id">): string | null {
   if (!form.fatherName.trim()) return "Father's name is required.";
   if (!form.className) return "Class is required.";
   if (form.phone && !/^\d{10}$/.test(form.phone)) return "Phone must be exactly 10 digits.";
-  if (!validateAadhar(form.studentAadhar)) return "Student Aadhar must be exactly 12 digits.";
-  if (!validateAadhar(form.parentAadhar)) return "Parent Aadhar must be exactly 12 digits.";
   return null;
 }
 
@@ -109,6 +107,14 @@ export default function Students() {
   const handleSave = () => {
     const err = validate(form);
     if (err) { setFormError(err); return; }
+    if (!validateAadhar(form.studentAadhar)) {
+      setFormError(isUrdu ? "براہ کرم درست ١٢ ہندسوں کا طالب علم آدھار نمبر درج کریں" : "Please enter a valid 12-digit Student Aadhar number");
+      return;
+    }
+    if (!validateAadhar(form.parentAadhar)) {
+      setFormError(isUrdu ? "براہ کرم درست ١٢ ہندسوں کا والدین آدھار نمبر درج کریں" : "Please enter a valid 12-digit Parent Aadhar number");
+      return;
+    }
     setFormError(null);
     if (editingId) {
       setStudents(students.map(s => s.id === editingId ? { ...form, id: editingId } : s));
@@ -394,7 +400,7 @@ export default function Students() {
               <div className="space-y-1.5">
                 <Label className={isUrdu ? "urdu-text" : ""}>{tr("studentAadhar")}</Label>
                 <Input
-                  placeholder="1234-5678-9012"
+                  placeholder={isUrdu ? "١٢٣٤-٥٦٧٨-٩٠١٢" : "1234-5678-9012"}
                   value={formatAadhar(form.studentAadhar || "")}
                   onChange={e => setField("studentAadhar", cleanAadhar(e.target.value))}
                   maxLength={14}
@@ -406,7 +412,7 @@ export default function Students() {
               <div className="space-y-1.5">
                 <Label className={isUrdu ? "urdu-text" : ""}>{tr("parentAadhar")}</Label>
                 <Input
-                  placeholder="1234-5678-9012"
+                  placeholder={isUrdu ? "١٢٣٤-٥٦٧٨-٩٠١٢" : "1234-5678-9012"}
                   value={formatAadhar(form.parentAadhar || "")}
                   onChange={e => setField("parentAadhar", cleanAadhar(e.target.value))}
                   maxLength={14}

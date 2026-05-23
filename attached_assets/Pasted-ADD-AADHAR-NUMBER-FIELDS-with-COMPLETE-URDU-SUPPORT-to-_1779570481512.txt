@@ -1,0 +1,364 @@
+ADD AADHAR NUMBER FIELDS with COMPLETE URDU SUPPORT to my Madrasa Management App "Darul Uloom Sirajul Islam Kalgaon".
+
+## REQUIREMENT:
+Add Aadhar number for both STUDENTS and PARENTS with full Urdu language support.
+
+## 1. ADD AADHAR FIELDS IN STUDENT FORM (Bilingual)
+
+### English Labels:
+- Student Aadhar Number
+- Parent Aadhar Number
+
+### Urdu Labels (when Urdu button clicked):
+- طالب علم کا آدھار نمبر
+- والدین کا آدھار نمبر
+
+### Placeholder in English:
+"1234-5678-9012"
+
+### Placeholder in Urdu:
+"١٢٣٤-٥٦٧٨-٩٠١٢"
+
+## 2. COMPLETE FORM HTML (With Urdu Support)
+
+```html
+<div class="mb-4">
+  <label id="studentAadharLabel" class="block text-gray-700 font-medium mb-2">
+    Student Aadhar Number
+  </label>
+  <input type="text" 
+         id="studentAadhar" 
+         class="w-full p-3 border rounded-lg"
+         placeholder="1234-5678-9012"
+         maxlength="14"
+         oninput="formatAadhar(this)">
+  <p id="studentAadharHint" class="text-xs text-gray-500 mt-1">
+    (12 digit number - optional)
+  </p>
+</div>
+
+<div class="mb-4">
+  <label id="parentAadharLabel" class="block text-gray-700 font-medium mb-2">
+    Parent Aadhar Number
+  </label>
+  <input type="text" 
+         id="parentAadhar" 
+         class="w-full p-3 border rounded-lg"
+         placeholder="1234-5678-9012"
+         maxlength="14"
+         oninput="formatAadhar(this)">
+  <p id="parentAadharHint" class="text-xs text-gray-500 mt-1">
+    (12 digit number - optional)
+  </p>
+</div>
+3. URDU TRANSLATIONS DICTIONARY (ADD TO EXISTING)
+Add these to your urduTranslations object:
+
+javascript
+// Add these translations
+const additionalUrduTranslations = {
+  // Aadhar fields
+  "Student Aadhar Number": "طالب علم کا آدھار نمبر",
+  "Parent Aadhar Number": "والدین کا آدھار نمبر",
+  "Aadhar Number": "آدھار نمبر",
+  "Student Aadhar": "طالب علم آدھار",
+  "Parent Aadhar": "والدین آدھار",
+  
+  // Hints and placeholders
+  "12 digit number - optional": "١٢ ہندسوں کا نمبر - اختیاری",
+  "Enter 12 digit Aadhar number": "١٢ ہندسوں کا آدھار نمبر درج کریں",
+  
+  // Table headers
+  "Student Aadhar": "طالب علم آدھار",
+  "Parent Aadhar": "والدین آدھار",
+  
+  // Validation messages
+  "Please enter valid 12-digit Student Aadhar number": "براہ کرم درست ١٢ ہندسوں کا طالب علم آدھار نمبر درج کریں",
+  "Please enter valid 12-digit Parent Aadhar number": "براہ کرم درست ١٢ ہندسوں کا والدین آدھار نمبر درج کریں",
+  "Invalid Aadhar number": "غلط آدھار نمبر"
+};
+4. UPDATE TRANSLATION FUNCTION
+Make sure the translation function handles Aadhar fields:
+
+javascript
+function translateToUrdu() {
+  // Translate Aadhar labels
+  const studentAadharLabel = document.getElementById('studentAadharLabel');
+  if (studentAadharLabel) {
+    studentAadharLabel.innerText = "طالب علم کا آدھار نمبر";
+  }
+  
+  const parentAadharLabel = document.getElementById('parentAadharLabel');
+  if (parentAadharLabel) {
+    parentAadharLabel.innerText = "والدین کا آدھار نمبر";
+  }
+  
+  // Translate hints
+  const studentHint = document.getElementById('studentAadharHint');
+  if (studentHint) {
+    studentHint.innerText = "١٢ ہندسوں کا نمبر - اختیاری";
+  }
+  
+  const parentHint = document.getElementById('parentAadharHint');
+  if (parentHint) {
+    parentHint.innerText = "١٢ ہندسوں کا نمبر - اختیاری";
+  }
+  
+  // Translate placeholders
+  const studentInput = document.getElementById('studentAadhar');
+  if (studentInput && studentInput.getAttribute('placeholder') === "1234-5678-9012") {
+    studentInput.setAttribute('placeholder', "١٢٣٤-٥٦٧٨-٩٠١٢");
+  }
+  
+  const parentInput = document.getElementById('parentAadhar');
+  if (parentInput && parentInput.getAttribute('placeholder') === "1234-5678-9012") {
+    parentInput.setAttribute('placeholder', "١٢٣٤-٥٦٧٨-٩٠١٢");
+  }
+  
+  // Translate table headers if they exist
+  const tableHeaders = document.querySelectorAll('th');
+  tableHeaders.forEach(header => {
+    if (header.innerText === "Student Aadhar") {
+      header.innerText = "طالب علم آدھار";
+    }
+    if (header.innerText === "Parent Aadhar") {
+      header.innerText = "والدین آدھار";
+    }
+  });
+}
+
+function translateToEnglish() {
+  // Revert Aadhar labels to English
+  const studentAadharLabel = document.getElementById('studentAadharLabel');
+  if (studentAadharLabel) {
+    studentAadharLabel.innerText = "Student Aadhar Number";
+  }
+  
+  const parentAadharLabel = document.getElementById('parentAadharLabel');
+  if (parentAadharLabel) {
+    parentAadharLabel.innerText = "Parent Aadhar Number";
+  }
+  
+  // Revert hints
+  const studentHint = document.getElementById('studentAadharHint');
+  if (studentHint) {
+    studentHint.innerText = "(12 digit number - optional)";
+  }
+  
+  const parentHint = document.getElementById('parentAadharHint');
+  if (parentHint) {
+    parentHint.innerText = "(12 digit number - optional)";
+  }
+  
+  // Revert placeholders
+  const studentInput = document.getElementById('studentAadhar');
+  if (studentInput) {
+    studentInput.setAttribute('placeholder', "1234-5678-9012");
+  }
+  
+  const parentInput = document.getElementById('parentAadhar');
+  if (parentInput) {
+    parentInput.setAttribute('placeholder', "1234-5678-9012");
+  }
+}
+5. AADHAR VALIDATION (Bilingual Messages)
+javascript
+function validateAadhar(aadhar, type) {
+  // Remove spaces and hyphens
+  let clean = aadhar.replace(/[\s-]/g, '');
+  
+  // Empty is allowed
+  if (clean.length === 0) return true;
+  
+  // Check exactly 12 digits
+  if (clean.length !== 12) {
+    const currentLang = localStorage.getItem('language');
+    if (currentLang === 'urdu') {
+      alert(`براہ کرم درست ١٢ ہندسوں کا ${type === 'student' ? 'طالب علم' : 'والدین'} آدھار نمبر درج کریں`);
+    } else {
+      alert(`Please enter valid 12-digit ${type === 'student' ? 'Student' : 'Parent'} Aadhar number`);
+    }
+    return false;
+  }
+  
+  // Check only digits
+  if (!/^\d+$/.test(clean)) {
+    const currentLang = localStorage.getItem('language');
+    if (currentLang === 'urdu') {
+      alert(`غلط آدھار نمبر - صرف ہندسے درج کریں`);
+    } else {
+      alert(`Invalid Aadhar number - only digits allowed`);
+    }
+    return false;
+  }
+  
+  return true;
+}
+
+// Auto-format Aadhar as user types (works in both languages)
+function formatAadhar(input) {
+  let value = input.value.replace(/[\s-]/g, '');
+  if (value.length >= 4) {
+    value = value.slice(0,4) + '-' + value.slice(4);
+  }
+  if (value.length >= 9) {
+    value = value.slice(0,9) + '-' + value.slice(9);
+  }
+  input.value = value.slice(0, 14);
+}
+6. STUDENT TABLE - ADD AADHAR COLUMNS
+Update the students table to show Aadhar columns:
+
+html
+<table class="w-full">
+  <thead>
+    <tr class="bg-gray-100">
+      <th class="p-3 text-left">#</th>
+      <th class="p-3 text-left student-name-col">Student Name</th>
+      <th class="p-3 text-left">Class</th>
+      <th class="p-3 text-left">Father Name</th>
+      <th class="p-3 text-left student-aadhar-col">Student Aadhar</th>
+      <th class="p-3 text-left parent-aadhar-col">Parent Aadhar</th>
+      <th class="p-3 text-left">Phone</th>
+      <th class="p-3 text-left">Actions</th>
+    </tr>
+  </thead>
+  <tbody id="studentsTableBody"></tbody>
+</table>
+7. DISPLAY AADHAR IN STUDENT LIST
+javascript
+function displayStudents() {
+  const students = JSON.parse(localStorage.getItem('students')) || [];
+  const tbody = document.getElementById('studentsTableBody');
+  tbody.innerHTML = '';
+  
+  students.forEach((student, index) => {
+    const row = tbody.insertRow();
+    row.innerHTML = `
+      <td class="p-3">${index + 1}</td>
+      <td class="p-3">${student.full_name || ''}</td>
+      <td class="p-3">${student.class || ''}</td>
+      <td class="p-3">${student.father_name || ''}</td>
+      <td class="p-3">${student.student_aadhar || '-'}</td>
+      <td class="p-3">${student.parent_aadhar || '-'}</td>
+      <td class="p-3">${student.phone || ''}</td>
+      <td class="p-3">
+        <button onclick="editStudent('${student.id}')" class="text-blue-500 mr-2">✏️</button>
+        <button onclick="deleteStudent('${student.id}')" class="text-red-500">🗑️</button>
+      </td>
+    `;
+  });
+}
+8. UPDATE STUDENT OBJECT
+javascript
+// When saving student
+function saveStudent() {
+  const student = {
+    id: document.getElementById('studentId').value || Date.now().toString(),
+    full_name: document.getElementById('fullName').value,
+    father_name: document.getElementById('fatherName').value,
+    mother_name: document.getElementById('motherName').value,
+    date_of_birth: document.getElementById('dob').value,
+    admission_date: document.getElementById('admissionDate').value,
+    class: document.getElementById('class').value,
+    phone: document.getElementById('phone').value,
+    address: document.getElementById('address').value,
+    // NEW AADHAR FIELDS
+    student_aadhar: document.getElementById('studentAadhar').value || '',
+    parent_aadhar: document.getElementById('parentAadhar').value || '',
+    status: 'active'
+  };
+  
+  // Validate Aadhar before saving
+  if (!validateAadhar(student.student_aadhar, 'student')) return;
+  if (!validateAadhar(student.parent_aadhar, 'parent')) return;
+  
+  // Save to localStorage
+  let students = JSON.parse(localStorage.getItem('students')) || [];
+  const existingIndex = students.findIndex(s => s.id === student.id);
+  
+  if (existingIndex >= 0) {
+    students[existingIndex] = student;
+  } else {
+    students.push(student);
+  }
+  
+  localStorage.setItem('students', JSON.stringify(students));
+  displayStudents();
+  closeModal();
+  
+  // Show success message
+  const currentLang = localStorage.getItem('language');
+  alert(currentLang === 'urdu' ? 'طالب علم محفوظ ہوگیا' : 'Student saved successfully');
+}
+9. EDIT STUDENT (Load Aadhar Values)
+javascript
+function editStudent(id) {
+  const students = JSON.parse(localStorage.getItem('students')) || [];
+  const student = students.find(s => s.id === id);
+  
+  if (student) {
+    document.getElementById('studentId').value = student.id;
+    document.getElementById('fullName').value = student.full_name || '';
+    document.getElementById('fatherName').value = student.father_name || '';
+    document.getElementById('motherName').value = student.mother_name || '';
+    document.getElementById('dob').value = student.date_of_birth || '';
+    document.getElementById('admissionDate').value = student.admission_date || '';
+    document.getElementById('class').value = student.class || '';
+    document.getElementById('phone').value = student.phone || '';
+    document.getElementById('address').value = student.address || '';
+    // LOAD AADHAR VALUES
+    document.getElementById('studentAadhar').value = student.student_aadhar || '';
+    document.getElementById('parentAadhar').value = student.parent_aadhar || '';
+    
+    openModal('Edit Student');
+  }
+}
+10. EXPORT TO EXCEL (Include Aadhar)
+javascript
+function exportToExcel() {
+  const students = JSON.parse(localStorage.getItem('students')) || [];
+  const currentLang = localStorage.getItem('language');
+  
+  const data = students.map(s => ({
+    [currentLang === 'urdu' ? 'طالب علم کا نام' : 'Student Name']: s.full_name,
+    [currentLang === 'urdu' ? 'والد کا نام' : 'Father Name']: s.father_name,
+    [currentLang === 'urdu' ? 'کلاس' : 'Class']: s.class,
+    [currentLang === 'urdu' ? 'طالب علم آدھار' : 'Student Aadhar']: s.student_aadhar || '-',
+    [currentLang === 'urdu' ? 'والدین آدھار' : 'Parent Aadhar']: s.parent_aadhar || '-',
+    [currentLang === 'urdu' ? 'فون نمبر' : 'Phone']: s.phone
+  }));
+  
+  // Export logic...
+}
+VERIFICATION CHECKLIST:
+After adding, verify:
+
+Student form has Student Aadhar field
+
+Student form has Parent Aadhar field
+
+When Urdu button clicked, labels change to Urdu
+
+When Urdu button clicked, placeholders change to Urdu numbers
+
+When Urdu button clicked, hint text changes to Urdu
+
+Aadhar auto-formats as XXXX-XXXX-XXXX
+
+Validation shows Urdu messages when in Urdu mode
+
+Data saves to localStorage
+
+Data displays in student table with Urdu headers
+
+Edit student loads existing Aadhar values
+
+DELIVERY:
+Add both Aadhar fields with FULL Urdu support
+
+All labels, placeholders, hints, and messages in Urdu when toggled
+
+Keep all existing features
+
+ONE complete HTML file

@@ -20,6 +20,7 @@ import {
   Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoImg from "@assets/logo.png_1779548283551.jpeg";
 
 interface NavItem {
   key: string;
@@ -76,12 +77,15 @@ export function Sidebar({ onClose }: SidebarProps) {
       className={`flex flex-col h-full bg-sidebar border-r border-sidebar-border w-64 text-sidebar-foreground ${isUrdu ? "urdu-text" : ""}`}
       dir={isUrdu ? "rtl" : "ltr"}
     >
-      <div className="p-5 border-b border-sidebar-border bg-sidebar-primary text-sidebar-primary-foreground flex flex-col items-center justify-center space-y-2">
-        <MoonStar className="w-9 h-9 text-accent" />
-        <h1 className={`text-base font-bold text-center leading-tight ${isUrdu ? "urdu-text" : ""}`}>
-          {isUrdu ? "دارالعلوم سراج الاسلام" : "Darul Uloom Sirajul Islam"}
-        </h1>
-        <p className="text-xs opacity-80">{isUrdu ? "کلگاؤں" : "Kalgaon"}</p>
+      <div className="p-4 border-b border-sidebar-border bg-sidebar-primary text-sidebar-primary-foreground flex flex-col items-center justify-center space-y-2">
+        <div className="w-20 h-20 rounded-full bg-white/95 p-1 shadow-md ring-2 ring-accent/40 flex items-center justify-center overflow-hidden">
+          <img src={logoImg} alt="Darul Uloom Sirajul Islam Kalgaon" className="w-full h-full object-contain rounded-full" />
+        </div>
+        <div className="text-center leading-tight">
+          <p className="text-[15px] font-bold tracking-wide" style={{ color: "#FFD700" }}>DARUL ULOOM</p>
+          <p className="text-[11px] font-semibold opacity-90 mt-0.5">SIRAJUL ISLAM KALGAON</p>
+        </div>
+        {isUrdu && <p className="text-xs opacity-80 urdu-text">دارالعلوم سراج الاسلام کلگاؤں</p>}
       </div>
 
       {/* Logged-in user info */}

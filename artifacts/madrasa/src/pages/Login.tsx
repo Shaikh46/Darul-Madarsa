@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth, tryLogin, getLS, Teacher } from "@/lib/storage";
 import { MoonStar, Eye, EyeOff, ShieldCheck, BookOpen, Lock, User } from "lucide-react";
+import logoImg from "@assets/logo.png_1779548283551.jpeg";
 
 export default function Login() {
   const { login } = useAuth();
@@ -54,11 +55,12 @@ export default function Login() {
           <div className="bg-primary px-8 py-8 text-center text-primary-foreground relative overflow-hidden">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
             <div className="relative">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white/30">
-                <MoonStar className="w-8 h-8 text-white" />
+              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white/40 shadow-lg overflow-hidden p-1">
+                <img src={logoImg} alt="Darul Uloom Sirajul Islam Kalgaon" className="w-full h-full object-contain rounded-full" />
               </div>
-              <h1 className="text-xl font-bold leading-tight">Darul Uloom Sirajul Islam</h1>
-              <p className="text-primary-foreground/80 text-sm mt-1">Kalgaon — Madrasa Management System</p>
+              <h1 className="text-xl font-bold leading-tight" style={{ color: "#FFD700" }}>DARUL ULOOM</h1>
+              <p className="text-white text-sm font-semibold mt-0.5 tracking-wide">SIRAJUL ISLAM KALGAON</p>
+              <p className="text-primary-foreground/80 text-xs mt-1">Madrasa Management System</p>
               <p className="text-accent text-xs mt-1 font-arabic" style={{ fontFamily: "'Noto Nastaliq Urdu', serif", direction: "rtl" }}>دارالعلوم سراج الاسلام کلگاؤں</p>
             </div>
           </div>

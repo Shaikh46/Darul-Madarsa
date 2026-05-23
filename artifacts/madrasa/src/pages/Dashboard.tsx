@@ -321,7 +321,7 @@ export default function Dashboard() {
           <div className={`flex items-center gap-3 ${isUrdu ? "flex-row-reverse" : ""}`}>
             <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
             <span className={`text-sm font-medium ${isUrdu ? "urdu-text" : ""}`}>
-              3 {tr("pendingFees")} &nbsp;·&nbsp; 2 {tr("salariesDue")} &nbsp;·&nbsp; 1 {tr("meetingTomorrow")}
+              0 {tr("pendingFees")} &nbsp;·&nbsp; 0 {tr("salariesDue")} &nbsp;·&nbsp; 0 {tr("meetingTomorrow")}
             </span>
           </div>
           <button onClick={() => setShowAlert(false)} className="text-amber-500 hover:text-amber-700" data-testid="btn-dismiss-alert">
@@ -508,9 +508,9 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-3">
             {[
-              { label: tr("present"), pct: 85, color: "bg-green-500" },
-              { label: tr("absent"), pct: 10, color: "bg-red-500" },
-              { label: tr("late"), pct: 5, color: "bg-yellow-500" },
+              { label: tr("present"), pct: 0, color: "bg-green-500" },
+              { label: tr("absent"), pct: 0, color: "bg-red-500" },
+              { label: tr("late"), pct: 0, color: "bg-yellow-500" },
             ].map(({ label, pct, color }) => (
               <div key={label}>
                 <div className={`flex justify-between text-sm mb-1 ${isUrdu ? "flex-row-reverse" : ""}`}>

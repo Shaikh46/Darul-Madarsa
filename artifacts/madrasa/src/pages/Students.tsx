@@ -122,7 +122,7 @@ export default function Students() {
       const lines = text.split("\n").filter(l => l.trim());
       const parsed: Partial<Student>[] = lines.slice(1).map(line => {
         const parts = line.split(",").map(p => p.trim().replace(/^"|"$/g, ""));
-        return { name: parts[0], fatherName: parts[1], className: parts[2] || "General", phone: parts[3], address: parts[4] || "Kalgaon", jamaat: "General", status: "Active" };
+        return { name: parts[0], fatherName: parts[1], className: parts[2] || "General", phone: parts[3], address: parts[4] || "Kalgaon", jamaat: "General", status: "Active" as const };
       }).filter(s => s.name);
       setImportRaw(parsed);
       setImportPreview(parsed.slice(0, 5));

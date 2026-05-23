@@ -1,12 +1,17 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useLS } from "@/lib/storage";
-import type { Student } from "@/lib/storage";
+import { useLS, CLASS_GROUPS } from "@/lib/storage";
+import type { Student, Teacher } from "@/lib/storage";
 import { useLang } from "@/lib/i18n";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 import {
   Users,
   UserCheck,
@@ -23,6 +28,7 @@ import {
   TrendingUp,
   TrendingDown,
   Calendar,
+  UserCog,
 } from "lucide-react";
 import {
   LineChart,
@@ -85,6 +91,7 @@ function getHeatmapColor(pct: number): string {
 interface Donation {
   id: string;
   donorName: string;
+  phone?: string;
   amount: number;
   donationType: string;
   date: string;
@@ -116,13 +123,65 @@ export default function Dashboard() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAlert, setShowAlert] = useState(true);
   const [students] = useLS<Student[]>("students", []);
-  const [donations] = useLS<Donation[]>("donations", []);
-  const [fees] = useLS<Fee[]>("fees", []);
+  const [teachers, setTeachers] = useLS<Teacher[]>("teachers", []);
+  const [donations, setDonations] = useLS<Donation[]>("donations", []);
+  const [fees, setFees] = useLS<Fee[]>("fees", []);
   const [hifzProgress] = useLS<HifzRecord[]>("hifz_progress", []);
-  const [expenses] = useLS<Expense[]>("expenses", []);
+  const [expenses, setExpenses] = useLS<Expense[]>("expenses", []);
   const [, setLocation] = useLocation();
   const { lang, tr } = useLang();
+  const { toast } = useToast();
   const isUrdu = lang === "ur";
+
+  // ── Quick Action modal state ──────────────────────────────────────────
+  type ModalType = "teacher" | "donation" | "fee" | "expense" | null;
+  const [activeModal, setActiveModal] = useState<ModalType>(null);
+
+  const [teacherForm, setTeacherForm] = useState({ name: "", email: "", phone: "", assignedClass: "", qualification: "" });
+  const [donationForm, setDonationForm] = useState({ donorName: "", phone: "", amount: "", donationType: "General", date: new Date().toISOString().slice(0, 10) });
+  const [feeForm, setFeeForm] = useState({ studentId: "", month: "", year: new Date().getFullYear().toString(), amount: "1500", paymentMethod: "Cash" });
+  const [expenseForm, setExpenseForm] = useState({ category: "General", description: "", amount: "", date: new Date().toISOString().slice(0, 10) });
+
+  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  const saveTeacher = () => {
+    if (!teacherForm.name.trim()) { toast({ title: "Error", description: "Teacher name is required.", variant: "destructive" }); return; }
+    const newTeacher: Teacher = { id: `t${Date.now()}`, name: teacherForm.name, email: teacherForm.email, phone: teacherForm.phone, assignedClass: teacherForm.assignedClass, qualification: teacherForm.qualification, joiningDate: new Date().toISOString().slice(0, 10), status: "Active" };
+    setTeachers([...teachers, newTeacher]);
+    toast({ title: isUrdu ? "استاد شامل ہو گیا" : "Teacher Added", description: teacherForm.name });
+    setTeacherForm({ name: "", email: "", phone: "", assignedClass: "", qualification: "" });
+    setActiveModal(null);
+  };
+
+  const saveDonation = () => {
+    if (!donationForm.donorName.trim() || !donationForm.amount) { toast({ title: "Error", description: "Donor name and amount required.", variant: "destructive" }); return; }
+    const receiptNo = `DSIK/DON/${new Date().getFullYear()}/${String(donations.length + 1).padStart(5, "0")}`;
+    const newDon: Donation = { id: `don${Date.now()}`, receiptNo, donorName: donationForm.donorName, phone: donationForm.phone, amount: parseFloat(donationForm.amount), donationType: donationForm.donationType, date: new Date(donationForm.date).toISOString() };
+    setDonations([newDon, ...donations]);
+    toast({ title: isUrdu ? "عطیہ ریکارڈ ہو گیا" : "Donation Recorded", description: `₹${donationForm.amount} — ${receiptNo}` });
+    setDonationForm({ donorName: "", phone: "", amount: "", donationType: "General", date: new Date().toISOString().slice(0, 10) });
+    setActiveModal(null);
+  };
+
+  const saveFee = () => {
+    if (!feeForm.studentId || !feeForm.month || !feeForm.amount) { toast({ title: "Error", description: "Student, month and amount required.", variant: "destructive" }); return; }
+    const student = students.find(s => s.id === feeForm.studentId);
+    const receiptNo = `DSIK/FEE/${feeForm.year}/${String(fees.length + 1).padStart(5, "0")}`;
+    const newFee: Fee = { id: `fee${Date.now()}`, receiptNo, studentId: feeForm.studentId, studentName: student?.name, month: feeForm.month, year: feeForm.year, amount: parseFloat(feeForm.amount), paymentMethod: feeForm.paymentMethod, status: "paid", date: new Date().toISOString() } as Fee & { studentId: string; month: string; year: string; paymentMethod: string };
+    setFees([newFee, ...fees]);
+    toast({ title: isUrdu ? "فیس ریکارڈ ہو گئی" : "Fee Recorded", description: `${student?.name} — ${feeForm.month} — ₹${feeForm.amount}` });
+    setFeeForm({ studentId: "", month: "", year: new Date().getFullYear().toString(), amount: "1500", paymentMethod: "Cash" });
+    setActiveModal(null);
+  };
+
+  const saveExpense = () => {
+    if (!expenseForm.description.trim() || !expenseForm.amount) { toast({ title: "Error", description: "Description and amount required.", variant: "destructive" }); return; }
+    const newExp: Expense = { id: `exp${Date.now()}`, category: expenseForm.category, description: expenseForm.description, amount: parseFloat(expenseForm.amount), date: new Date(expenseForm.date).toISOString() } as Expense & { category: string; description: string };
+    setExpenses([newExp, ...expenses]);
+    toast({ title: isUrdu ? "خرچ شامل ہو گیا" : "Expense Added", description: `₹${expenseForm.amount} — ${expenseForm.description}` });
+    setExpenseForm({ category: "General", description: "", amount: "", date: new Date().toISOString().slice(0, 10) });
+    setActiveModal(null);
+  };
 
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -323,59 +382,60 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick Actions Bar */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className={`text-sm font-semibold text-muted-foreground uppercase tracking-wider ${isUrdu ? "urdu-text" : ""}`}>
-            {tr("quickActions")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2 flex-wrap">
-            {[
-              { label: tr("addStudent"), icon: Plus, action: () => setLocation("/students") },
-              { label: tr("markAttendance"), icon: UserCheck, action: () => setLocation("/attendance") },
-              { label: tr("addDonation"), icon: HeartHandshake, action: () => setLocation("/donations") },
-              { label: tr("collectFee"), icon: CreditCard, action: () => setLocation("/fees") },
-              { label: tr("addExpense"), icon: FileText, action: () => setLocation("/expenses") },
-              { label: tr("sendNotification"), icon: Bell, action: () => setLocation("/communication") },
-              { label: tr("generateReport"), icon: FileText, action: () => window.print() },
-              {
-                label: tr("downloadBackup"),
-                icon: Download,
-                action: () => {
-                  const data: Record<string, unknown> = {};
-                  for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key) {
-                      try { data[key] = JSON.parse(localStorage.getItem(key) || "null"); } catch { data[key] = localStorage.getItem(key); }
-                    }
-                  }
-                  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = "madrasa_backup.json";
-                  a.click();
-                  URL.revokeObjectURL(url);
-                },
-              },
-            ].map(({ label, icon: Icon, action }) => (
-              <Button
-                key={label}
-                variant="outline"
-                size="sm"
-                className={`border-primary/30 text-primary hover:bg-primary/5 gap-1.5 ${isUrdu ? "urdu-text flex-row-reverse" : ""}`}
-                onClick={action}
-                data-testid={`quick-action-${label.replace(/\s+/g, "-").toLowerCase()}`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {label}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Quick Actions — 4 Prominent Cards */}
+      <div>
+        <p className={`text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 ${isUrdu ? "urdu-text text-right" : ""}`}>
+          {tr("quickActions")}
+        </p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { modal: "teacher" as const, icon: UserCog, label: isUrdu ? "استاد شامل کریں" : "Add Teacher", sub: isUrdu ? "نئے استاد کا اندراج" : "Register new teacher", grad: "from-blue-600 to-blue-700" },
+            { modal: "donation" as const, icon: HeartHandshake, label: isUrdu ? "عطیہ ریکارڈ کریں" : "Record Donation", sub: isUrdu ? "عطیہ درج کریں" : "Log a donation receipt", grad: "from-purple-600 to-purple-700" },
+            { modal: "fee" as const, icon: CreditCard, label: isUrdu ? "فیس ریکارڈ کریں" : "Record Fee", sub: isUrdu ? "طالب علم کی فیس" : "Collect student fee", grad: "from-emerald-600 to-emerald-700" },
+            { modal: "expense" as const, icon: FileText, label: isUrdu ? "خرچ شامل کریں" : "Add Expense", sub: isUrdu ? "اخراجات ریکارڈ کریں" : "Record an expense", grad: "from-orange-500 to-orange-600" },
+          ].map(({ modal, icon: Icon, label, sub, grad }) => (
+            <button
+              key={modal}
+              onClick={() => setActiveModal(modal)}
+              className={`relative rounded-xl p-4 text-white shadow-md bg-gradient-to-br ${grad} hover:opacity-90 active:scale-[0.98] transition-all text-left`}
+              data-testid={`qa-${modal}`}
+            >
+              <Icon className="w-7 h-7 opacity-90 mb-2" />
+              <p className={`font-bold text-sm leading-tight ${isUrdu ? "urdu-text" : ""}`}>{label}</p>
+              <p className={`text-white/70 text-xs mt-0.5 ${isUrdu ? "urdu-text" : ""}`}>{sub}</p>
+              <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+                <Plus className="w-4 h-4" />
+              </div>
+            </button>
+          ))}
+        </div>
+        {/* Secondary quick links */}
+        <div className="flex gap-2 flex-wrap mt-3">
+          {[
+            { label: tr("addStudent"), icon: Plus, action: () => setLocation("/students") },
+            { label: tr("markAttendance"), icon: UserCheck, action: () => setLocation("/attendance") },
+            { label: tr("sendNotification"), icon: Bell, action: () => setLocation("/communication") },
+            { label: tr("generateReport"), icon: FileText, action: () => window.print() },
+            { label: tr("downloadBackup"), icon: Download, action: () => {
+              const data: Record<string, unknown> = {};
+              for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key) { try { data[key] = JSON.parse(localStorage.getItem(key) || "null"); } catch { data[key] = localStorage.getItem(key); } }
+              }
+              const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a"); a.href = url; a.download = "madrasa_backup.json"; a.click();
+              URL.revokeObjectURL(url);
+            }},
+          ].map(({ label, icon: Icon, action }) => (
+            <Button key={label} variant="outline" size="sm"
+              className={`border-primary/30 text-primary hover:bg-primary/5 gap-1.5 ${isUrdu ? "urdu-text flex-row-reverse" : ""}`}
+              onClick={action}>
+              <Icon className="w-3.5 h-3.5" />{label}
+            </Button>
+          ))}
+        </div>
+      </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -633,6 +693,189 @@ export default function Dashboard() {
 
       {/* Floating Action Button */}
       <FAB />
+
+      {/* ── Quick Action Modals ──────────────────────────────────────────── */}
+
+      {/* Add Teacher Modal */}
+      <Dialog open={activeModal === "teacher"} onOpenChange={o => !o && setActiveModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className={isUrdu ? "urdu-text" : ""}>{isUrdu ? "استاد شامل کریں" : "Add Teacher"}</DialogTitle>
+          </DialogHeader>
+          <div className={`space-y-3 py-1 ${isUrdu ? "urdu-text" : ""}`} dir={isUrdu ? "rtl" : "ltr"}>
+            <div className="space-y-1.5">
+              <Label>{isUrdu ? "پورا نام" : "Full Name"} *</Label>
+              <Input placeholder={isUrdu ? "استاد کا نام" : "Teacher name"} value={teacherForm.name} onChange={e => setTeacherForm(f => ({ ...f, name: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "ای میل" : "Email"}</Label>
+                <Input placeholder="teacher@dsik.edu" value={teacherForm.email} onChange={e => setTeacherForm(f => ({ ...f, email: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "فون" : "Phone"}</Label>
+                <Input placeholder="9876543210" value={teacherForm.phone} onChange={e => setTeacherForm(f => ({ ...f, phone: e.target.value.replace(/\D/g,"").slice(0,10) }))} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{isUrdu ? "کلاس" : "Assigned Class"}</Label>
+              <Select value={teacherForm.assignedClass} onValueChange={v => setTeacherForm(f => ({ ...f, assignedClass: v }))}>
+                <SelectTrigger><SelectValue placeholder={isUrdu ? "کلاس منتخب کریں" : "Select class"} /></SelectTrigger>
+                <SelectContent>
+                  {CLASS_GROUPS.map(g => (
+                    <div key={g.label}>
+                      <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1">{g.icon} {g.label}</div>
+                      {g.classes.map(c => <SelectItem key={c} value={c} className="pl-5">{c}</SelectItem>)}
+                    </div>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{isUrdu ? "تعلیمی قابلیت" : "Qualification"}</Label>
+              <Input placeholder="Dars-e-Nizami / Fazil" value={teacherForm.qualification} onChange={e => setTeacherForm(f => ({ ...f, qualification: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setActiveModal(null)}>{isUrdu ? "منسوخ" : "Cancel"}</Button>
+            <Button onClick={saveTeacher}>{isUrdu ? "محفوظ کریں" : "Save Teacher"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Record Donation Modal */}
+      <Dialog open={activeModal === "donation"} onOpenChange={o => !o && setActiveModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className={isUrdu ? "urdu-text" : ""}>{isUrdu ? "عطیہ ریکارڈ کریں" : "Record Donation"}</DialogTitle>
+          </DialogHeader>
+          <div className={`space-y-3 py-1 ${isUrdu ? "urdu-text" : ""}`} dir={isUrdu ? "rtl" : "ltr"}>
+            <div className="space-y-1.5">
+              <Label>{isUrdu ? "عطیہ دہندہ کا نام" : "Donor Name"} *</Label>
+              <Input placeholder="Abdullah Merchant" value={donationForm.donorName} onChange={e => setDonationForm(f => ({ ...f, donorName: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "فون" : "Phone"}</Label>
+                <Input placeholder="9876543210" value={donationForm.phone} onChange={e => setDonationForm(f => ({ ...f, phone: e.target.value.replace(/\D/g,"").slice(0,10) }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "رقم (₹)" : "Amount (₹)"} *</Label>
+                <Input type="number" placeholder="5000" value={donationForm.amount} onChange={e => setDonationForm(f => ({ ...f, amount: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "قسم" : "Type"}</Label>
+                <Select value={donationForm.donationType} onValueChange={v => setDonationForm(f => ({ ...f, donationType: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["General","Zakat","Sadaqah","Fitrana","Construction","Monthly","One-time"].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "تاریخ" : "Date"}</Label>
+                <Input type="date" value={donationForm.date} onChange={e => setDonationForm(f => ({ ...f, date: e.target.value }))} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setActiveModal(null)}>{isUrdu ? "منسوخ" : "Cancel"}</Button>
+            <Button onClick={saveDonation}>{isUrdu ? "محفوظ کریں" : "Record Donation"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Record Fee Modal */}
+      <Dialog open={activeModal === "fee"} onOpenChange={o => !o && setActiveModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className={isUrdu ? "urdu-text" : ""}>{isUrdu ? "فیس ریکارڈ کریں" : "Record Fee"}</DialogTitle>
+          </DialogHeader>
+          <div className={`space-y-3 py-1 ${isUrdu ? "urdu-text" : ""}`} dir={isUrdu ? "rtl" : "ltr"}>
+            <div className="space-y-1.5">
+              <Label>{isUrdu ? "طالب علم" : "Student"} *</Label>
+              <Select value={feeForm.studentId} onValueChange={v => setFeeForm(f => ({ ...f, studentId: v }))}>
+                <SelectTrigger><SelectValue placeholder={isUrdu ? "طالب علم منتخب کریں" : "Select student"} /></SelectTrigger>
+                <SelectContent>
+                  {students.map(s => <SelectItem key={s.id} value={s.id}>{s.name} ({s.className})</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "مہینہ" : "Month"} *</Label>
+                <Select value={feeForm.month} onValueChange={v => setFeeForm(f => ({ ...f, month: v }))}>
+                  <SelectTrigger><SelectValue placeholder={isUrdu ? "مہینہ" : "Month"} /></SelectTrigger>
+                  <SelectContent>{MONTHS.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "سال" : "Year"}</Label>
+                <Input value={feeForm.year} onChange={e => setFeeForm(f => ({ ...f, year: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "رقم (₹)" : "Amount (₹)"} *</Label>
+                <Input type="number" value={feeForm.amount} onChange={e => setFeeForm(f => ({ ...f, amount: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "ادائیگی طریقہ" : "Payment Method"}</Label>
+                <Select value={feeForm.paymentMethod} onValueChange={v => setFeeForm(f => ({ ...f, paymentMethod: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["Cash","Bank Transfer","Online/UPI","Cheque"].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setActiveModal(null)}>{isUrdu ? "منسوخ" : "Cancel"}</Button>
+            <Button onClick={saveFee}>{isUrdu ? "محفوظ کریں" : "Record Fee"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Expense Modal */}
+      <Dialog open={activeModal === "expense"} onOpenChange={o => !o && setActiveModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className={isUrdu ? "urdu-text" : ""}>{isUrdu ? "خرچ شامل کریں" : "Add Expense"}</DialogTitle>
+          </DialogHeader>
+          <div className={`space-y-3 py-1 ${isUrdu ? "urdu-text" : ""}`} dir={isUrdu ? "rtl" : "ltr"}>
+            <div className="space-y-1.5">
+              <Label>{isUrdu ? "زمرہ" : "Category"}</Label>
+              <Select value={expenseForm.category} onValueChange={v => setExpenseForm(f => ({ ...f, category: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {["Salary","Maintenance","Books","Electricity","Water","Food","Transport","Other"].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{isUrdu ? "تفصیل" : "Description"} *</Label>
+              <Input placeholder={isUrdu ? "تفصیل درج کریں" : "e.g. Monthly electricity bill"} value={expenseForm.description} onChange={e => setExpenseForm(f => ({ ...f, description: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "رقم (₹)" : "Amount (₹)"} *</Label>
+                <Input type="number" placeholder="5000" value={expenseForm.amount} onChange={e => setExpenseForm(f => ({ ...f, amount: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "تاریخ" : "Date"}</Label>
+                <Input type="date" value={expenseForm.date} onChange={e => setExpenseForm(f => ({ ...f, date: e.target.value }))} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setActiveModal(null)}>{isUrdu ? "منسوخ" : "Cancel"}</Button>
+            <Button onClick={saveExpense}>{isUrdu ? "محفوظ کریں" : "Add Expense"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

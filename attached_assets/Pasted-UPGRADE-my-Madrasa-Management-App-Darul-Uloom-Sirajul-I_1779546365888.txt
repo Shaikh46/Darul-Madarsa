@@ -1,0 +1,229 @@
+UPGRADE my Madrasa Management App "Darul Uloom Sirajul Islam Kalgaon" with these changes:
+
+## 1. STUDY TIMETABLE SECTION (START EMPTY)
+
+Create a Study Timetable module that starts COMPLETELY EMPTY.
+
+### NO Default Timetable - User must add everything manually.
+
+### Timetable Features:
+
+**For Admin Only:**
+- Can ADD new timetable entry
+- Can EDIT existing timetable entry  
+- Can DELETE timetable entry
+- Can assign different timetable for each class
+
+**For Teachers:**
+- Can VIEW their class timetable (only view, cannot edit)
+- Can mark lessons as "Completed"
+
+**For Parents/Students:**
+- Can VIEW their class timetable
+- Can download timetable as PDF
+
+### Timetable Form Fields (for Adding/Editing):
+
+When Admin clicks "Add Timetable Entry", show form with:
+
+| Field | Type | Options |
+|-------|------|---------|
+| Select Class | Dropdown | Deeniyat Alif, Deeniyat Baa, Farsi Awwal, Farsi Duwwam, Arbi Awwal, Arbi Duwwam, Arbi Suwwam, Arbi Chahrum, Arbi Panjum, Hifz Alif, Hifz Baa |
+| Select Day | Dropdown | Sunday, Monday, Tuesday, Wednesday, Thursday, Friday |
+| Start Time | Time Picker | (example: 08:00 AM) |
+| End Time | Time Picker | (example: 08:45 AM) |
+| Subject | Text Input | Quran, Qaida, Deeniyat, Arabic, Farsi, Hifz, Tajweed, etc. |
+| Teacher | Dropdown | List of all teachers |
+| Room No. | Text Input | Optional |
+
+Buttons: [SAVE] [CANCEL]
+
+### Timetable Display Table:
+
+After adding entries, timetable shows like this:
+┌────────────────────────────────────────────────────────────────────┐
+│ STUDY TIMETABLE - Deeniyat Alif Class [Add Entry] │
+│ [Download PDF] [اردو/English] │
+├──────────┬──────────┬──────────┬──────────┬──────────┬──────────┤
+│ Time │ Sunday │ Monday │ Tuesday │ Wednesday│ Thursday │ Friday │
+├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+│ 8:00-8:45│ Quran │ Quran │ Quran │ Quran │ Quran │ Quran │
+│ │ Mr.Ahmed │ Mr.Ahmed │ Mr.Ahmed │ Mr.Ahmed │ Mr.Ahmed │ Mr.Ahmed│
+├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+│ 8:45-9:30│ Qaida │ Qaida │ Qaida │ Qaida │ Qaida │ Qaida │
+│ │ Ms.Fatima│ Ms.Fatima│ Ms.Fatima│ Ms.Fatima│ Ms.Fatima│ Ms.Fatima│
+├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+│ 9:30-10:15│ (Empty) │ (Empty) │ Arabic │ Arabic │ Deeniyat │ Deeniyat│
+│ │ │ │ Mr.Yusuf │ Mr.Yusuf │ Mr.Ali │ Mr.Ali │
+└──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
+
+text
+
+### Each Timetable Entry Shows:
+- Time slot (Start - End)
+- Subject name
+- Teacher name (below subject in small text)
+
+### Action Buttons on Each Entry (Admin only):
+- ✏️ Edit button - opens form with existing data
+- 🗑️ Delete button - removes entry after confirmation
+
+### Empty State Message:
+If no timetable entries for a class, show:
+"📅 No timetable added yet. Click 'Add Entry' to create schedule."
+
+## 2. COMPLETE URDU LANGUAGE SUPPORT
+
+When user clicks "اردو" button, EVERYTHING changes to Urdu including Timetable:
+
+### Timetable Urdu Translations:
+- Study Timetable → مطالعاتی نظام الاوقات
+- Add Entry → اندراج شامل کریں
+- Edit Entry → اندراج میں ترمیم کریں
+- Delete Entry → اندراج حذف کریں
+- Select Class → کلاس منتخب کریں
+- Select Day → دن منتخب کریں
+- Start Time → شروع کا وقت
+- End Time → ختم ہونے کا وقت
+- Subject → مضمون
+- Teacher → استاد
+- Room No. → کمرہ نمبر
+- Sunday → اتوار
+- Monday → پیر
+- Tuesday → منگل
+- Wednesday → بدھ
+- Thursday → جمعرات
+- Friday → جمعہ
+- No timetable added yet → ابھی تک کوئی نظام الاوقات شامل نہیں کیا گیا
+
+## 3. ADD THESE QUICK ACTION BUTTONS (Admin Dashboard)
+
+Add these 4 buttons prominently on Admin Dashboard:
+┌─────────────────────────────────────────────────────────────────┐
+│ QUICK ACTIONS │
+├─────────────────────────────────────────────────────────────────┤
+│ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ │
+│ │ 👨‍🏫 │ │ 🤲 │ │ 💰 │ │ 📝 │ │
+│ │ ADD TEACHER │ │ RECORD │ │ RECORD FEE │ │ ADD EXPENSE │ │
+│ │ │ │ DONATION │ │ │ │ │ │
+│ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+
+text
+
+### Add Teacher Button:
+- Opens form: Teacher Name, Email, Phone, Assigned Class (dropdown of all 11 classes), Qualification
+- Saves to teachers array
+
+### Record Donation Button:
+- Opens form: Donor Name, Phone, Amount, Type (Zakat/Sadaqah/Fitrana/General/One-time/Monthly), Date
+- Generates receipt number automatically
+- Saves to donations array
+
+### Record Fee Button:
+- Opens form: Select Student (dropdown), Month, Year, Amount, Payment Method (Cash/Bank/Online)
+- Generates receipt
+- Updates fee status
+
+### Add Expense Button:
+- Opens form: Category (Salary/Maintenance/Books/Electricity/Water/Other), Description, Amount, Date
+- Saves to expenses array
+
+## 4. URDU TRANSLATION FOR QUICK ACTION BUTTONS
+
+When Urdu selected:
+- Add Teacher → استاد شامل کریں
+- Record Donation → عطیہ ریکارڈ کریں
+- Record Fee → فیس ریکارڈ کریں
+- Add Expense → خرچ شامل کریں
+
+## 5. KEEP EXISTING LOGIN SYSTEM
+
+### Admin Login:
+- Email: darulum@admin
+- Password: 78607860
+- Access: EVERYTHING (including Add/Edit/Delete Timetable)
+
+### Teacher Login:
+- Email: darulum@teacher
+- Password: 068706
+- Access: ONLY View Timetable (cannot add/edit/delete), Attendance, Qaida, their class
+
+## 6. TEACHER LIMITED ACCESS
+
+Teacher can:
+- ✅ View their class timetable (read only)
+- ✅ Mark attendance for their class
+- ✅ Update Qaida progress
+- ❌ CANNOT add/edit/delete timetable entries
+- ❌ CANNOT see Add Teacher, Record Donation, Record Fee, Add Expense buttons
+
+## 7. TIMETABLE DATABASE STRUCTURE
+
+```javascript
+timetable_entries: [
+  {
+    id: "auto-gen-1",
+    class_name: "Deeniyat Alif",
+    day: "Monday",
+    start_time: "08:00",
+    end_time: "08:45",
+    subject: "Quran",
+    teacher_name: "Mr. Ahmed",
+    teacher_id: "teacher_001",
+    room_no: "Room 1",
+    created_by: "admin",
+    created_date: "2026-01-15"
+  },
+  {
+    id: "auto-gen-2",
+    class_name: "Hifz Alif",
+    day: "Tuesday",
+    start_time: "09:00",
+    end_time: "10:00",
+    subject: "Hifz Revision",
+    teacher_name: "Qari Sahab",
+    room_no: "Hifz Hall"
+  }
+]
+8. TIMETABLE ADD/EDIT FORM (URDU/ENGLISH Bilingual)
+Form fields show in English normally, in Urdu when toggled:
+
+English	Urdu
+Class	کلاس
+Day	دن
+Start Time	شروع کا وقت
+End Time	ختم ہونے کا وقت
+Subject	مضمون
+Teacher	استاد
+Room No.	کمرہ نمبر
+9. TIMETABLE PDF EXPORT
+Add "Download PDF" button on timetable page:
+
+Exports current class timetable to PDF
+
+Includes: Madrasa name, Class name, Week days, Time slots, Subjects, Teacher names
+
+Urdu text when Urdu selected
+
+10. TIMETABLE FILTER
+Add dropdown to select which class timetable to view:
+
+Default shows first class
+
+Changing dropdown reloads timetable for that class
+
+DELIVERY REQUIREMENTS
+Timetable starts COMPLETELY EMPTY for all classes
+
+Admin can ADD, EDIT, DELETE timetable entries
+
+Teacher can ONLY VIEW timetable
+
+All 4 quick action buttons work (Add Teacher, Record Donation, Record Fee, Add Expense)
+
+Urdu toggle works for EVERYTHING including timetable
+
+Keep both logins working
+
+ONE complete HTML file

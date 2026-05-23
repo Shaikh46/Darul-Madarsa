@@ -36,6 +36,7 @@ const navItems: NavItem[] = [
   { key: "results",       href: "/results",        icon: GraduationCap,   roles: ["admin", "parent"] },
   { key: "teacherPortal", href: "/teacher-portal", icon: Briefcase,       roles: ["teacher"] },
   { key: "noraniQaida",   href: "/norani-qaida",   icon: BookOpen,        roles: ["admin", "teacher", "parent"] },
+  { key: "timetable",     href: "/timetable",      icon: CalendarCheck,   roles: ["admin", "teacher", "parent"] },
   { key: "fees",          href: "/fees",           icon: CreditCard,      roles: ["admin", "parent"] },
   { key: "expenses",      href: "/expenses",       icon: Receipt,         roles: ["admin"] },
   { key: "salaries",      href: "/salaries",       icon: Wallet,          roles: ["admin"] },

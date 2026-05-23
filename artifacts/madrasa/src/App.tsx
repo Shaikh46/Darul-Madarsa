@@ -22,6 +22,7 @@ import Donations from "@/pages/Donations";
 import Islamic from "@/pages/Islamic";
 import Communication from "@/pages/Communication";
 import NoraniQaida from "@/pages/NoraniQaida";
+import Timetable from "@/pages/Timetable";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ function Router() {
         <Route path="/salaries" component={Salaries} />
         <Route path="/donations" component={Donations} />
         <Route path="/norani-qaida" component={NoraniQaida} />
+        <Route path="/timetable" component={Timetable} />
         <Route path="/islamic" component={Islamic} />
         <Route path="/communication" component={Communication} />
         <Route path="/" component={Dashboard} />

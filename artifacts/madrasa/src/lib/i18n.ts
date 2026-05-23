@@ -128,6 +128,27 @@ export const translations: Record<string, Record<Lang, string>> = {
   thursday: { en: "Thursday", ur: "جمعرات" },
   friday: { en: "Friday", ur: "جمعہ" },
   noTimetable: { en: "No timetable added yet. Click 'Add Entry' to create schedule.", ur: "ابھی تک کوئی نظام الاوقات شامل نہیں کیا گیا۔ 'اندراج شامل کریں' پر کلک کریں۔" },
+  // Classes
+  classes:        { en: "Classes",          ur: "کلاسیں" },
+  allClasses:     { en: "All Classes",      ur: "تمام کلاسیں" },
+  // Reports / nav
+  reports:        { en: "Reports",          ur: "رپورٹس" },
+  downloadPdf:    { en: "Download PDF",     ur: "پی ڈی ایف ڈاؤن لوڈ کریں" },
+  exportBtn:      { en: "Export",           ur: "ایکسپورٹ کریں" },
+  login:          { en: "Login",            ur: "لاگ ان کریں" },
+  // Days
+  saturday:       { en: "Saturday",         ur: "ہفتہ" },
+  // Norani Qaida
+  lessons:        { en: "Lessons",          ur: "اسباق" },
+  progress:       { en: "Progress",         ur: "پیشرفت" },
+  assessment:     { en: "Assessment",       ur: "تشخیص" },
+  readingFluency: { en: "Reading Fluency",  ur: "پڑھنے کی روانی" },
+  tajweedScore:   { en: "Tajweed Score",    ur: "تجوید کا اسکور" },
+  teacherRemarks: { en: "Teacher Remarks",  ur: "استاد کے تبصرے" },
+  markComplete:   { en: "Mark Complete",    ur: "مکمل نشان زد کریں" },
+  // Hijri
+  hijriSuffix:    { en: "AH",              ur: "ہجری" },
+  today:          { en: "Today",           ur: "آج" },
 };
 
 export function useLanguage() {

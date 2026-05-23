@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useLS, CLASS_GROUPS } from "@/lib/storage";
+import { useLS, CLASS_GROUPS, trClass, trClassGroup } from "@/lib/storage";
 import type { Student, Teacher } from "@/lib/storage";
 import { useLang } from "@/lib/i18n";
 import { useLocation } from "wouter";
@@ -58,21 +58,24 @@ const PIE_COLORS = ["#008000", "#DAA520", "#2563eb", "#9333ea", "#10b981"];
 const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const weekAttendance = [0, 0, 0, 0, 0, 0, 0];
 
-function getHijriDate(): string {
-  const epoch = new Date(2000, 0, 1);
-  const hijriEpoch = { year: 1420, month: 9, day: 6 };
+function getHijriDate(lang: "en" | "ur" = "en"): string {
+  // Anchor: 18 May 2026 = 1 Zil Hijjah 1447 (verified reference point)
+  const ANCHOR_GREG = new Date(2026, 4, 18);
+  const AVG = 29.53059;
+  const AVG_YEAR = AVG * 12;
+  const ANCHOR_TOTAL = (1447 - 1) * AVG_YEAR + (12 - 1) * AVG + (1 - 1);
   const today = new Date();
-  const diffMs = today.getTime() - epoch.getTime();
-  const diffDays = Math.floor(diffMs / 86400000);
-  const avgIslamicMonthDays = 29.53059;
-  const avgIslamicYearDays = avgIslamicMonthDays * 12;
-  let totalDays = diffDays + (hijriEpoch.day - 1) + (hijriEpoch.month - 1) * avgIslamicMonthDays + (hijriEpoch.year - 1) * avgIslamicYearDays;
-  const hijriYear = Math.floor(totalDays / avgIslamicYearDays) + 1;
-  totalDays = totalDays % avgIslamicYearDays;
-  const hijriMonth = Math.floor(totalDays / avgIslamicMonthDays) + 1;
-  const hijriDay = Math.floor(totalDays % avgIslamicMonthDays) + 1;
-  const months = ["Muharram", "Safar", "Rabi ul Awwal", "Rabi ul Thani", "Jamadi ul Awwal", "Jamadi ul Thani", "Rajab", "Sha'ban", "Ramadan", "Shawwal", "Dhul Qa'dah", "Dhul Hijjah"];
-  return `${hijriDay} ${months[Math.min(hijriMonth - 1, 11)]} ${hijriYear} AH`;
+  const diffDays = Math.round((today.getTime() - ANCHOR_GREG.getTime()) / 86400000);
+  const total = ANCHOR_TOTAL + diffDays;
+  const hYear = Math.floor(total / AVG_YEAR) + 1;
+  const rem1 = total % AVG_YEAR;
+  const hMonth = Math.min(Math.floor(rem1 / AVG) + 1, 12);
+  const hDay = Math.min(Math.floor(rem1 % AVG) + 1, 30);
+  const monthsEn = ["Muharram","Safar","Rabi ul Awwal","Rabi ul Thani","Jamadi ul Awwal","Jamadi ul Thani","Rajab","Sha'ban","Ramadan","Shawwal","Zil Qa'dah","Zil Hijjah"];
+  const monthsUr = ["محرم","صفر","ربیع الاول","ربیع الثانی","جمادی الاول","جمادی الثانی","رجب","شعبان","رمضان","شوال","ذوالقعدہ","ذوالحجہ"];
+  const mIdx = Math.max(0, Math.min(hMonth - 1, 11));
+  if (lang === "ur") return `${hDay} ${monthsUr[mIdx]} ${hYear} ہجری`;
+  return `${hDay} ${monthsEn[mIdx]} ${hYear} AH`;
 }
 
 function getGreeting(lang: "en" | "ur", tr: (k: string) => string): string {
@@ -302,7 +305,7 @@ export default function Dashboard() {
               {tr("assalamAlaikum")}, Admin
             </h2>
             <p className="text-white/80 text-sm">
-              {getHijriDate()}
+              {getHijriDate(lang)}
             </p>
             <p className="text-white/60 text-xs mt-0.5">
               {currentTime.toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
@@ -734,8 +737,8 @@ export default function Dashboard() {
                 <SelectContent>
                   {CLASS_GROUPS.map(g => (
                     <div key={g.label}>
-                      <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1">{g.icon} {g.label}</div>
-                      {g.classes.map(c => <SelectItem key={c} value={c} className="pl-5">{c}</SelectItem>)}
+                      <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1">{g.icon} {trClassGroup(g.label, lang)}</div>
+                      {g.classes.map(c => <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>)}
                     </div>
                   ))}
                 </SelectContent>
@@ -777,8 +780,8 @@ export default function Dashboard() {
                 <SelectContent>
                   {CLASS_GROUPS.map(g => (
                     <div key={g.label}>
-                      <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1">{g.icon} {g.label}</div>
-                      {g.classes.map(c => <SelectItem key={c} value={c} className="pl-5">{c}</SelectItem>)}
+                      <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1">{g.icon} {trClassGroup(g.label, lang)}</div>
+                      {g.classes.map(c => <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>)}
                     </div>
                   ))}
                 </SelectContent>

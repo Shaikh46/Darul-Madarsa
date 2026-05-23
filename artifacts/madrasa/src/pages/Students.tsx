@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { useLS, Student, CLASS_GROUPS, JAMAAT_OPTIONS, exportToCSV } from "@/lib/storage";
+import { useLS, Student, CLASS_GROUPS, JAMAAT_OPTIONS, exportToCSV, trClass, trClassGroup } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -191,17 +191,17 @@ export default function Students() {
         </div>
         <Select value={filterClass} onValueChange={setFilterClass}>
           <SelectTrigger className="w-44">
-            <SelectValue placeholder="All Classes" />
+            <SelectValue placeholder={lang === "ur" ? "تمام کلاسیں" : "All Classes"} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Classes</SelectItem>
+            <SelectItem value="all">{lang === "ur" ? "تمام کلاسیں" : "All Classes"}</SelectItem>
             {CLASS_GROUPS.map(group => (
               <div key={group.label}>
                 <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
-                  {group.icon} {group.label}
+                  {group.icon} {trClassGroup(group.label, lang)}
                 </div>
                 {group.classes.filter(c => classes.includes(c)).map(c => (
-                  <SelectItem key={c} value={c} className="pl-5">{c}</SelectItem>
+                  <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>
                 ))}
               </div>
             ))}
@@ -214,13 +214,13 @@ export default function Students() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Student</TableHead>
-              <TableHead>Father Name</TableHead>
-              <TableHead>Class</TableHead>
-              <TableHead>Jamaat</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{lang === "ur" ? "طالب علم" : "Student"}</TableHead>
+              <TableHead>{lang === "ur" ? "والد کا نام" : "Father Name"}</TableHead>
+              <TableHead>{lang === "ur" ? "کلاس" : "Class"}</TableHead>
+              <TableHead>{lang === "ur" ? "جماعت" : "Jamaat"}</TableHead>
+              <TableHead>{lang === "ur" ? "فون" : "Phone"}</TableHead>
+              <TableHead>{lang === "ur" ? "حیثیت" : "Status"}</TableHead>
+              <TableHead className="text-right">{lang === "ur" ? "اقدامات" : "Actions"}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -242,7 +242,7 @@ export default function Students() {
                   </div>
                 </TableCell>
                 <TableCell>{student.fatherName}</TableCell>
-                <TableCell>{student.className}</TableCell>
+                <TableCell>{trClass(student.className, lang)}</TableCell>
                 <TableCell><span className="text-xs bg-muted px-2 py-1 rounded-full">{student.jamaat || "—"}</span></TableCell>
                 <TableCell className="text-sm">+91 {student.phone}</TableCell>
                 <TableCell>
@@ -319,17 +319,17 @@ export default function Students() {
                 <Input placeholder="Fatima Khan" value={form.motherName} onChange={e => setField("motherName", e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Class <span className="text-destructive">*</span></Label>
+                <Label>{lang === "ur" ? "کلاس" : "Class"} <span className="text-destructive">*</span></Label>
                 <Select value={form.className} onValueChange={v => setField("className", v)}>
-                  <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={lang === "ur" ? "کلاس منتخب کریں" : "Select class"} /></SelectTrigger>
                   <SelectContent>
                     {CLASS_GROUPS.map(group => (
                       <div key={group.label}>
                         <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
-                          {group.icon} {group.label}
+                          {group.icon} {trClassGroup(group.label, lang)}
                         </div>
                         {group.classes.map(c => (
-                          <SelectItem key={c} value={c} className="pl-5">{c}</SelectItem>
+                          <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>
                         ))}
                       </div>
                     ))}

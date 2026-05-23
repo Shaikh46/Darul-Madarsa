@@ -127,6 +127,35 @@ export const CLASS_GROUPS: ClassGroup[] = [
 
 export const CLASS_OPTIONS: string[] = CLASS_GROUPS.flatMap(g => g.classes);
 
+export const CLASS_NAMES_UR: Record<string, string> = {
+  "Deeniyat Alif": "دینیات الف",
+  "Deeniyat Baa":  "دینیات ب",
+  "Farsi Awwal":   "فارسی اول",
+  "Farsi Duwwam":  "فارسی دوم",
+  "Arbi Awwal":    "عربی اول",
+  "Arbi Duwwam":   "عربی دوم",
+  "Arbi Suwwam":   "عربی سوم",
+  "Arbi Chahrum":  "عربی چہارم",
+  "Arbi Panjum":   "عربی پنجم",
+  "Hifz Alif":     "حفظ الف",
+  "Hifz Baa":      "حفظ ب",
+};
+
+export const CLASS_GROUP_LABELS_UR: Record<string, string> = {
+  "Deeniyat Classes": "دینیات کلاسیں",
+  "Farsi Classes":    "فارسی کلاسیں",
+  "Arabic Classes":   "عربی کلاسیں",
+  "Hifz Classes":     "حفظ کلاسیں",
+};
+
+export function trClass(cls: string, lang: "en" | "ur"): string {
+  return lang === "ur" ? (CLASS_NAMES_UR[cls] ?? cls) : cls;
+}
+
+export function trClassGroup(label: string, lang: "en" | "ur"): string {
+  return lang === "ur" ? (CLASS_GROUP_LABELS_UR[label] ?? label) : label;
+}
+
 export const JAMAAT_OPTIONS = ["Hifz", "Nazera", "Alim", "General"];
 
 // ── Reset all data keys ────────────────────────────────────────────────────

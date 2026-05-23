@@ -1,0 +1,299 @@
+FIX my Madrasa Management App "Darul Uloom Sirajul Islam Kalgaon" with these changes:
+
+## 1. REMOVE NUMBER CLASSES (5, 6, 7)
+
+Delete these classes completely from the app:
+- Class 5
+- Class 6
+- Class 7
+- Any numbered classes (1,2,3,4,5,6,7,8,9,10)
+
+Remove them from:
+- Student add/edit form (class dropdown)
+- Teacher class assignment dropdown
+- Timetable class filter dropdown
+- Any filter or search by class
+
+## 2. SET THESE EXACT CLASSES ONLY
+
+Show ONLY these 11 classes in ALL dropdowns:
+
+### Deeniyat Classes:
+- Deeniyat Alif
+- Deeniyat Baa
+
+### Farsi Classes:
+- Farsi Awwal
+- Farsi Duwwam
+
+### Arabic Classes:
+- Arbi Awwal
+- Arbi Duwwam
+- Arbi Suwwam
+- Arbi Chahrum
+- Arbi Panjum
+
+### Hifz Classes:
+- Hifz Alif
+- Hifz Baa
+
+## 3. CLASSES SECTION DISPLAY
+
+In sidebar menu and dashboard, show "Classes" section like this:
+📚 CLASSES
+├── Deeniyat Alif
+├── Deeniyat Baa
+├── Farsi Awwal
+├── Farsi Duwwam
+├── Arbi Awwal
+├── Arbi Duwwam
+├── Arbi Suwwam
+├── Arbi Chahrum
+├── Arbi Panjum
+├── Hifz Alif
+└── Hifz Baa
+
+text
+
+## 4. URDU TRANSLATIONS FOR CLASSES
+
+When user clicks Urdu button (اردو), classes MUST show:
+
+| English | Urdu |
+|---------|------|
+| Classes | کلاسیں |
+| Deeniyat Alif | دینیات الف |
+| Deeniyat Baa | دینیات ب |
+| Farsi Awwal | فارسی اول |
+| Farsi Duwwam | فارسی دوم |
+| Arbi Awwal | عربی اول |
+| Arbi Duwwam | عربی دوم |
+| Arbi Suwwam | عربی سوم |
+| Arbi Chahrum | عربی چہارم |
+| Arbi Panjum | عربی پنجم |
+| Hifz Alif | حفظ الف |
+| Hifz Baa | حفظ ب |
+
+## 5. COMPLETE URDU TRANSLATION FOR EVERYTHING
+
+When Urdu button is clicked, ALL these must change to Urdu:
+
+### Menu Items:
+| English | Urdu |
+|---------|------|
+| Dashboard | ڈیش بورڈ |
+| Students | طلباء |
+| Teachers | اساتذہ |
+| Attendance | حاضری |
+| Norani Qaida | نورانی قاعدہ |
+| Study Timetable | مطالعاتی نظام الاوقات |
+| Exams | امتحانات |
+| Results | نتائج |
+| Fees | فیس |
+| Donations | عطیات |
+| Expenses | اخراجات |
+| Reports | رپورٹس |
+| Settings | ترتیبات |
+
+### Dashboard Cards:
+| English | Urdu |
+|---------|------|
+| Total Students | کل طلباء |
+| Present Today | آج حاضرین |
+| Monthly Fees | ماہانہ فیس |
+| Pending Dues | بقایا جات |
+| Total Donations | کل عطیات |
+| Total Expenses | کل اخراجات |
+
+### Buttons:
+| English | Urdu |
+|---------|------|
+| Add Student | طالب علم شامل کریں |
+| Add Teacher | استاد شامل کریں |
+| Record Donation | عطیہ ریکارڈ کریں |
+| Record Fee | فیس ریکارڈ کریں |
+| Add Expense | خرچ شامل کریں |
+| Edit | ترمیم کریں |
+| Delete | حذف کریں |
+| Save | محفوظ کریں |
+| Cancel | منسوخ کریں |
+| Search | تلاش کریں |
+| Download PDF | پی ڈی ایف ڈاؤن لوڈ کریں |
+| Export | ایکسپورٹ کریں |
+| Mark Attendance | حاضری لگائیں |
+| Login | لاگ ان کریں |
+| Logout | لاگ آؤٹ کریں |
+
+### Timetable:
+| English | Urdu |
+|---------|------|
+| Study Timetable | مطالعاتی نظام الاوقات |
+| Select Class | کلاس منتخب کریں |
+| Select Day | دن منتخب کریں |
+| Start Time | شروع کا وقت |
+| End Time | ختم ہونے کا وقت |
+| Subject | مضمون |
+| Teacher | استاد |
+| Room No. | کمرہ نمبر |
+| Add Entry | اندراج شامل کریں |
+| Sunday | اتوار |
+| Monday | پیر |
+| Tuesday | منگل |
+| Wednesday | بدھ |
+| Thursday | جمعرات |
+| Friday | جمعہ |
+
+### Norani Qaida:
+| English | Urdu |
+|---------|------|
+| Lessons | اسباق |
+| Progress | پیشرفت |
+| Assessment | تشخیص |
+| Reading Fluency | پڑھنے کی روانی |
+| Tajweed Score | تجوید کا اسکور |
+| Teacher Remarks | استاد کے تبصرے |
+| Mark Complete | مکمل نشان زد کریں |
+
+### Days (Islamic Calendar):
+| English | Urdu |
+|---------|------|
+| Today | آج |
+| Hijri | ہجری |
+| Zil Hijjah | ذوالحجہ |
+
+## 6. UPDATE HIJRI DATE
+
+Set Hijri date to: **6 Zil Hijjah 1447 Hijri**
+
+Display at top of dashboard:
+📅 6 Zil Hijjah 1447 Hijri | 24 May 2026
+
+text
+
+In Urdu mode:
+📅 6 ذوالحجہ 1447 ہجری | 24 مئی 2026
+
+text
+
+## 7. LANGUAGE TOGGLE MUST WORK EVERYWHERE
+
+When Urdu button clicked:
+- ✅ Classes section shows Urdu names
+- ✅ All menu items change to Urdu
+- ✅ All buttons change to Urdu
+- ✅ All table headers change to Urdu
+- ✅ All form labels change to Urdu
+- ✅ Dashboard cards change to Urdu
+- ✅ Timetable changes to Urdu
+- ✅ Qaida page changes to Urdu
+- ✅ Hijri date shows in Urdu
+
+When English button clicked:
+- Everything changes back to English
+
+## 8. FIX CLASS DROPDOWNS
+
+Update ALL class dropdowns to show only these 11 classes:
+
+```html
+<select id="classSelect">
+  <optgroup label="Deeniyat Classes">
+    <option value="Deeniyat Alif">Deeniyat Alif</option>
+    <option value="Deeniyat Baa">Deeniyat Baa</option>
+  </optgroup>
+  <optgroup label="Farsi Classes">
+    <option value="Farsi Awwal">Farsi Awwal</option>
+    <option value="Farsi Duwwam">Farsi Duwwam</option>
+  </optgroup>
+  <optgroup label="Arabic Classes">
+    <option value="Arbi Awwal">Arbi Awwal</option>
+    <option value="Arbi Duwwam">Arbi Duwwam</option>
+    <option value="Arbi Suwwam">Arbi Suwwam</option>
+    <option value="Arbi Chahrum">Arbi Chahrum</option>
+    <option value="Arbi Panjum">Arbi Panjum</option>
+  </optgroup>
+  <optgroup label="Hifz Classes">
+    <option value="Hifz Alif">Hifz Alif</option>
+    <option value="Hifz Baa">Hifz Baa</option>
+  </optgroup>
+</select>
+DELIVERY REQUIREMENTS:
+Remove classes 5,6,7 completely
+
+Add only the 11 specified classes
+
+Complete Urdu translation for ALL app features
+
+Hijri date: 6 Zil Hijjah 1447
+
+Keep both logins working (Admin + Teacher)
+
+ONE complete HTML file
+
+START BUILDING NOW. Everything must change to Urdu when toggle is clicked.
+
+text
+
+---
+
+## 📊 Summary of Changes
+
+| Change | What to Do |
+|--------|-----------|
+| Remove classes 5,6,7 | Delete from all dropdowns |
+| Add 11 new classes | Deeniyat (2), Farsi (2), Arabic (5), Hifz (2) |
+| Complete Urdu translation | ALL text changes when toggle clicked |
+| Hijri date | 6 Zil Hijjah 1447 |
+
+---
+
+## ✅ After Fix - Classes Should Look Like:
+English Mode:
+Classes
+
+Deeniyat Alif
+
+Deeniyat Baa
+
+Farsi Awwal
+
+Farsi Duwwam
+
+Arbi Awwal
+
+Arbi Duwwam
+
+Arbi Suwwam
+
+Arbi Chahrum
+
+Arbi Panjum
+
+Hifz Alif
+
+Hifz Baa
+
+Urdu Mode:
+کلاسیں
+
+دینیات الف
+
+دینیات ب
+
+فارسی اول
+
+فارسی دوم
+
+عربی اول
+
+عربی دوم
+
+عربی سوم
+
+عربی چہارم
+
+عربی پنجم
+
+حفظ الف
+
+حفظ ب

@@ -157,9 +157,9 @@ export default function Students() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Students</h1>
+          <h1 className={`text-3xl font-bold text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("studentsPage")}</h1>
           <p className="text-muted-foreground mt-1">
-            {students.length} total students &nbsp;·&nbsp; {filtered.length} shown
+            {students.length} {tr("totalShown")} &nbsp;·&nbsp; {filtered.length} {tr("shown")}
           </p>
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -187,7 +187,7 @@ export default function Students() {
       <div className="flex gap-3 flex-wrap">
         <div className="relative flex-1 min-w-48">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search by name, class or father..." className="pl-9" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <Input placeholder={isUrdu ? "نام، کلاس یا والد سے تلاش..." : "Search by name, class or father..."} className="pl-9" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         </div>
         <Select value={filterClass} onValueChange={setFilterClass}>
           <SelectTrigger className="w-44">
@@ -263,7 +263,7 @@ export default function Students() {
             {filtered.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
-                  {searchTerm ? "No students match your search." : "No students added yet."}
+                  {searchTerm ? tr("noStudentsSearch") : tr("noStudentsYet")}
                 </TableCell>
               </TableRow>
             )}
@@ -275,7 +275,7 @@ export default function Students() {
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit Student" : "Add New Student"}</DialogTitle>
+            <DialogTitle className={isUrdu ? "urdu-text" : ""}>{editingId ? tr("editStudent") : tr("addNewStudent")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {/* Photo upload */}
@@ -290,32 +290,32 @@ export default function Students() {
               <div>
                 <input type="file" accept="image/*" ref={fileRef} className="hidden" onChange={handlePhotoUpload} />
                 <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
-                  <Upload className="w-3.5 h-3.5 mr-2" /> Upload Photo
+                  <Upload className="w-3.5 h-3.5 mr-2" /> {tr("uploadPhoto")}
                 </Button>
                 {form.photo && (
                   <Button variant="ghost" size="sm" className="ml-2 text-destructive" onClick={() => setField("photo", "")}>
                     <X className="w-3.5 h-3.5" />
                   </Button>
                 )}
-                <p className="text-xs text-muted-foreground mt-1">Optional. Stored locally.</p>
+                <p className={`text-xs text-muted-foreground mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("optionalLocal")}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Full Name <span className="text-destructive">*</span></Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("fullName")} <span className="text-destructive">*</span></Label>
                 <Input placeholder="Ahmed Khan" value={form.name} onChange={e => setField("name", e.target.value)} data-testid="input-name" />
               </div>
               <div className="space-y-1.5">
-                <Label>Date of Birth</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("dateOfBirth")}</Label>
                 <Input type="date" value={form.dob} onChange={e => setField("dob", e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Father's Name <span className="text-destructive">*</span></Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("fathersName")} <span className="text-destructive">*</span></Label>
                 <Input placeholder="Rashid Khan" value={form.fatherName} onChange={e => setField("fatherName", e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Mother's Name</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("mothersName")}</Label>
                 <Input placeholder="Fatima Khan" value={form.motherName} onChange={e => setField("motherName", e.target.value)} />
               </div>
               <div className="space-y-1.5">
@@ -337,40 +337,40 @@ export default function Students() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>Jamaat</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("jamaat")}</Label>
                 <Select value={form.jamaat} onValueChange={v => setField("jamaat", v)}>
-                  <SelectTrigger><SelectValue placeholder="Select jamaat" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={isUrdu ? "جماعت منتخب کریں" : "Select jamaat"} /></SelectTrigger>
                   <SelectContent>
                     {JAMAAT_OPTIONS.map(j => <SelectItem key={j} value={j}>{j}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>Phone (+91)</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("phone")} (+91)</Label>
                 <div className="flex gap-1">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-sm text-muted-foreground">+91</span>
                   <Input placeholder="9876543210" value={form.phone} onChange={e => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} className="rounded-l-none" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label>Status</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("status")}</Label>
                 <Select value={form.status} onValueChange={v => setField("status", v as Student["status"])}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                    <SelectItem value="Graduated">Graduated</SelectItem>
+                    <SelectItem value="Active">{tr("active")}</SelectItem>
+                    <SelectItem value="Inactive">{tr("inactive")}</SelectItem>
+                    <SelectItem value="Graduated">{isUrdu ? "فارغ التحصیل" : "Graduated"}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>Admission Date</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("admissionDate")}</Label>
                 <Input type="date" value={form.admissionDate} onChange={e => setField("admissionDate", e.target.value)} />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label>Address</Label>
+              <Label className={isUrdu ? "urdu-text" : ""}>{tr("address")}</Label>
               <Textarea placeholder="Village / Town, District" value={form.address} onChange={e => setField("address", e.target.value)} rows={2} />
             </div>
 
@@ -381,10 +381,10 @@ export default function Students() {
             )}
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => { setForm(emptyForm()); setFormError(null); }}>Reset</Button>
-            <Button variant="outline" onClick={() => setIsFormOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave} data-testid="btn-save-student">
-              {editingId ? "Update Student" : "Save Student"}
+            <Button variant="outline" onClick={() => { setForm(emptyForm()); setFormError(null); }} className={isUrdu ? "urdu-text" : ""}>{tr("reset")}</Button>
+            <Button variant="outline" onClick={() => setIsFormOpen(false)} className={isUrdu ? "urdu-text" : ""}>{tr("cancel")}</Button>
+            <Button onClick={handleSave} data-testid="btn-save-student" className={isUrdu ? "urdu-text" : ""}>
+              {editingId ? tr("updateStudent") : tr("saveStudent")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -393,16 +393,16 @@ export default function Students() {
       {/* CSV Import Preview Dialog */}
       <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
         <DialogContent className="max-w-xl">
-          <DialogHeader><DialogTitle>Import Preview ({importRaw.length} students)</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">Showing first {importPreview.length} rows. CSV format: Name, Father Name, Class, Phone, Address</p>
+          <DialogHeader><DialogTitle className={isUrdu ? "urdu-text" : ""}>{tr("importPreview")} ({importRaw.length})</DialogTitle></DialogHeader>
+          <p className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("csvFormatNote")}</p>
           <div className="border rounded-md overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Father</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Phone</TableHead>
+                  <TableHead className={isUrdu ? "urdu-text" : ""}>{tr("name")}</TableHead>
+                  <TableHead className={isUrdu ? "urdu-text" : ""}>{tr("fathersName")}</TableHead>
+                  <TableHead className={isUrdu ? "urdu-text" : ""}>{tr("classLabel")}</TableHead>
+                  <TableHead className={isUrdu ? "urdu-text" : ""}>{tr("phone")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -418,8 +418,8 @@ export default function Students() {
             </Table>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsImportOpen(false)}>Cancel</Button>
-            <Button onClick={confirmImport}>Import All {importRaw.length} Students</Button>
+            <Button variant="outline" onClick={() => setIsImportOpen(false)} className={isUrdu ? "urdu-text" : ""}>{tr("cancel")}</Button>
+            <Button onClick={confirmImport} className={isUrdu ? "urdu-text" : ""}>{tr("importAll")} {importRaw.length} {tr("studentsPage")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

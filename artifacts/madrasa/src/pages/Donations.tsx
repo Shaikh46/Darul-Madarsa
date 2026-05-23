@@ -26,11 +26,16 @@ interface Donation {
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--chart-2))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
+const DONATION_TYPES_EN = ["General", "Zakat", "Sadaqah", "Fitrana", "Construction", "Student Fund"];
+const DONATION_TYPES_UR = ["عام", "زکوٰۃ", "صدقہ", "فطرانہ", "تعمیراتی فنڈ", "طلباء فنڈ"];
+
 export default function Donations() {
   const { lang, tr } = useLang();
   const isUrdu = lang === "ur";
   const [donations, setDonations] = useLS<Donation[]>("donations", []);
   const [isAddOpen, setIsAddOpen] = useState(false);
+
+  const donationTypes = isUrdu ? DONATION_TYPES_UR : DONATION_TYPES_EN;
 
   const generateReceiptNo = () => `DSIK/DON/2026/${String(donations.length + 1).padStart(5, '0')}`;
 
@@ -55,7 +60,6 @@ export default function Donations() {
   const handlePrint = (don: Donation) => {
     const printWindow = window.open('', '', 'width=800,height=600');
     if (!printWindow) return;
-
     printWindow.document.write(`
       <html>
         <head>
@@ -84,9 +88,7 @@ export default function Donations() {
             <div class="row"><span>Payment Mode:</span> <strong>${don.paymentMethod}</strong></div>
             ${don.transactionId ? `<div class="row"><span>Transaction ID:</span> <strong>${don.transactionId}</strong></div>` : ''}
           </div>
-          <div class="amount">
-            ₹ ${don.amount.toLocaleString()}
-          </div>
+          <div class="amount">₹ ${don.amount.toLocaleString()}</div>
           <p style="text-align: center; font-style: italic;">Jazakallah Khair for your generous contribution.</p>
           <div class="footer">
             <p>_______________________</p>
@@ -107,7 +109,6 @@ export default function Donations() {
   const zakatTotal = donations.filter(d => d.donationType === "Zakat").reduce((sum, d) => sum + d.amount, 0);
   const generalTotal = donations.filter(d => d.donationType !== "Zakat").reduce((sum, d) => sum + d.amount, 0);
 
-  // Group donations by type for the pie chart
   const pieData = donations.reduce((acc, curr) => {
     const existing = acc.find(item => item.name === curr.donationType);
     if (existing) {
@@ -123,7 +124,7 @@ export default function Donations() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className={`text-3xl font-bold text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("donationsPage")}</h1>
-          <p className="text-muted-foreground mt-1">{isUrdu ? "مدرسہ فنڈز کا انتظام اور رسید" : "Manage and receipt madrasa funds"}</p>
+          <p className={`text-muted-foreground mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("manageReceiptFunds")}</p>
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
@@ -133,51 +134,50 @@ export default function Donations() {
             <DialogHeader><DialogTitle className={isUrdu ? "urdu-text" : ""}>{tr("recordDonation")}</DialogTitle></DialogHeader>
             <form onSubmit={handleAdd} className="space-y-4">
               <div className="space-y-2">
-                <Label>Donor Name</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("donorName")}</Label>
                 <Input name="donorName" required />
               </div>
               <div className="space-y-2">
-                <Label>Phone Number (WhatsApp)</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("phoneWhatsApp")}</Label>
                 <Input name="phone" required />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Amount (₹)</Label>
+                  <Label className={isUrdu ? "urdu-text" : ""}>{tr("amountRupees")}</Label>
                   <Input type="number" name="amount" required />
                 </div>
                 <div className="space-y-2">
-                  <Label>Donation Type</Label>
+                  <Label className={isUrdu ? "urdu-text" : ""}>{tr("donationType")}</Label>
                   <Select name="donationType" required defaultValue="General">
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="General">General</SelectItem>
-                      <SelectItem value="Zakat">Zakat</SelectItem>
-                      <SelectItem value="Sadaqah">Sadaqah</SelectItem>
-                      <SelectItem value="Fitrana">Fitrana</SelectItem>
-                      <SelectItem value="Construction">Construction Fund</SelectItem>
-                      <SelectItem value="Student Fund">Student Fund</SelectItem>
+                      {DONATION_TYPES_EN.map((t, i) => (
+                        <SelectItem key={t} value={t}>{donationTypes[i]}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Payment Method</Label>
+                  <Label className={isUrdu ? "urdu-text" : ""}>{tr("paymentMethod")}</Label>
                   <Select name="paymentMethod" required defaultValue="Cash">
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Cash">Cash</SelectItem>
-                      <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
+                      <SelectItem value="Cash">{tr("cash")}</SelectItem>
+                      <SelectItem value="Bank Transfer">{tr("bankTransfer")}</SelectItem>
                       <SelectItem value="UPI">UPI</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Transaction ID (Optional)</Label>
+                  <Label className={isUrdu ? "urdu-text" : ""}>{tr("transactionIdOpt")}</Label>
                   <Input name="transactionId" />
                 </div>
               </div>
-              <DialogFooter><Button type="submit">Generate Receipt</Button></DialogFooter>
+              <DialogFooter>
+                <Button type="submit" className={isUrdu ? "urdu-text" : ""}>{tr("generateReceipt")}</Button>
+              </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
@@ -185,24 +185,24 @@ export default function Donations() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-6 rounded-lg bg-card border shadow-sm flex flex-col justify-center">
-          <p className="text-sm font-medium text-muted-foreground">Total Collections</p>
+          <p className={`text-sm font-medium text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("totalCollections")}</p>
           <h3 className="text-3xl font-bold mt-2">₹{(zakatTotal + generalTotal).toLocaleString()}</h3>
         </div>
         <div className="p-6 rounded-lg bg-card border shadow-sm border-l-4 border-l-primary flex flex-col justify-center">
-          <p className="text-sm font-medium text-muted-foreground">General Funds</p>
+          <p className={`text-sm font-medium text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("generalFunds")}</p>
           <h3 className="text-3xl font-bold mt-2">₹{generalTotal.toLocaleString()}</h3>
         </div>
         <div className="p-6 rounded-lg bg-card border shadow-sm border-l-4 border-l-accent flex flex-col justify-center">
-          <p className="text-sm font-medium text-muted-foreground">Zakat Collection</p>
+          <p className={`text-sm font-medium text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("zakatCollection")}</p>
           <h3 className="text-3xl font-bold mt-2">₹{zakatTotal.toLocaleString()}</h3>
         </div>
       </div>
 
       {pieData.length > 0 && (
         <div className="p-6 border rounded-md bg-card">
-          <h3 className="text-lg font-bold flex items-center gap-2 mb-4">
+          <h3 className={`text-lg font-bold flex items-center gap-2 mb-4 ${isUrdu ? "urdu-text" : ""}`}>
             <PieChartIcon className="w-5 h-5 text-primary" />
-            Donation Types Distribution
+            {tr("donationTypesDist")}
           </h3>
           <div className="h-[300px] w-full max-w-lg mx-auto">
             <ResponsiveContainer width="100%" height="100%">
@@ -231,19 +231,19 @@ export default function Donations() {
 
       <Tabs defaultValue="all" className="w-full">
         <TabsList>
-          <TabsTrigger value="all">All Donations</TabsTrigger>
-          <TabsTrigger value="zakat">Zakat Registry</TabsTrigger>
+          <TabsTrigger value="all" className={isUrdu ? "urdu-text" : ""}>{tr("allDonations")}</TabsTrigger>
+          <TabsTrigger value="zakat" className={isUrdu ? "urdu-text" : ""}>{tr("zakatRegistry")}</TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="mt-4">
           <div className="border rounded-md bg-card">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Receipt</TableHead>
-                  <TableHead>Donor</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{tr("receipt")}</TableHead>
+                  <TableHead>{tr("donor")}</TableHead>
+                  <TableHead>{tr("type")}</TableHead>
+                  <TableHead>{tr("amount")}</TableHead>
+                  <TableHead className="text-right">{tr("actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -258,17 +258,17 @@ export default function Donations() {
                     </TableCell>
                     <TableCell className="font-bold">₹{d.amount}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => handlePrint(d)} title="Print Receipt">
+                      <Button variant="ghost" size="icon" onClick={() => handlePrint(d)} title={isUrdu ? "رسید پرنٹ کریں" : "Print Receipt"}>
                         <Printer className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="text-emerald-600" onClick={() => sendWhatsApp(d)} title="Send WhatsApp">
+                      <Button variant="ghost" size="icon" className="text-emerald-600" onClick={() => sendWhatsApp(d)} title={isUrdu ? "واٹس ایپ" : "Send WhatsApp"}>
                         <MessageSquare className="w-4 h-4" />
                       </Button>
                     </TableCell>
                   </TableRow>
                 ))}
                 {donations.length === 0 && (
-                  <TableRow><TableCell colSpan={5} className="text-center h-24 text-muted-foreground">No donations recorded.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className={`text-center h-24 text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("noDonationsRecorded")}</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
@@ -279,10 +279,10 @@ export default function Donations() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Receipt</TableHead>
-                  <TableHead>Donor</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead>{tr("receipt")}</TableHead>
+                  <TableHead>{tr("donor")}</TableHead>
+                  <TableHead>{tr("amount")}</TableHead>
+                  <TableHead>{tr("date")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -295,7 +295,7 @@ export default function Donations() {
                   </TableRow>
                 ))}
                 {donations.filter(d => d.donationType === "Zakat").length === 0 && (
-                  <TableRow><TableCell colSpan={4} className="text-center h-24 text-muted-foreground">No zakat donations recorded.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={4} className={`text-center h-24 text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("noZakatDonations")}</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>

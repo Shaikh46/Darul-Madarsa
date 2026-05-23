@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useLS, Teacher, CLASS_GROUPS, exportToCSV, trClass, trClassGroup } from "@/lib/storage";
+import { useLang } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Search, Plus, Download, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useLang } from "@/lib/i18n";
 
 const emptyForm = (): Omit<Teacher, "id"> => ({
   name: "",
@@ -63,18 +63,18 @@ export default function Teachers() {
     if (err) { setFormError(err); return; }
     if (editingId) {
       setTeachers(teachers.map(t => t.id === editingId ? { ...form, id: editingId } : t));
-      toast({ title: "Teacher Updated", description: `${form.name} has been updated.` });
+      toast({ title: isUrdu ? "استاد تازہ ہو گیا" : "Teacher Updated", description: form.name });
     } else {
       setTeachers([...teachers, { ...form, id: `t${Date.now()}` }]);
-      toast({ title: "Teacher Added", description: `${form.name} has been added.` });
+      toast({ title: isUrdu ? "استاد شامل ہو گیا" : "Teacher Added", description: form.name });
     }
     setIsFormOpen(false);
   };
 
   const handleDelete = (id: string, name: string) => {
-    if (confirm(`Delete "${name}"? This cannot be undone.`)) {
+    if (confirm(isUrdu ? `"${name}" کو حذف کریں؟ یہ واپس نہیں ہو سکتا۔` : `Delete "${name}"? This cannot be undone.`)) {
       setTeachers(teachers.filter(t => t.id !== id));
-      toast({ title: "Teacher Removed", description: `${name} has been deleted.` });
+      toast({ title: isUrdu ? "استاد ہٹا دیا گیا" : "Teacher Removed", description: name });
     }
   };
 
@@ -109,20 +109,20 @@ export default function Teachers() {
 
       <div className="relative max-w-sm">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search by name or class..." className="pl-9" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+        <Input placeholder={tr("searchNameClass")} className="pl-9" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
       </div>
 
       <div className="border rounded-md bg-card overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Assigned Class</TableHead>
-              <TableHead>Qualification</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Joining Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{tr("name")}</TableHead>
+              <TableHead>{tr("assignedClass")}</TableHead>
+              <TableHead>{tr("qualification")}</TableHead>
+              <TableHead>{tr("phone")}</TableHead>
+              <TableHead>{tr("joiningDate")}</TableHead>
+              <TableHead>{tr("status")}</TableHead>
+              <TableHead className="text-right">{tr("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -134,13 +134,13 @@ export default function Teachers() {
                     <p className="text-xs text-muted-foreground">{t.email}</p>
                   </div>
                 </TableCell>
-                <TableCell>{t.assignedClass || "—"}</TableCell>
+                <TableCell>{t.assignedClass ? trClass(t.assignedClass, lang) : "—"}</TableCell>
                 <TableCell>{t.qualification || "—"}</TableCell>
                 <TableCell>+91 {t.phone}</TableCell>
                 <TableCell>{t.joiningDate}</TableCell>
                 <TableCell>
                   <span className={`text-xs px-2 py-1 rounded-full border ${t.status === "Active" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-gray-100 text-gray-600"}`}>
-                    {t.status}
+                    {t.status === "Active" ? tr("active") : tr("inactive")}
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
@@ -155,7 +155,7 @@ export default function Teachers() {
             ))}
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">No teachers found.</TableCell>
+                <TableCell colSpan={7} className={`text-center h-24 text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("noTeachersFound")}</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -165,29 +165,29 @@ export default function Teachers() {
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit Teacher" : "Add New Teacher"}</DialogTitle>
+            <DialogTitle className={isUrdu ? "urdu-text" : ""}>{editingId ? tr("editTeacher") : tr("addNewTeacher")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2 space-y-1.5">
-                <Label>Full Name <span className="text-destructive">*</span></Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("fullName")} <span className="text-destructive">*</span></Label>
                 <Input placeholder="Maulana Abdul Rahman" value={form.name} onChange={e => setField("name", e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Email</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("email")}</Label>
                 <Input type="email" placeholder="teacher@dsik.edu" value={form.email} onChange={e => setField("email", e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Phone (+91)</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("phone")} (+91)</Label>
                 <div className="flex gap-1">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-sm text-muted-foreground">+91</span>
                   <Input placeholder="9876500001" value={form.phone} onChange={e => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} className="rounded-l-none" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label>{lang === "ur" ? "کلاس" : "Assigned Class"}</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("assignedClass")}</Label>
                 <Select value={form.assignedClass} onValueChange={v => setField("assignedClass", v)}>
-                  <SelectTrigger><SelectValue placeholder={lang === "ur" ? "کلاس منتخب کریں" : "Select class"} /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={isUrdu ? "کلاس منتخب کریں" : "Select class"} /></SelectTrigger>
                   <SelectContent>
                     {CLASS_GROUPS.map(group => (
                       <div key={group.label}>
@@ -203,20 +203,20 @@ export default function Teachers() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>Qualification</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("qualification")}</Label>
                 <Input placeholder="Dars-e-Nizami" value={form.qualification} onChange={e => setField("qualification", e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Joining Date</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("joiningDate")}</Label>
                 <Input type="date" value={form.joiningDate} onChange={e => setField("joiningDate", e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Status</Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("status")}</Label>
                 <Select value={form.status} onValueChange={v => setField("status", v as Teacher["status"])}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
+                    <SelectItem value="Active">{tr("active")}</SelectItem>
+                    <SelectItem value="Inactive">{tr("inactive")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -226,9 +226,9 @@ export default function Teachers() {
             )}
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => { setForm(emptyForm()); setFormError(null); }}>Reset</Button>
-            <Button variant="outline" onClick={() => setIsFormOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>{editingId ? "Update Teacher" : "Save Teacher"}</Button>
+            <Button variant="outline" onClick={() => { setForm(emptyForm()); setFormError(null); }} className={isUrdu ? "urdu-text" : ""}>{tr("reset")}</Button>
+            <Button variant="outline" onClick={() => setIsFormOpen(false)} className={isUrdu ? "urdu-text" : ""}>{tr("cancel")}</Button>
+            <Button onClick={handleSave} className={isUrdu ? "urdu-text" : ""}>{editingId ? tr("updateTeacher") : tr("saveTeacher")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

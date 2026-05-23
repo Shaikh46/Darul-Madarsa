@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLS, Student, exportToCSV } from "@/lib/storage";
+import { useLang } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -19,8 +20,11 @@ interface ExamResult {
   date: string;
 }
 
-const EXAM_NAMES = ["Mid-Term", "Final", "Monthly Test", "Weekly Test", "Annual", "Unit Test"];
-const SUBJECTS = ["Quran", "Hifz", "Tajweed", "Fiqh", "Arabic", "Urdu", "English", "Mathematics", "General Knowledge", "Islamic Studies"];
+const EXAM_NAMES_EN = ["Mid-Term", "Final", "Monthly Test", "Weekly Test", "Annual", "Unit Test"];
+const EXAM_NAMES_UR = ["وسط مدت", "آخری", "ماہانہ ٹیسٹ", "ہفتہ وار ٹیسٹ", "سالانہ", "یونٹ ٹیسٹ"];
+
+const SUBJECTS_EN = ["Quran", "Hifz", "Tajweed", "Fiqh", "Arabic", "Urdu", "English", "Mathematics", "General Knowledge", "Islamic Studies"];
+const SUBJECTS_UR = ["قرآن", "حفظ", "تجوید", "فقہ", "عربی", "اردو", "انگریزی", "ریاضی", "عمومی علم", "اسلامی تعلیم"];
 
 function calculateGrade(obtained: number, total: number) {
   const pct = (obtained / total) * 100;
@@ -32,6 +36,8 @@ function calculateGrade(obtained: number, total: number) {
 }
 
 export default function Results() {
+  const { lang, tr } = useLang();
+  const isUrdu = lang === "ur";
   const [students] = useLS<Student[]>("students", []);
   const [results, setResults] = useLS<ExamResult[]>("exam_results", []);
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -46,6 +52,8 @@ export default function Results() {
   const [formError, setFormError] = useState("");
   const { toast } = useToast();
 
+  const examNames = isUrdu ? EXAM_NAMES_UR : EXAM_NAMES_EN;
+  const subjects = isUrdu ? SUBJECTS_UR : SUBJECTS_EN;
   const examNameValue = selectedExam === "custom" ? customExam : selectedExam;
 
   const filtered = results.filter(r => {
@@ -63,14 +71,14 @@ export default function Results() {
   };
 
   const handleAdd = () => {
-    if (!selectedStudent) { setFormError("Please select a student."); return; }
-    if (!examNameValue.trim()) { setFormError("Exam name is required."); return; }
-    if (!selectedSubject) { setFormError("Please select a subject."); return; }
+    if (!selectedStudent) { setFormError(isUrdu ? "طالب علم منتخب کریں۔" : "Please select a student."); return; }
+    if (!examNameValue.trim()) { setFormError(isUrdu ? "امتحان کا نام ضروری ہے۔" : "Exam name is required."); return; }
+    if (!selectedSubject) { setFormError(isUrdu ? "مضمون منتخب کریں۔" : "Please select a subject."); return; }
     const obtained = parseFloat(marksObtained);
     const total = parseFloat(totalMarks);
-    if (isNaN(obtained) || obtained < 0) { setFormError("Marks obtained must be a valid number."); return; }
-    if (isNaN(total) || total <= 0) { setFormError("Total marks must be positive."); return; }
-    if (obtained > total) { setFormError("Marks obtained cannot exceed total marks."); return; }
+    if (isNaN(obtained) || obtained < 0) { setFormError(isUrdu ? "حاصل کردہ نمبر درست عدد ہونا چاہیے۔" : "Marks obtained must be a valid number."); return; }
+    if (isNaN(total) || total <= 0) { setFormError(isUrdu ? "کل نمبر مثبت ہونے چاہییں۔" : "Total marks must be positive."); return; }
+    if (obtained > total) { setFormError(isUrdu ? "حاصل کردہ نمبر کل نمبر سے زیادہ نہیں ہو سکتے۔" : "Marks obtained cannot exceed total marks."); return; }
     setFormError("");
     const newResult: ExamResult = {
       id: `res_${Date.now()}`,
@@ -82,15 +90,15 @@ export default function Results() {
       date: new Date().toISOString(),
     };
     setResults([newResult, ...results]);
-    toast({ title: "Result Added", description: `${examNameValue} result saved.` });
+    toast({ title: isUrdu ? "نتیجہ شامل ہو گیا" : "Result Added", description: `${examNameValue}` });
     resetForm();
     setIsAddOpen(false);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Delete this result?")) {
+    if (confirm(isUrdu ? "یہ نتیجہ حذف کریں؟" : "Delete this result?")) {
       setResults(results.filter(r => r.id !== id));
-      toast({ title: "Result Deleted" });
+      toast({ title: isUrdu ? "نتیجہ حذف ہو گیا" : "Result Deleted" });
     }
   };
 
@@ -110,7 +118,7 @@ export default function Results() {
     const student = students.find(s => s.id === studentId);
     if (!student) return;
     const studentResults = results.filter(r => r.studentId === studentId);
-    if (studentResults.length === 0) return alert("No results to print.");
+    if (studentResults.length === 0) return alert(isUrdu ? "پرنٹ کرنے کے لیے کوئی نتیجہ نہیں۔" : "No results to print.");
     const printWindow = window.open("", "", "width=800,height=600");
     if (!printWindow) return;
     printWindow.document.write(`<html><head><title>Report Card - ${student.name}</title><style>body{font-family:Arial,sans-serif;padding:40px}h1,h2,h3{text-align:center;margin:5px 0}.header{border-bottom:2px solid #008000;padding-bottom:20px;margin-bottom:20px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ccc;padding:10px;text-align:left}th{background:#f5f5f5}.footer{margin-top:50px;display:flex;justify-content:space-between}.grade{font-weight:bold;padding:2px 8px;border-radius:4px}</style></head><body><div class="header"><h1 style="color:#008000">Darul Uloom Sirajul Islam</h1><h2>Kalgaon, Maharashtra</h2><h3>Official Report Card</h3></div><p><strong>Student Name:</strong> ${student.name}</p><p><strong>Class:</strong> ${student.className}</p><p><strong>Jamaat:</strong> ${student.jamaat || "—"}</p><p><strong>Date Issued:</strong> ${new Date().toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}</p><table><tr><th>Exam</th><th>Subject</th><th>Marks</th><th>Total</th><th>%</th><th>Grade</th></tr>${studentResults.map(r => { const pct = ((r.marksObtained / r.totalMarks) * 100).toFixed(1); const { grade } = calculateGrade(r.marksObtained, r.totalMarks); return `<tr><td>${r.examName}</td><td>${r.subject}</td><td>${r.marksObtained}</td><td>${r.totalMarks}</td><td>${pct}%</td><td class="grade">${grade}</td></tr>`; }).join("")}</table><div class="footer"><p>_______________________<br/>Teacher Signature</p><p>_______________________<br/>Principal Signature</p></div></body></html>`);
@@ -122,15 +130,15 @@ export default function Results() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Exam Results</h1>
-          <p className="text-muted-foreground mt-1">{results.length} result records</p>
+          <h1 className={`text-3xl font-bold text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("examResults")}</h1>
+          <p className="text-muted-foreground mt-1">{results.length} {tr("resultRecords")}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" /> Export CSV
+            <Download className="w-4 h-4 mr-2" /> {tr("exportCsv")}
           </Button>
           <Button size="sm" onClick={() => { resetForm(); setIsAddOpen(true); }}>
-            <Plus className="w-4 h-4 mr-2" /> Add Result
+            <Plus className="w-4 h-4 mr-2" /> {tr("addResult")}
           </Button>
         </div>
       </div>
@@ -138,14 +146,14 @@ export default function Results() {
       <div className="flex gap-3 flex-wrap">
         <div className="relative flex-1 min-w-48">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search by student, exam or subject..." className="pl-9" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <Input placeholder={tr("searchResultsPlh")} className="pl-9" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         </div>
         <Select value={filterStudent} onValueChange={setFilterStudent}>
           <SelectTrigger className="w-44">
-            <SelectValue placeholder="All Students" />
+            <SelectValue placeholder={tr("allStudents")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Students</SelectItem>
+            <SelectItem value="all">{tr("allStudents")}</SelectItem>
             {students.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
           </SelectContent>
         </Select>
@@ -155,13 +163,13 @@ export default function Results() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Student</TableHead>
-              <TableHead>Exam</TableHead>
-              <TableHead>Subject</TableHead>
-              <TableHead>Marks</TableHead>
-              <TableHead>Percentage</TableHead>
-              <TableHead>Grade</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{tr("student")}</TableHead>
+              <TableHead>{tr("exam")}</TableHead>
+              <TableHead>{tr("subject")}</TableHead>
+              <TableHead>{tr("marks")}</TableHead>
+              <TableHead>{tr("percentage")}</TableHead>
+              <TableHead>{tr("grade")}</TableHead>
+              <TableHead className="text-right">{tr("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -171,7 +179,7 @@ export default function Results() {
               const { grade, color } = calculateGrade(r.marksObtained, r.totalMarks);
               return (
                 <TableRow key={r.id}>
-                  <TableCell className="font-medium">{student?.name || "Unknown"}<br /><span className="text-xs text-muted-foreground">{student?.className}</span></TableCell>
+                  <TableCell className="font-medium">{student?.name || (isUrdu ? "نامعلوم" : "Unknown")}<br /><span className="text-xs text-muted-foreground">{student?.className}</span></TableCell>
                   <TableCell>{r.examName}</TableCell>
                   <TableCell>{r.subject}</TableCell>
                   <TableCell>{r.marksObtained} / {r.totalMarks}</TableCell>
@@ -181,7 +189,7 @@ export default function Results() {
                   </TableCell>
                   <TableCell className="text-right">
                     <Button variant="outline" size="sm" className="mr-1" onClick={() => handlePrint(r.studentId)}>
-                      <Printer className="w-3.5 h-3.5 mr-1.5" /> Report Card
+                      <Printer className="w-3.5 h-3.5 mr-1.5" /> {tr("reportCard")}
                     </Button>
                     <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(r.id)}>
                       <Trash2 className="h-4 w-4" />
@@ -192,7 +200,7 @@ export default function Results() {
             })}
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">No results found.</TableCell>
+                <TableCell colSpan={7} className={`text-center h-24 text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("noResultsFound")}</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -201,52 +209,52 @@ export default function Results() {
 
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>Add Exam Result</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className={isUrdu ? "urdu-text" : ""}>{tr("addExamResult")}</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label>Student <span className="text-destructive">*</span></Label>
+              <Label className={isUrdu ? "urdu-text" : ""}>{tr("student")} <span className="text-destructive">*</span></Label>
               <Select value={selectedStudent} onValueChange={setSelectedStudent}>
-                <SelectTrigger><SelectValue placeholder="Select student" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={tr("selectStudent")} /></SelectTrigger>
                 <SelectContent>
                   {students.map(s => <SelectItem key={s.id} value={s.id}>{s.name} ({s.className})</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Exam Name <span className="text-destructive">*</span></Label>
+              <Label className={isUrdu ? "urdu-text" : ""}>{tr("examName")} <span className="text-destructive">*</span></Label>
               <Select value={selectedExam} onValueChange={setSelectedExam}>
-                <SelectTrigger><SelectValue placeholder="Select exam type" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={tr("selectExamType")} /></SelectTrigger>
                 <SelectContent>
-                  {EXAM_NAMES.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-                  <SelectItem value="custom">Other (type below)</SelectItem>
+                  {EXAM_NAMES_EN.map((e, i) => <SelectItem key={e} value={e}>{examNames[i]}</SelectItem>)}
+                  <SelectItem value="custom">{tr("otherTypeBelow")}</SelectItem>
                 </SelectContent>
               </Select>
               {selectedExam === "custom" && (
-                <Input placeholder="Enter exam name" value={customExam} onChange={e => setCustomExam(e.target.value)} className="mt-2" />
+                <Input placeholder={tr("enterExamName")} value={customExam} onChange={e => setCustomExam(e.target.value)} className="mt-2" />
               )}
             </div>
             <div className="space-y-1.5">
-              <Label>Subject <span className="text-destructive">*</span></Label>
+              <Label className={isUrdu ? "urdu-text" : ""}>{tr("subject")} <span className="text-destructive">*</span></Label>
               <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                <SelectTrigger><SelectValue placeholder="Select subject" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={tr("selectSubject")} /></SelectTrigger>
                 <SelectContent>
-                  {SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  {SUBJECTS_EN.map((s, i) => <SelectItem key={s} value={s}>{subjects[i]}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Marks Obtained <span className="text-destructive">*</span></Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("marksObtained")} <span className="text-destructive">*</span></Label>
                 <Input type="number" placeholder="85" min="0" value={marksObtained} onChange={e => setMarksObtained(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Total Marks <span className="text-destructive">*</span></Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("totalMarks")} <span className="text-destructive">*</span></Label>
                 <Input type="number" placeholder="100" min="1" value={totalMarks} onChange={e => setTotalMarks(e.target.value)} />
               </div>
             </div>
             {marksObtained && totalMarks && !isNaN(parseFloat(marksObtained)) && !isNaN(parseFloat(totalMarks)) && parseFloat(totalMarks) > 0 && (
               <div className="p-3 bg-muted rounded-lg flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Auto-calculated result</span>
+                <span className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("autoCalculated")}</span>
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-medium">{((parseFloat(marksObtained) / parseFloat(totalMarks)) * 100).toFixed(1)}%</span>
                   <span className={`text-xs font-bold px-2 py-1 rounded-full ${calculateGrade(parseFloat(marksObtained), parseFloat(totalMarks)).color}`}>
@@ -255,11 +263,11 @@ export default function Results() {
                 </div>
               </div>
             )}
-            {formError && <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded px-3 py-2">{formError}</p>}
+            {formError && <p className={`text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded px-3 py-2 ${isUrdu ? "urdu-text" : ""}`}>{formError}</p>}
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setIsAddOpen(false)}>Cancel</Button>
-            <Button onClick={handleAdd}>Save Result</Button>
+            <Button variant="outline" onClick={() => setIsAddOpen(false)} className={isUrdu ? "urdu-text" : ""}>{tr("cancel")}</Button>
+            <Button onClick={handleAdd} className={isUrdu ? "urdu-text" : ""}>{tr("saveResult")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

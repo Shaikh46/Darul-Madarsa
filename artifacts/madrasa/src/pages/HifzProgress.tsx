@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useLS, Student } from "@/lib/storage";
+import { useLS, Student, CLASS_GROUPS, trClass, trClassGroup } from "@/lib/storage";
+import { useLang } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -18,6 +19,8 @@ interface ProgressRecord {
 }
 
 export default function HifzProgress() {
+  const { lang, tr } = useLang();
+  const isUrdu = lang === "ur";
   const [students] = useLS<Student[]>("students", []);
   const [progress, setProgress] = useLS<ProgressRecord[]>("hifz_progress", []);
   const [selectedClass, setSelectedClass] = useState<string>("");
@@ -29,15 +32,15 @@ export default function HifzProgress() {
     return progress.find(p => p.studentId === studentId && p.type === type);
   };
 
-  const handleUpdate = (studentId: string, type: "hifz" | "nazera", data: any) => {
+  const handleUpdate = (studentId: string, type: "hifz" | "nazera", data: Record<string, unknown>) => {
     const existing = getProgress(studentId, type);
     const newRecord: ProgressRecord = {
       studentId,
       type,
+      remarks: "",
       ...data,
       updatedAt: new Date().toISOString()
     };
-    
     if (existing) {
       setProgress(progress.map(p => p === existing ? { ...p, ...data, updatedAt: new Date().toISOString() } : p));
     } else {
@@ -48,20 +51,31 @@ export default function HifzProgress() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Hifz & Nazera Progress</h1>
-        <p className="text-muted-foreground mt-1">Track student memorization and reading</p>
+        <h1 className={`text-3xl font-bold text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("hifzNazeraProgress")}</h1>
+        <p className={`text-muted-foreground mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("trackMemReading")}</p>
       </div>
 
-      <div className="w-full max-w-sm">
-        <Label>Select Class</Label>
+      <div className="w-full max-w-sm space-y-1.5">
+        <Label className={isUrdu ? "urdu-text" : ""}>{tr("selectClass")}</Label>
         <Select value={selectedClass} onValueChange={setSelectedClass}>
           <SelectTrigger>
-            <SelectValue placeholder="Select class" />
+            <SelectValue placeholder={isUrdu ? "کلاس منتخب کریں" : "Select class"} />
           </SelectTrigger>
           <SelectContent>
-            {classes.map(c => (
-              <SelectItem key={c} value={c}>{c}</SelectItem>
-            ))}
+            {CLASS_GROUPS.map(group => {
+              const groupClasses = group.classes.filter(c => classes.includes(c));
+              if (groupClasses.length === 0) return null;
+              return (
+                <div key={group.label}>
+                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
+                    {group.icon} {trClassGroup(group.label, lang)}
+                  </div>
+                  {groupClasses.map(c => (
+                    <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>
+                  ))}
+                </div>
+              );
+            })}
           </SelectContent>
         </Select>
       </div>
@@ -78,23 +92,22 @@ export default function HifzProgress() {
                   <CardTitle>{student.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  
-                  {/* Hifz Section */}
+
                   <div className="space-y-4">
-                    <h3 className="font-semibold border-b pb-2 text-primary">Hifz Progress</h3>
+                    <h3 className={`font-semibold border-b pb-2 text-primary ${isUrdu ? "urdu-text" : ""}`}>{tr("hifzProgressSection")}</h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label>Current Juz</Label>
-                        <Input 
-                          type="number" 
-                          min={1} max={30} 
+                        <Label className={isUrdu ? "urdu-text" : ""}>{tr("currentJuz")}</Label>
+                        <Input
+                          type="number"
+                          min={1} max={30}
                           defaultValue={hifzData?.hifz?.currentJuz || 1}
                           onBlur={(e) => handleUpdate(student.id, "hifz", { hifz: { ...hifzData?.hifz, currentJuz: parseInt(e.target.value) } })}
                         />
                       </div>
                       <div>
-                        <Label>Current Surah</Label>
-                        <Input 
+                        <Label className={isUrdu ? "urdu-text" : ""}>{tr("currentSurah")}</Label>
+                        <Input
                           defaultValue={hifzData?.hifz?.currentSurah || ""}
                           onBlur={(e) => handleUpdate(student.id, "hifz", { hifz: { ...hifzData?.hifz, currentSurah: e.target.value } })}
                         />
@@ -102,13 +115,13 @@ export default function HifzProgress() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>Overall Progress</span>
+                        <span className={isUrdu ? "urdu-text" : ""}>{tr("overallProgress")}</span>
                         <span>{hifzData?.hifz?.progressPercent || 0}%</span>
                       </div>
                       <Progress value={hifzData?.hifz?.progressPercent || 0} className="h-2" />
-                      <Input 
-                        type="range" 
-                        min={0} max={100} 
+                      <Input
+                        type="range"
+                        min={0} max={100}
                         className="w-full"
                         defaultValue={hifzData?.hifz?.progressPercent || 0}
                         onChange={(e) => handleUpdate(student.id, "hifz", { hifz: { ...hifzData?.hifz, progressPercent: parseInt(e.target.value) } })}
@@ -116,43 +129,41 @@ export default function HifzProgress() {
                     </div>
                   </div>
 
-                  {/* Nazera Section */}
                   <div className="space-y-4 pt-4 border-t">
-                    <h3 className="font-semibold border-b pb-2 text-primary">Nazera Progress</h3>
+                    <h3 className={`font-semibold border-b pb-2 text-primary ${isUrdu ? "urdu-text" : ""}`}>{tr("nazeraProgressSection")}</h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label>Current Parah</Label>
-                        <Input 
-                          type="number" 
-                          min={1} max={30} 
+                        <Label className={isUrdu ? "urdu-text" : ""}>{tr("currentParah")}</Label>
+                        <Input
+                          type="number"
+                          min={1} max={30}
                           defaultValue={nazeraData?.nazera?.currentParah || 1}
                           onBlur={(e) => handleUpdate(student.id, "nazera", { nazera: { ...nazeraData?.nazera, currentParah: parseInt(e.target.value) } })}
                         />
                       </div>
                       <div>
-                        <Label>Quality</Label>
-                        <Select 
+                        <Label className={isUrdu ? "urdu-text" : ""}>{tr("quality")}</Label>
+                        <Select
                           defaultValue={nazeraData?.nazera?.readingQuality || "Good"}
-                          onValueChange={(val) => handleUpdate(student.id, "nazera", { nazera: { ...nazeraData?.nazera, readingQuality: val as any } })}
+                          onValueChange={(val) => handleUpdate(student.id, "nazera", { nazera: { ...nazeraData?.nazera, readingQuality: val as "Excellent" | "Good" | "Needs Improvement" } })}
                         >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Excellent">Excellent</SelectItem>
-                            <SelectItem value="Good">Good</SelectItem>
-                            <SelectItem value="Needs Improvement">Needs Improvement</SelectItem>
+                            <SelectItem value="Excellent">{tr("excellent")}</SelectItem>
+                            <SelectItem value="Good">{tr("good")}</SelectItem>
+                            <SelectItem value="Needs Improvement">{tr("needsImprovement")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
                   </div>
 
-                  {/* Remarks */}
                   <div>
-                    <Label>Teacher Remarks</Label>
-                    <Textarea 
-                      placeholder="Add remarks..." 
+                    <Label className={isUrdu ? "urdu-text" : ""}>{tr("teacherRemarks")}</Label>
+                    <Textarea
+                      placeholder={tr("addRemarks")}
                       defaultValue={hifzData?.remarks || nazeraData?.remarks || ""}
                       onBlur={(e) => handleUpdate(student.id, "hifz", { remarks: e.target.value })}
                     />
@@ -164,8 +175,8 @@ export default function HifzProgress() {
           })}
         </div>
       ) : (
-        <div className="p-8 text-center border rounded-md text-muted-foreground bg-card">
-          Please select a class to view progress.
+        <div className={`p-8 text-center border rounded-md text-muted-foreground bg-card ${isUrdu ? "urdu-text" : ""}`}>
+          {tr("pleaseSelectClass")}
         </div>
       )}
     </div>

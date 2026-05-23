@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLS, exportToCSV } from "@/lib/storage";
+import { useLang } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Plus, Search, Download, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useLang } from "@/lib/i18n";
 import { format } from "date-fns";
 
 interface Expense {
@@ -19,7 +19,8 @@ interface Expense {
   date: string;
 }
 
-const CATEGORIES = ["Salary", "Maintenance", "Books", "Electricity", "Water", "Rent", "Food", "Transport", "Other"];
+const CATEGORIES_EN = ["Salary", "Maintenance", "Books", "Electricity", "Water", "Rent", "Food", "Transport", "Other"];
+const CATEGORIES_UR = ["تنخواہ", "دیکھ بھال", "کتابیں", "بجلی", "پانی", "کرایہ", "کھانا", "آمد و رفت", "دیگر"];
 
 const CATEGORY_COLORS: Record<string, string> = {
   Salary: "bg-blue-100 text-blue-700",
@@ -44,6 +45,8 @@ export default function Expenses() {
   const [amountError, setAmountError] = useState("");
   const { toast } = useToast();
 
+  const categories = isUrdu ? CATEGORIES_UR : CATEGORIES_EN;
+
   const filtered = expenses.filter(e => {
     const matchSearch = e.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       e.category.toLowerCase().includes(searchTerm.toLowerCase());
@@ -56,22 +59,22 @@ export default function Expenses() {
   const resetForm = () => { setCategory(""); setDescription(""); setAmount(""); setDate(format(new Date(), "yyyy-MM-dd")); setAmountError(""); };
 
   const handleAdd = () => {
-    if (!category) { toast({ title: "Error", description: "Select a category.", variant: "destructive" }); return; }
-    if (!description.trim()) { toast({ title: "Error", description: "Description is required.", variant: "destructive" }); return; }
+    if (!category) { toast({ title: isUrdu ? "خطا" : "Error", description: isUrdu ? "زمرہ منتخب کریں۔" : "Select a category.", variant: "destructive" }); return; }
+    if (!description.trim()) { toast({ title: isUrdu ? "خطا" : "Error", description: isUrdu ? "تفصیل ضروری ہے۔" : "Description is required.", variant: "destructive" }); return; }
     const amt = parseFloat(amount);
-    if (!amount || isNaN(amt) || amt <= 0) { setAmountError("Amount must be a positive number."); return; }
+    if (!amount || isNaN(amt) || amt <= 0) { setAmountError(tr("amountPositive")); return; }
     setAmountError("");
     const newExp: Expense = { id: `exp_${Date.now()}`, category, description, amount: amt, date: date || new Date().toISOString() };
     setExpenses([newExp, ...expenses]);
-    toast({ title: "Expense Saved", description: `₹${amt} for ${category} recorded.` });
+    toast({ title: isUrdu ? "خرچ محفوظ ہو گیا" : "Expense Saved", description: `₹${amt}` });
     resetForm();
     setIsAddOpen(false);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Delete this expense record?")) {
+    if (confirm(isUrdu ? "یہ خرچ ریکارڈ حذف کریں؟" : "Delete this expense record?")) {
       setExpenses(expenses.filter(e => e.id !== id));
-      toast({ title: "Expense Deleted" });
+      toast({ title: isUrdu ? "خرچ حذف ہو گیا" : "Expense Deleted" });
     }
   };
 
@@ -108,15 +111,15 @@ export default function Expenses() {
       <div className="flex gap-3 flex-wrap">
         <div className="relative flex-1 min-w-48">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search description or category..." className="pl-9" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <Input placeholder={tr("searchDescCat")} className="pl-9" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         </div>
         <Select value={filterCategory} onValueChange={setFilterCategory}>
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="All Categories" />
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder={tr("allCategories")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            <SelectItem value="all">{tr("allCategories")}</SelectItem>
+            {CATEGORIES_EN.map((c, i) => <SelectItem key={c} value={c}>{categories[i]}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
@@ -125,33 +128,37 @@ export default function Expenses() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{tr("date")}</TableHead>
+              <TableHead>{tr("category")}</TableHead>
+              <TableHead>{tr("description")}</TableHead>
+              <TableHead className="text-right">{tr("amount")}</TableHead>
+              <TableHead className="text-right">{tr("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map(e => (
-              <TableRow key={e.id}>
-                <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                  {e.date ? format(new Date(e.date), "MMM d, yyyy") : "—"}
-                </TableCell>
-                <TableCell>
-                  <span className={`text-xs px-2 py-1 rounded-full ${CATEGORY_COLORS[e.category] || "bg-gray-100 text-gray-600"}`}>
-                    {e.category}
-                  </span>
-                </TableCell>
-                <TableCell>{e.description}</TableCell>
-                <TableCell className="text-right font-bold text-destructive">₹{e.amount.toLocaleString()}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(e.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {filtered.map(e => {
+              const catIndex = CATEGORIES_EN.indexOf(e.category);
+              const catLabel = catIndex >= 0 ? categories[catIndex] : e.category;
+              return (
+                <TableRow key={e.id}>
+                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                    {e.date ? format(new Date(e.date), "MMM d, yyyy") : "—"}
+                  </TableCell>
+                  <TableCell>
+                    <span className={`text-xs px-2 py-1 rounded-full ${CATEGORY_COLORS[e.category] || "bg-gray-100 text-gray-600"}`}>
+                      {catLabel}
+                    </span>
+                  </TableCell>
+                  <TableCell>{e.description}</TableCell>
+                  <TableCell className="text-right font-bold text-destructive">₹{e.amount.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(e.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
             {filtered.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className={`text-center h-24 text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("noExpenses")}</TableCell>
@@ -166,33 +173,33 @@ export default function Expenses() {
           <DialogHeader><DialogTitle className={isUrdu ? "urdu-text" : ""}>{tr("addExpenseBtn")}</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label>Category <span className="text-destructive">*</span></Label>
+              <Label className={isUrdu ? "urdu-text" : ""}>{tr("category")} <span className="text-destructive">*</span></Label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={tr("selectCategory")} /></SelectTrigger>
                 <SelectContent>
-                  {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  {CATEGORIES_EN.map((c, i) => <SelectItem key={c} value={c}>{categories[i]}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Description <span className="text-destructive">*</span></Label>
-              <Input placeholder="Monthly electricity bill" value={description} onChange={e => setDescription(e.target.value)} />
+              <Label className={isUrdu ? "urdu-text" : ""}>{tr("description")} <span className="text-destructive">*</span></Label>
+              <Input placeholder={tr("expDescPlh")} value={description} onChange={e => setDescription(e.target.value)} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Amount (₹) <span className="text-destructive">*</span></Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("amountRupees")} <span className="text-destructive">*</span></Label>
                 <Input type="number" placeholder="5000" min="1" value={amount} onChange={e => { setAmount(e.target.value); setAmountError(""); }} />
-                {amountError && <p className="text-xs text-destructive">{amountError}</p>}
+                {amountError && <p className={`text-xs text-destructive ${isUrdu ? "urdu-text" : ""}`}>{amountError}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label>Date <span className="text-destructive">*</span></Label>
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("date")} <span className="text-destructive">*</span></Label>
                 <Input type="date" value={date} onChange={e => setDate(e.target.value)} />
               </div>
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setIsAddOpen(false)}>Cancel</Button>
-            <Button onClick={handleAdd}>Save Expense</Button>
+            <Button variant="outline" onClick={() => setIsAddOpen(false)} className={isUrdu ? "urdu-text" : ""}>{tr("cancel")}</Button>
+            <Button onClick={handleAdd} className={isUrdu ? "urdu-text" : ""}>{tr("saveExpense")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

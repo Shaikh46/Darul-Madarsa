@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Plus, Search, Download, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLang } from "@/lib/i18n";
 import { format } from "date-fns";
 
 interface Expense {
@@ -30,6 +31,8 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default function Expenses() {
+  const { lang, tr } = useLang();
+  const isUrdu = lang === "ur";
   const [expenses, setExpenses] = useLS<Expense[]>("expenses", []);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -84,21 +87,21 @@ export default function Expenses() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Expenses</h1>
-          <p className="text-muted-foreground mt-1">Record and track madrasa expenses</p>
+          <h1 className={`text-3xl font-bold text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("expensesPage")}</h1>
+          <p className={`text-muted-foreground mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("trackExpenses")}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" /> Export CSV
+            <Download className="w-4 h-4 mr-2" />{tr("exportCsv")}
           </Button>
-          <Button size="sm" onClick={() => { resetForm(); setIsAddOpen(true); }}>
-            <Plus className="w-4 h-4 mr-2" /> Add Expense
+          <Button size="sm" onClick={() => { resetForm(); setIsAddOpen(true); }} data-testid="btn-add-expense">
+            <Plus className="w-4 h-4 mr-2" />{tr("addExpenseBtn")}
           </Button>
         </div>
       </div>
 
       <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg flex items-center justify-between">
-        <span className="text-sm font-medium text-destructive">Total Expenses (filtered)</span>
+        <span className={`text-sm font-medium text-destructive ${isUrdu ? "urdu-text" : ""}`}>{tr("totalExpFiltered")}</span>
         <span className="text-2xl font-bold text-destructive">₹{totalExpenses.toLocaleString()}</span>
       </div>
 
@@ -151,7 +154,7 @@ export default function Expenses() {
             ))}
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">No expenses recorded.</TableCell>
+                <TableCell colSpan={5} className={`text-center h-24 text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("noExpenses")}</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -160,7 +163,7 @@ export default function Expenses() {
 
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>Add Expense</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className={isUrdu ? "urdu-text" : ""}>{tr("addExpenseBtn")}</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
               <Label>Category <span className="text-destructive">*</span></Label>

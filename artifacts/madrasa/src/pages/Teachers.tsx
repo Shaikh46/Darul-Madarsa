@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Search, Plus, Download, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLang } from "@/lib/i18n";
 
 const emptyForm = (): Omit<Teacher, "id"> => ({
   name: "",
@@ -27,6 +28,8 @@ function validate(f: Omit<Teacher, "id">): string | null {
 }
 
 export default function Teachers() {
+  const { lang, tr } = useLang();
+  const isUrdu = lang === "ur";
   const [teachers, setTeachers] = useLS<Teacher[]>("teachers", []);
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -91,15 +94,15 @@ export default function Teachers() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Teachers</h1>
-          <p className="text-muted-foreground mt-1">{teachers.length} staff members</p>
+          <h1 className={`text-3xl font-bold text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("teachersPage")}</h1>
+          <p className={`text-muted-foreground mt-1 ${isUrdu ? "urdu-text" : ""}`}>{teachers.length} {tr("staffMembers")}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" /> Export CSV
+            <Download className="w-4 h-4 mr-2" />{tr("exportCsv")}
           </Button>
-          <Button size="sm" onClick={openAdd}>
-            <Plus className="w-4 h-4 mr-2" /> Add Teacher
+          <Button size="sm" onClick={openAdd} data-testid="btn-add-teacher">
+            <Plus className="w-4 h-4 mr-2" />{tr("addTeacherBtn")}
           </Button>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Plus, CheckCircle2, Clock, Search, Download, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLang } from "@/lib/i18n";
 
 interface FeePayment {
   id: string;
@@ -24,6 +25,8 @@ interface FeePayment {
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 export default function Fees() {
+  const { lang, tr } = useLang();
+  const isUrdu = lang === "ur";
   const [students] = useLS<Student[]>("students", []);
   const [fees, setFees] = useLS<FeePayment[]>("fees", []);
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -201,7 +204,7 @@ export default function Fees() {
 
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>Record Fee Payment</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className={isUrdu ? "urdu-text" : ""}>{tr("recordFeePayment")}</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
               <Label>Student <span className="text-destructive">*</span></Label>

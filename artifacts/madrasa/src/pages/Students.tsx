@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Search, Plus, Download, Edit, Trash2, Upload, CheckCircle2, X, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLang } from "@/lib/i18n";
 
 const emptyForm = (): Omit<Student, "id"> => ({
   name: "",
@@ -34,6 +35,8 @@ function validate(form: Omit<Student, "id">): string | null {
 }
 
 export default function Students() {
+  const { lang, tr } = useLang();
+  const isUrdu = lang === "ur";
   const [students, setStudents] = useLS<Student[]>("students", []);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterClass, setFilterClass] = useState("all");
@@ -162,13 +165,13 @@ export default function Students() {
         <div className="flex gap-2 flex-wrap">
           <input type="file" accept=".csv" ref={csvRef} className="hidden" onChange={handleCSVImport} />
           <Button variant="outline" size="sm" onClick={() => csvRef.current?.click()}>
-            <Upload className="w-4 h-4 mr-2" /> Import CSV
+            <Upload className="w-4 h-4 mr-2" />{tr("importCsv")}
           </Button>
           <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" /> Export CSV
+            <Download className="w-4 h-4 mr-2" />{tr("exportCsv")}
           </Button>
-          <Button size="sm" onClick={openAdd}>
-            <Plus className="w-4 h-4 mr-2" /> Add Student
+          <Button size="sm" onClick={openAdd} data-testid="btn-add-student">
+            <Plus className="w-4 h-4 mr-2" />{tr("addStudentBtn")}
           </Button>
         </div>
       </div>
@@ -176,7 +179,7 @@ export default function Students() {
       {successMsg && (
         <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
           <CheckCircle2 className="w-4 h-4" />
-          Student Added Successfully!
+          {tr("studentAddedOk")}
         </div>
       )}
 

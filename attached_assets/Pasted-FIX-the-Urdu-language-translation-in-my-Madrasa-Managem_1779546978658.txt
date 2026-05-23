@@ -1,0 +1,229 @@
+FIX the Urdu language translation in my Madrasa Management App.
+
+## PROBLEM:
+When I click the Urdu button (اردو), these buttons are still showing in English:
+- Add Expense
+- Record Fee  
+- Record Donation
+- Add Teacher
+- Add Student
+- إيدمن (Admin text)
+
+## SOLUTION:
+
+Add COMPLETE Urdu translations for ALL text in the app.
+
+### Button Translations:
+
+| English Button | Urdu Translation |
+|----------------|------------------|
+| Add Expense | خرچ شامل کریں |
+| Record Fee | فیس ریکارڈ کریں |
+| Record Donation | عطیہ ریکارڈ کریں |
+| Add Teacher | استاد شامل کریں |
+| Add Student | طالب علم شامل کریں |
+| Edit | ترمیم کریں |
+| Delete | حذف کریں |
+| Save | محفوظ کریں |
+| Cancel | منسوخ کریں |
+| Search | تلاش کریں |
+| Download PDF | پی ڈی ایف ڈاؤن لوڈ کریں |
+| Generate Report | رپورٹ بنائیں |
+| Export to Excel | ایکسپورٹ کریں |
+| Mark Attendance | حاضری لگائیں |
+| Update Progress | پیشرفت اپ ڈیٹ کریں |
+| Add Entry | اندراج شامل کریں |
+| Login | لاگ ان کریں |
+| Logout | لاگ آؤٹ کریں |
+
+### Admin/User Role Translations:
+
+| English | Urdu |
+|---------|------|
+| Admin | منتظم |
+| Teacher | استاد |
+| Parent | والدین |
+| Student | طالب علم |
+
+### Dashboard Card Translations:
+
+| English | Urdu |
+|---------|------|
+| Total Students | کل طلباء |
+| Present Today | آج حاضرین |
+| Monthly Fees | ماہانہ فیس |
+| Pending Dues | بقایا جات |
+| Total Donations | کل عطیات |
+| Total Expenses | کل اخراجات |
+| Total Teachers | کل اساتذہ |
+
+### Menu Item Translations:
+
+| English | Urdu |
+|---------|------|
+| Dashboard | ڈیش بورڈ |
+| Student Management | طلباء کا انتظام |
+| Attendance | حاضری |
+| Norani Qaida | نورانی قاعدہ |
+| Study Timetable | مطالعاتی نظام الاوقات |
+| Exam Results | امتحانی نتائج |
+| Fee Management | فیس کا انتظام |
+| Donation Management | عطیات کا انتظام |
+| Expense Management | اخراجات کا انتظام |
+| Teacher Management | اساتذہ کا انتظام |
+| Settings | ترتیبات |
+
+### Quick Action Section Translations:
+
+| English | Urdu |
+|---------|------|
+| Quick Actions | فوری اقدامات |
+| Add Expense | خرچ شامل کریں |
+| Record Fee | فیس ریکارڈ کریں |
+| Record Donation | عطیہ ریکارڈ کریں |
+| Add Teacher | استاد شامل کریں |
+| Add Student | طالب علم شامل کریں |
+
+### Norani Qaida Translations:
+
+| English | Urdu |
+|---------|------|
+| Lessons | اسباق |
+| Progress | پیشرفت |
+| Assessment | تشخیص |
+| Reading Fluency | پڑھنے کی روانی |
+| Tajweed Score | تجوید کا اسکور |
+| Teacher Remarks | استاد کے تبصرے |
+| Mark Complete | مکمل نشان زد کریں |
+
+### Study Timetable Translations:
+
+| English | Urdu |
+|---------|------|
+| Select Class | کلاس منتخب کریں |
+| Select Day | دن منتخب کریں |
+| Start Time | شروع کا وقت |
+| End Time | ختم ہونے کا وقت |
+| Subject | مضمون |
+| Room No. | کمرہ نمبر |
+| Add Entry | اندراج شامل کریں |
+| No timetable added yet | ابھی تک کوئی نظام الاوقات شامل نہیں |
+
+### Class Name Translations:
+
+| English | Urdu |
+|---------|------|
+| Deeniyat Alif | دینیات الف |
+| Deeniyat Baa | دینیات ب |
+| Farsi Awwal | فارسی اول |
+| Farsi Duwwam | فارسی دوم |
+| Arbi Awwal | عربی اول |
+| Arbi Duwwam | عربی دوم |
+| Arbi Suwwam | عربی سوم |
+| Arbi Chahrum | عربی چہارم |
+| Arbi Panjum | عربی پنجم |
+| Hifz Alif | حفظ الف |
+| Hifz Baa | حفظ ب |
+
+### Day Translations:
+
+| English | Urdu |
+|---------|------|
+| Sunday | اتوار |
+| Monday | پیر |
+| Tuesday | منگل |
+| Wednesday | بدھ |
+| Thursday | جمعرات |
+| Friday | جمعہ |
+| Saturday | ہفتہ |
+
+### Month Translations:
+
+| English | Urdu |
+|---------|------|
+| January | جنوری |
+| February | فروری |
+| March | مارچ |
+| April | اپریل |
+| May | مئی |
+| June | جون |
+| July | جولائی |
+| August | اگست |
+| September | ستمبر |
+| October | اکتوبر |
+| November | نومبر |
+| December | دسمبر |
+
+### Islamic Month Translations:
+
+| English | Urdu |
+|---------|------|
+| Muharram | محرم |
+| Safar | صفر |
+| Rabi ul Awwal | ربیع الاول |
+| Rabi us Sani | ربیع الثانی |
+| Jamadi ul Awwal | جمادی الاول |
+| Jamadi us Sani | جمادی الثانی |
+| Rajab | رجب |
+| Shaban | شعبان |
+| Ramadan | رمضان |
+| Shawwal | شوال |
+| Dhul Qadah | ذوالقعدہ |
+| Dhul Hijjah | ذوالحجہ |
+
+## IMPLEMENTATION REQUIREMENTS:
+
+1. Create a JavaScript object `urduTranslations` containing ALL the above translations
+2. Create a function `translateToUrdu()` that updates EVERY text element in the app
+3. Create a function `translateToEnglish()` that reverts back
+4. Make sure the language toggle button triggers the correct translation function
+5. All dynamically added elements (modals, popups, new rows) must also use current language
+
+## FIX THE LANGUAGE TOGGLE:
+
+The current language toggle should:
+- Change ALL button text
+- Change ALL labels
+- Change ALL table headers
+- Change ALL dropdown options
+- Change ALL placeholder text
+- Change ALL modal titles
+- Change ALL alert/confirmation messages
+
+## TESTING CHECKLIST:
+
+After fix, when I click Urdu button (اردو):
+- [ ] "Add Expense" becomes "خرچ شامل کریں"
+- [ ] "Record Fee" becomes "فیس ریکارڈ کریں"
+- [ ] "Record Donation" becomes "عطیہ ریکارڈ کریں"
+- [ ] "Add Teacher" becomes "استاد شامل کریں"
+- [ ] "Add Student" becomes "طالب علم شامل کریں"
+- [ ] All menu items change to Urdu
+- [ ] All table headers change to Urdu
+- [ ] All form labels change to Urdu
+- [ ] Dashboard cards change to Urdu
+- [ ] Class names change to Urdu
+
+## DELIVERY:
+- Fix the existing code
+- Do NOT remove any features
+- ONE complete HTML file
+- Make sure Urdu text displays correctly (use Noto Nastaliq Urdu font)
+
+START FIXING NOW. The Urdu button must translate EVERYTHING including the 5 buttons shown in the screenshot.
+📊 Quick Fix Summary
+Problem	Solution
+Buttons show English in Urdu mode	Add missing translations
+Admin text "إيدمن"	Translate to "منتظم"
+All 5 buttons not translating	Add to translation object
+Language toggle incomplete	Make function update ALL elements
+✅ After Fix - What You Should See
+When you click "اردو" button:
+
+Before (English)	After (Urdu)
+Add Expense	خرچ شامل کریں
+Record Fee	فیس ریکارڈ کریں
+Record Donation	عطیہ ریکارڈ کریں
+Add Teacher	استاد شامل کریں
+Add Student	طالب علم شامل کریں
+Admin	منتظم

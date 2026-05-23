@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLS } from "@/lib/storage";
+import { useLang } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -26,6 +27,8 @@ interface Donation {
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--chart-2))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export default function Donations() {
+  const { lang, tr } = useLang();
+  const isUrdu = lang === "ur";
   const [donations, setDonations] = useLS<Donation[]>("donations", []);
   const [isAddOpen, setIsAddOpen] = useState(false);
 
@@ -119,15 +122,15 @@ export default function Donations() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Donations</h1>
-          <p className="text-muted-foreground mt-1">Manage and receipt madrasa funds</p>
+          <h1 className={`text-3xl font-bold text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("donationsPage")}</h1>
+          <p className="text-muted-foreground mt-1">{isUrdu ? "مدرسہ فنڈز کا انتظام اور رسید" : "Manage and receipt madrasa funds"}</p>
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
-            <Button><Plus className="w-4 h-4 mr-2" /> New Donation</Button>
+            <Button data-testid="btn-new-donation"><Plus className="w-4 h-4 mr-2" />{tr("newDonation")}</Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Record Donation</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle className={isUrdu ? "urdu-text" : ""}>{tr("recordDonation")}</DialogTitle></DialogHeader>
             <form onSubmit={handleAdd} className="space-y-4">
               <div className="space-y-2">
                 <Label>Donor Name</Label>

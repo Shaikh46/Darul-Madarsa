@@ -893,12 +893,14 @@ function FAB() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const { lang: fabLang, tr: fabTr } = useLang();
+  const fabUrdu = fabLang === "ur";
   const actions = [
-    { label: "Add Student", icon: Users, href: "/students", color: "bg-primary hover:bg-primary/90" },
-    { label: "Add Teacher", icon: UserCheck, href: "/teachers", color: "bg-blue-600 hover:bg-blue-700" },
-    { label: "Record Donation", icon: HeartHandshake, href: "/donations", color: "bg-accent hover:bg-accent/90" },
-    { label: "Record Fee", icon: CreditCard, href: "/fees", color: "bg-emerald-600 hover:bg-emerald-700" },
-    { label: "Add Expense", icon: FileText, href: "/expenses", color: "bg-orange-500 hover:bg-orange-600" },
+    { label: fabUrdu ? "طالب علم شامل کریں" : "Add Student",     icon: Users,          href: "/students",  color: "bg-primary hover:bg-primary/90" },
+    { label: fabUrdu ? "استاد شامل کریں"    : "Add Teacher",     icon: UserCheck,      href: "/teachers",  color: "bg-blue-600 hover:bg-blue-700" },
+    { label: fabUrdu ? "عطیہ ریکارڈ کریں"  : "Record Donation", icon: HeartHandshake, href: "/donations", color: "bg-accent hover:bg-accent/90" },
+    { label: fabUrdu ? "فیس ریکارڈ کریں"   : "Record Fee",      icon: CreditCard,     href: "/fees",      color: "bg-emerald-600 hover:bg-emerald-700" },
+    { label: fabUrdu ? "خرچ شامل کریں"     : "Add Expense",     icon: FileText,       href: "/expenses",  color: "bg-orange-500 hover:bg-orange-600" },
   ];
 
   return (

@@ -31,10 +31,11 @@ export function Layout({ children }: { children: ReactNode }) {
 
   if (!role) return null;
 
+  const isUrdu = lang === "ur";
   const roleBadge =
-    role === "admin"   ? { label: "Admin",   cls: "bg-primary/10 text-primary border-primary/20" } :
-    role === "teacher" ? { label: "Teacher", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" } :
-                         { label: "Parent",  cls: "bg-blue-50 text-blue-700 border-blue-200" };
+    role === "admin"   ? { label: isUrdu ? "منتظم"  : "Admin",   cls: "bg-primary/10 text-primary border-primary/20" } :
+    role === "teacher" ? { label: isUrdu ? "استاد"  : "Teacher", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" } :
+                         { label: isUrdu ? "والدین" : "Parent",  cls: "bg-blue-50 text-blue-700 border-blue-200" };
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row w-full overflow-hidden">

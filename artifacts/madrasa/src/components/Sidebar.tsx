@@ -65,8 +65,8 @@ export function Sidebar({ onClose }: SidebarProps) {
                          "bg-blue-100 text-blue-800 border-blue-300";
 
   const roleLabel =
-    role === "admin"   ? (isUrdu ? "ایڈمن" : "Admin") :
-    role === "teacher" ? (isUrdu ? "استاد" : "Teacher") :
+    role === "admin"   ? (isUrdu ? "منتظم"  : "Admin") :
+    role === "teacher" ? (isUrdu ? "استاد"  : "Teacher") :
                          (isUrdu ? "والدین" : "Parent");
 
   return (

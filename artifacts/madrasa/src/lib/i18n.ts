@@ -271,6 +271,10 @@ export const translations: Record<string, Record<Lang, string>> = {
   shown:              { en: "shown", ur: "دکھائے گئے" },
   csvFormatNote:      { en: "CSV format: Name, Father Name, Class, Phone, Address", ur: "CSV فارمیٹ: نام، والد کا نام، کلاس، فون، پتہ" },
   classLabel:         { en: "Class",            ur: "کلاس" },
+  studentAadhar:      { en: "Student Aadhar Number", ur: "طالب علم کا آدھار نمبر" },
+  parentAadhar:       { en: "Parent Aadhar Number",  ur: "والدین کا آدھار نمبر" },
+  aadharHint:         { en: "12 digit number (optional)", ur: "12 ہندسوں کا نمبر (اختیاری)" },
+  invalidAadhar:      { en: "Aadhar must be exactly 12 digits.", ur: "آدھار بالکل 12 ہندسوں کا ہونا ضروری ہے۔" },
 
   // ── Hifz Progress ──
   hifzNazeraProgress:   { en: "Hifz & Nazera Progress",              ur: "حفظ اور نظرہ پیشرفت" },

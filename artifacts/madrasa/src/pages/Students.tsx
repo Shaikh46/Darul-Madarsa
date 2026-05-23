@@ -24,13 +24,33 @@ const emptyForm = (): Omit<Student, "id"> => ({
   admissionDate: new Date().toISOString().slice(0, 10),
   status: "Active",
   photo: "",
+  studentAadhar: "",
+  parentAadhar: "",
 });
+
+function cleanAadhar(v: string): string {
+  return v.replace(/\D/g, "").slice(0, 12);
+}
+
+function formatAadhar(v: string): string {
+  const c = cleanAadhar(v);
+  if (c.length <= 4) return c;
+  if (c.length <= 8) return `${c.slice(0, 4)}-${c.slice(4)}`;
+  return `${c.slice(0, 4)}-${c.slice(4, 8)}-${c.slice(8)}`;
+}
+
+function validateAadhar(v?: string): boolean {
+  if (!v) return true;
+  return cleanAadhar(v).length === 12;
+}
 
 function validate(form: Omit<Student, "id">): string | null {
   if (!form.name.trim()) return "Full name is required.";
   if (!form.fatherName.trim()) return "Father's name is required.";
   if (!form.className) return "Class is required.";
   if (form.phone && !/^\d{10}$/.test(form.phone)) return "Phone must be exactly 10 digits.";
+  if (!validateAadhar(form.studentAadhar)) return "Student Aadhar must be exactly 12 digits.";
+  if (!validateAadhar(form.parentAadhar)) return "Parent Aadhar must be exactly 12 digits.";
   return null;
 }
 
@@ -72,7 +92,7 @@ export default function Students() {
 
   const openEdit = (s: Student) => {
     setEditingId(s.id);
-    setForm({ name: s.name, fatherName: s.fatherName, motherName: s.motherName || "", className: s.className, jamaat: s.jamaat || "General", phone: s.phone, address: s.address, dob: s.dob || "", admissionDate: s.admissionDate || "", status: s.status || "Active", photo: s.photo || "" });
+    setForm({ name: s.name, fatherName: s.fatherName, motherName: s.motherName || "", className: s.className, jamaat: s.jamaat || "General", phone: s.phone, address: s.address, dob: s.dob || "", admissionDate: s.admissionDate || "", status: s.status || "Active", photo: s.photo || "", studentAadhar: s.studentAadhar || "", parentAadhar: s.parentAadhar || "" });
     setFormError(null);
     setSuccessMsg(false);
     setIsFormOpen(true);
@@ -110,8 +130,8 @@ export default function Students() {
 
   const handleExport = () => {
     exportToCSV(
-      ["Name", "Father Name", "Mother Name", "Class", "Jamaat", "Phone", "Address", "DOB", "Admission Date", "Status"],
-      filtered.map(s => [s.name, s.fatherName, s.motherName, s.className, s.jamaat || "", s.phone, s.address, s.dob || "", s.admissionDate || "", s.status || "Active"]),
+      ["Name", "Father Name", "Mother Name", "Class", "Jamaat", "Phone", "Student Aadhar", "Parent Aadhar", "Address", "DOB", "Admission Date", "Status"],
+      filtered.map(s => [s.name, s.fatherName, s.motherName, s.className, s.jamaat || "", s.phone, formatAadhar(s.studentAadhar || ""), formatAadhar(s.parentAadhar || ""), s.address, s.dob || "", s.admissionDate || "", s.status || "Active"]),
       "students.csv"
     );
   };
@@ -219,6 +239,8 @@ export default function Students() {
               <TableHead>{lang === "ur" ? "کلاس" : "Class"}</TableHead>
               <TableHead>{lang === "ur" ? "جماعت" : "Jamaat"}</TableHead>
               <TableHead>{lang === "ur" ? "فون" : "Phone"}</TableHead>
+              <TableHead className={isUrdu ? "urdu-text" : ""}>{lang === "ur" ? "طالب علم آدھار" : "Student Aadhar"}</TableHead>
+              <TableHead className={isUrdu ? "urdu-text" : ""}>{lang === "ur" ? "والدین آدھار" : "Parent Aadhar"}</TableHead>
               <TableHead>{lang === "ur" ? "حیثیت" : "Status"}</TableHead>
               <TableHead className="text-right">{lang === "ur" ? "اقدامات" : "Actions"}</TableHead>
             </TableRow>
@@ -245,6 +267,8 @@ export default function Students() {
                 <TableCell>{trClass(student.className, lang)}</TableCell>
                 <TableCell><span className="text-xs bg-muted px-2 py-1 rounded-full">{student.jamaat || "—"}</span></TableCell>
                 <TableCell className="text-sm">+91 {student.phone}</TableCell>
+                <TableCell className="text-sm font-mono">{student.studentAadhar ? formatAadhar(student.studentAadhar) : "—"}</TableCell>
+                <TableCell className="text-sm font-mono">{student.parentAadhar ? formatAadhar(student.parentAadhar) : "—"}</TableCell>
                 <TableCell>
                   <span className={`text-xs px-2 py-1 rounded-full border ${statusColor(student.status)}`}>
                     {student.status || "Active"}
@@ -262,7 +286,7 @@ export default function Students() {
             ))}
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
+                <TableCell colSpan={9} className="text-center h-24 text-muted-foreground">
                   {searchTerm ? tr("noStudentsSearch") : tr("noStudentsYet")}
                 </TableCell>
               </TableRow>
@@ -366,6 +390,30 @@ export default function Students() {
               <div className="space-y-1.5">
                 <Label className={isUrdu ? "urdu-text" : ""}>{tr("admissionDate")}</Label>
                 <Input type="date" value={form.admissionDate} onChange={e => setField("admissionDate", e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("studentAadhar")}</Label>
+                <Input
+                  placeholder="1234-5678-9012"
+                  value={formatAadhar(form.studentAadhar || "")}
+                  onChange={e => setField("studentAadhar", cleanAadhar(e.target.value))}
+                  maxLength={14}
+                  inputMode="numeric"
+                  data-testid="input-student-aadhar"
+                />
+                <p className={`text-xs text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("aadharHint")}</p>
+              </div>
+              <div className="space-y-1.5">
+                <Label className={isUrdu ? "urdu-text" : ""}>{tr("parentAadhar")}</Label>
+                <Input
+                  placeholder="1234-5678-9012"
+                  value={formatAadhar(form.parentAadhar || "")}
+                  onChange={e => setField("parentAadhar", cleanAadhar(e.target.value))}
+                  maxLength={14}
+                  inputMode="numeric"
+                  data-testid="input-parent-aadhar"
+                />
+                <p className={`text-xs text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("aadharHint")}</p>
               </div>
             </div>
 

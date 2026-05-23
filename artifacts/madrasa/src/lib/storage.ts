@@ -97,6 +97,8 @@ export interface Student {
   admissionDate?: string;
   status?: "Active" | "Inactive" | "Graduated";
   photo?: string;
+  studentAadhar?: string;
+  parentAadhar?: string;
 }
 
 // ── Teacher type ──────────────────────────────────────────────────────────

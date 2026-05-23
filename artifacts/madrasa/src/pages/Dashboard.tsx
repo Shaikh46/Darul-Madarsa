@@ -45,18 +45,18 @@ import {
 } from "recharts";
 
 const feeData = [
-  { name: "Aug", amount: 45000 },
-  { name: "Sep", amount: 52000 },
-  { name: "Oct", amount: 48000 },
-  { name: "Nov", amount: 61000 },
-  { name: "Dec", amount: 59000 },
-  { name: "Jan", amount: 65000 },
+  { name: "Aug", amount: 0 },
+  { name: "Sep", amount: 0 },
+  { name: "Oct", amount: 0 },
+  { name: "Nov", amount: 0 },
+  { name: "Dec", amount: 0 },
+  { name: "Jan", amount: 0 },
 ];
 
 const PIE_COLORS = ["#008000", "#DAA520", "#2563eb", "#9333ea", "#10b981"];
 
 const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const weekAttendance = [95, 88, 92, 78, 96, 85, 91];
+const weekAttendance = [0, 0, 0, 0, 0, 0, 0];
 
 function getHijriDate(): string {
   const epoch = new Date(2000, 0, 1);
@@ -340,7 +340,6 @@ export default function Dashboard() {
         >
           <div className="flex items-start justify-between mb-3">
             <Users className="w-8 h-8 opacity-80" />
-            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">+2 this month</span>
           </div>
           <p className={`text-3xl font-bold`}>{students.length}</p>
           <p className={`text-white/70 text-xs mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("totalStudents")}</p>
@@ -354,9 +353,9 @@ export default function Dashboard() {
         >
           <div className="flex items-start justify-between mb-3">
             <UserCheck className="w-8 h-8 opacity-80" />
-            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">94%</span>
+            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">0%</span>
           </div>
-          <p className="text-3xl font-bold">142</p>
+          <p className="text-3xl font-bold">0</p>
           <p className={`text-white/70 text-xs mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("presentToday")}</p>
         </div>
 
@@ -368,12 +367,12 @@ export default function Dashboard() {
         >
           <div className="flex items-start justify-between mb-2">
             <CreditCard className="w-8 h-8 opacity-80" />
-            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">80% target</span>
+            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">0% target</span>
           </div>
-          <p className="text-3xl font-bold">₹65,000</p>
+          <p className="text-3xl font-bold">₹{totalFees.toLocaleString()}</p>
           <p className={`text-white/70 text-xs mt-1 mb-2 ${isUrdu ? "urdu-text" : ""}`}>{tr("monthlyFees")}</p>
           <div className="w-full bg-white/20 rounded-full h-1.5">
-            <div className="bg-white h-1.5 rounded-full" style={{ width: "80%" }} />
+            <div className="bg-white h-1.5 rounded-full" style={{ width: "0%" }} />
           </div>
         </div>
 
@@ -387,7 +386,7 @@ export default function Dashboard() {
             <HeartHandshake className="w-8 h-8 opacity-80" />
             <TrendingUp className="w-5 h-5 opacity-70" />
           </div>
-          <p className="text-3xl font-bold">₹{totalDonations > 0 ? totalDonations.toLocaleString() : "45,000"}</p>
+          <p className="text-3xl font-bold">₹{totalDonations.toLocaleString()}</p>
           <p className={`text-white/70 text-xs mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("totalDonations")}</p>
         </div>
       </div>
@@ -534,18 +533,18 @@ export default function Dashboard() {
           <CardContent className="space-y-3">
             <div className={`flex justify-between items-center ${isUrdu ? "flex-row-reverse" : ""}`}>
               <span className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("totalIncome")}</span>
-              <span className="font-bold text-green-600">₹{(totalFees + totalDonations || 110000).toLocaleString()}</span>
+              <span className="font-bold text-green-600">₹{(totalFees + totalDonations).toLocaleString()}</span>
             </div>
             <div className={`flex justify-between items-center ${isUrdu ? "flex-row-reverse" : ""}`}>
               <span className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("totalExpense")}</span>
-              <span className="font-bold text-red-500">₹{(totalExpenses || 45000).toLocaleString()}</span>
+              <span className="font-bold text-red-500">₹{totalExpenses.toLocaleString()}</span>
             </div>
             <div className="border-t border-border pt-3">
               <div className={`flex justify-between items-center ${isUrdu ? "flex-row-reverse" : ""}`}>
                 <span className={`text-sm font-semibold ${isUrdu ? "urdu-text" : ""}`}>{tr("netBalance")}</span>
                 <span className={`font-bold text-lg flex items-center gap-1 ${netBalance >= 0 ? "text-green-600" : "text-red-500"}`}>
                   {netBalance >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                  ₹{Math.abs(netBalance || 65000).toLocaleString()}
+                  ₹{Math.abs(netBalance).toLocaleString()}
                 </span>
               </div>
             </div>

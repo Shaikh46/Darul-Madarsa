@@ -1,0 +1,118 @@
+UPGRADE my Madrasa Management App "Darul Uloom Sirajul Islam Kalgaon" with this logo change:
+
+## 1. ADD THE MADRASA LOGO
+
+Replace the existing logo/header with this exact text logo:
+DARUL ULOOM
+SIRAJUL ISLAM KALGAON
+
+text
+
+### Logo Design Requirements:
+
+**Display the logo at the TOP LEFT of the app (sidebar header)**
+
+**Styling for Logo:**
+- First line: "DARUL ULOOM" in bold, size 18px, color: #008000 (Islamic Green)
+- Second line: "SIRAJUL ISLAM KALGAON" in normal, size 12px, color: #B8860B (Gold)
+- Add a small Islamic star/crescent icon before the text 🌙 or ⭐
+- Background: White or transparent
+- Padding: 10px
+
+### Alternative: If you want to UPLOAD an actual image file
+
+If you have an image file (PNG/JPG) named "logo.png", I can help you add it. For now, use the text logo above.
+
+## 2. LOGO POSITIONS
+
+Place the logo in these locations:
+
+1. **Sidebar Header** (top of left menu)
+2. **Login Page** (center top)
+3. **Dashboard Header** (top right or top left)
+4. **PDF Reports** (on report cards, fee receipts, donation receipts)
+
+## 3. LOGO ON PDF RECEIPTS
+
+When generating:
+- Donation receipts
+- Fee receipts
+- Report cards
+- Timetable PDF
+
+The logo should appear at the top of every PDF.
+
+## 4. FAVICON (Browser Tab Icon)
+
+Add a small icon for browser tab:
+- Use a simple Islamic icon (mosque or star and crescent)
+- Or use "DU" letters as favicon
+
+## 5. LOGO STORAGE
+
+Store logo in localStorage so it persists:
+```javascript
+madrasa_info: {
+  name: "Darul Uloom Sirajul Islam Kalgaon",
+  logo_text: "DARUL ULOOM\nSIRAJUL ISLAM KALGAON",
+  logo_type: "text" // or "image"
+}
+6. RESPONSIVE LOGO
+On mobile screens (<768px):
+
+Logo text size reduces slightly
+
+Or show only "DU" as mini logo
+
+7. KEEP ALL EXISTING FEATURES
+Do NOT remove any features. Just add the logo.
+
+DELIVERY
+Update the logo everywhere in the app
+
+Keep the green and gold color scheme
+
+ONE complete HTML file
+
+text
+
+---
+
+## 🖼️ If You Want to Upload an Actual Image File
+
+If you have a **logo image file** (PNG, JPG) from the madrasa:
+
+| Step | Action |
+|------|--------|
+| 1 | In Replit, click the "Files" icon (left sidebar) |
+| 2 | Click "Upload file" button |
+| 3 | Select your logo image file |
+| 4 | Name it `logo.png` or `logo.jpg` |
+| 5 | Then paste this prompt in Replit chat: |
+Use the uploaded logo image file in my app. Replace the text logo with this image. Show the image at the top of sidebar, login page, and all PDF receipts. Keep image size around 50x50 pixels or adjust as needed. Maintain green and gold theme.
+
+text
+
+---
+
+## 📋 Alternative: Complete Prompt with Logo (Copy-Paste Ready)
+UPGRADE my Madrasa Management App with this logo at the top of sidebar:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌙 DARUL ULOOM
+SIRAJUL ISLAM KALGAON
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Styling:
+
+First line: DARUL ULOOM - Bold, Green (#008000), size 18px
+
+Second line: SIRAJUL ISLAM KALGAON - Gold (#FFD700), size 11px
+
+Icon: 🌙 (moon) or ⭐ (star) before the text
+
+Background: White
+
+Center aligned in sidebar header
+
+Add to login page header as well

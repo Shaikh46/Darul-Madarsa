@@ -60,7 +60,7 @@ export default function Login() {
               </div>
               <h1 className="text-xl font-bold leading-tight" style={{ color: "#FFD700" }}>DARUL ULOOM</h1>
               <p className="text-white text-sm font-semibold mt-0.5 tracking-wide">SIRAJUL ISLAM KALGAON</p>
-              <p className="text-primary-foreground/80 text-xs mt-1">Madrasa Management System</p>
+              <p className="text-primary-foreground/80 text-xs mt-1">Madarsa Management System</p>
               <p className="text-accent text-xs mt-1 font-arabic" style={{ fontFamily: "'Noto Nastaliq Urdu', serif", direction: "rtl" }}>دارالعلوم سراج الاسلام کلگاؤں</p>
             </div>
           </div>

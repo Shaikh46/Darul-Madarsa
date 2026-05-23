@@ -142,41 +142,18 @@ export function resetAllData() {
   window.location.reload();
 }
 
-// ── Sample seed data (v2) ──────────────────────────────────────────────────
-const INIT_VERSION = "v2";
-
-const sampleStudents: Student[] = [
-  { id: "s1", name: "Abdullah",  fatherName: "Ahmed",  motherName: "", className: "Deeniyat Alif", jamaat: "General", phone: "9876543210", address: "Kalgaon", status: "Active", admissionDate: new Date().toISOString().slice(0,10) },
-  { id: "s2", name: "Fatima",    fatherName: "Yusuf",  motherName: "", className: "Deeniyat Baa",  jamaat: "General", phone: "9876543211", address: "Kalgaon", status: "Active", admissionDate: new Date().toISOString().slice(0,10) },
-  { id: "s3", name: "Muhammad",  fatherName: "Omar",   motherName: "", className: "Arbi Awwal",    jamaat: "Nazera",  phone: "9876543212", address: "Kalgaon", status: "Active", admissionDate: new Date().toISOString().slice(0,10) },
-  { id: "s4", name: "Ayesha",    fatherName: "Bilal",  motherName: "", className: "Hifz Alif",     jamaat: "Hifz",    phone: "9876543213", address: "Kalgaon", status: "Active", admissionDate: new Date().toISOString().slice(0,10) },
-  { id: "s5", name: "Hassan",    fatherName: "Ali",    motherName: "", className: "Farsi Awwal",   jamaat: "Alim",    phone: "9876543214", address: "Kalgaon", status: "Active", admissionDate: new Date().toISOString().slice(0,10) },
-];
-
-const sampleTeachers: Teacher[] = [
-  { id: "t1", name: "Qari Sahab",    email: "darulum@teacher",  phone: "9876543215", assignedClass: "Hifz Alif",     qualification: "Hifz-e-Quran",  joiningDate: new Date().toISOString().slice(0,10), status: "Active" },
-  { id: "t2", name: "Maulana Sahab", email: "teacher2@dsik.edu",phone: "9876543216", assignedClass: "Deeniyat Alif", qualification: "Dars-e-Nizami", joiningDate: new Date().toISOString().slice(0,10), status: "Active" },
-];
-
-const today  = new Date().toISOString();
-const yesterday = new Date(Date.now() - 86400000).toISOString();
-const lastWeek  = new Date(Date.now() - 7 * 86400000).toISOString();
-
-const sampleDonations = [
-  { id: "don1", receiptNo: "DSIK/DON/2026/00001", donorName: "Mr. Rahman",  phone: "9876540001", amount: 5000,  donationType: "Zakat",   paymentMethod: "Cash", transactionId: "", date: today     },
-  { id: "don2", receiptNo: "DSIK/DON/2026/00002", donorName: "Mrs. Fatima", phone: "9876540002", amount: 2500,  donationType: "Sadaqah", paymentMethod: "Cash", transactionId: "", date: yesterday },
-  { id: "don3", receiptNo: "DSIK/DON/2026/00003", donorName: "Mr. Ibrahim", phone: "9876540003", amount: 10000, donationType: "General", paymentMethod: "Bank Transfer", transactionId: "TXN001", date: lastWeek  },
-];
+// ── Empty seed (zero data) ─────────────────────────────────────────────────
+const INIT_VERSION = "v3-zero";
 
 export function initializeData() {
   const currentVersion = localStorage.getItem("db_init_version");
 
   if (currentVersion !== INIT_VERSION) {
-    // Clear all old data and reseed with new sample data
+    // Clear all old data — start completely empty
     DATA_KEYS.forEach(k => localStorage.removeItem(k));
-    setLS("students",         sampleStudents);
-    setLS("teachers",         sampleTeachers);
-    setLS("donations",        sampleDonations);
+    setLS("students",         []);
+    setLS("teachers",         []);
+    setLS("donations",        []);
     setLS("fees",             []);
     setLS("expenses",         []);
     setLS("attendance",       []);

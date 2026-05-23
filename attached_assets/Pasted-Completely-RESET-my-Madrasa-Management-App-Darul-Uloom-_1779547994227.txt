@@ -1,0 +1,155 @@
+Completely RESET my Madrasa Management App "Darul Uloom Sirajul Islam Kalgaon" to ZERO.
+
+## WHAT TO RESET (ALL MUST BE ZERO/EMPTY):
+
+### 1. STUDENTS - ZERO
+- Delete ALL students
+- Student count = 0
+- Student list = Empty
+
+### 2. DONATIONS - ZERO
+- Delete ALL donations
+- Donation count = 0
+- Total donations = ₹0
+- Donor list = Empty
+
+### 3. FEES - ZERO
+- Delete ALL fee records
+- Total fees collected = ₹0
+- Pending fees = ₹0
+
+### 4. EXPENSES - ZERO
+- Delete ALL expenses
+- Total expenses = ₹0
+
+### 5. TEACHERS - ZERO
+- Delete ALL teachers
+- Teacher count = 0
+
+### 6. ATTENDANCE - ZERO
+- Delete ALL attendance records
+- No attendance marked
+
+### 7. EXAM RESULTS - ZERO
+- Delete ALL exam results
+
+### 8. HIFZ/NAZERA PROGRESS - ZERO
+- Delete ALL progress records
+
+### 9. QAIDA PROGRESS - ZERO
+- Delete ALL Qaida progress
+
+### 10. TIMETABLE - ZERO
+- Delete ALL timetable entries
+- Timetable completely empty
+
+### 11. SALARY RECORDS - ZERO
+- Delete ALL salary records
+
+## WHAT TO KEEP (ONLY THESE):
+
+### Keep ONLY:
+✅ Madrasa Name: "Darul Uloom Sirajul Islam Kalgaon"
+✅ Admin Login: darulum@admin / 78607860
+✅ Teacher Login: darulum@teacher / 068706
+✅ Classes list (Deeniyat Alif, Deeniyat Baa, Farsi Awwal, etc.)
+✅ Urdu/English language toggle
+✅ App design and layout
+
+## AFTER RESET, THESE SHOULD SHOW:
+
+### Dashboard Cards:
+| Card | Value |
+|------|-------|
+| Total Students | 0 |
+| Present Today | 0 |
+| Monthly Fees | ₹0 |
+| Pending Dues | ₹0 |
+| Total Donations | ₹0 |
+| Total Expenses | ₹0 |
+
+### All Tables:
+- Students Table: "No students found"
+- Donations Table: "No donations found"
+- Fees Table: "No fee records found"
+- Expenses Table: "No expenses found"
+- Teachers Table: "No teachers found"
+
+## ADD A RESET BUTTON (For Admin Only)
+
+Add a button in Admin Settings called "RESET ALL DATA" that:
+- Shows confirmation: "⚠️ WARNING: This will delete ALL students, donations, fees, expenses, teachers, attendance, exam results, progress records, timetable entries, and salary records. This action CANNOT be undone. Are you sure?"
+- If Admin clicks "YES", clear ALL data
+- Show success message: "All data has been reset to zero"
+- Refresh the dashboard to show zeros everywhere
+
+## RESET FUNCTION CODE
+
+```javascript
+function resetAllData() {
+  if(confirm("⚠️ WARNING: This will delete ALL data! Students, Donations, Fees, Expenses, Teachers, Attendance, Results, Progress, Timetable, Salaries will become ZERO. This cannot be undone. Are you sure?")) {
+    // Clear all localStorage data
+    localStorage.removeItem('students');
+    localStorage.removeItem('donations');
+    localStorage.removeItem('fees');
+    localStorage.removeItem('expenses');
+    localStorage.removeItem('teachers');
+    localStorage.removeItem('attendance');
+    localStorage.removeItem('exam_results');
+    localStorage.removeItem('hifz_progress');
+    localStorage.removeItem('qaida_progress');
+    localStorage.removeItem('timetable_entries');
+    localStorage.removeItem('salary_records');
+    localStorage.removeItem('donors');
+    localStorage.removeItem('fee_records');
+    localStorage.removeItem('expense_records');
+    
+    // Reset counts to zero
+    localStorage.setItem('total_students', '0');
+    localStorage.setItem('total_donations', '0');
+    localStorage.setItem('total_fees', '0');
+    localStorage.setItem('total_expenses', '0');
+    
+    alert("✅ All data has been reset to ZERO!");
+    location.reload();
+  }
+}
+VERIFICATION CHECKLIST (ALL MUST BE ZERO):
+After reset, verify each:
+
+Total Students = 0
+
+Total Donations = ₹0
+
+Total Fees = ₹0
+
+Total Expenses = ₹0
+
+Total Teachers = 0
+
+Student list shows "No data"
+
+Donation list shows "No data"
+
+Fee list shows "No data"
+
+Expense list shows "No data"
+
+Teacher list shows "No data"
+
+Attendance shows "No records"
+
+Timetable shows "No entries"
+
+DELIVERY:
+Reset ALL data to ZERO
+
+Keep login credentials working
+
+Keep classes list intact
+
+Keep Urdu/English toggle working
+
+Add RESET button in Admin Settings
+
+ONE complete HTML file

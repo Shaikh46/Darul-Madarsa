@@ -267,7 +267,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div key={refreshKey} className={`space-y-6 ${isUrdu ? "urdu-text" : ""}`}>
+    <div key={refreshKey} className={`space-y-6 slide-up-stagger ${isUrdu ? "urdu-text" : ""}`}>
       {/* Header */}
       <div className={`flex items-center justify-between ${isUrdu ? "flex-row-reverse" : ""}`}>
         <div>

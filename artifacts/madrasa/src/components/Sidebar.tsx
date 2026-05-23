@@ -17,6 +17,7 @@ import {
   MessageSquare,
   LogOut,
   ShieldCheck,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -43,6 +44,7 @@ const navItems: NavItem[] = [
   { key: "donations",     href: "/donations",      icon: HeartHandshake,  roles: ["admin"] },
   { key: "islamic",       href: "/islamic",        icon: MoonStar,        roles: ["admin", "teacher", "parent"] },
   { key: "communication", href: "/communication",  icon: MessageSquare,   roles: ["admin"] },
+  { key: "settings",      href: "/settings",       icon: Settings,        roles: ["admin"] },
 ];
 
 interface SidebarProps {

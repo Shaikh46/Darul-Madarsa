@@ -122,7 +122,6 @@ interface Expense {
 export default function Dashboard() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAlert, setShowAlert] = useState(true);
-  const [students] = useLS<Student[]>("students", []);
   const [teachers, setTeachers] = useLS<Teacher[]>("teachers", []);
   const [donations, setDonations] = useLS<Donation[]>("donations", []);
   const [fees, setFees] = useLS<Fee[]>("fees", []);
@@ -134,15 +133,26 @@ export default function Dashboard() {
   const isUrdu = lang === "ur";
 
   // ── Quick Action modal state ──────────────────────────────────────────
-  type ModalType = "teacher" | "donation" | "fee" | "expense" | null;
+  type ModalType = "student" | "teacher" | "donation" | "fee" | "expense" | null;
   const [activeModal, setActiveModal] = useState<ModalType>(null);
+  const [students, setStudents] = useLS<Student[]>("students", []);
 
+  const [studentForm, setStudentForm] = useState({ name: "", fatherName: "", className: "", phone: "" });
   const [teacherForm, setTeacherForm] = useState({ name: "", email: "", phone: "", assignedClass: "", qualification: "" });
   const [donationForm, setDonationForm] = useState({ donorName: "", phone: "", amount: "", donationType: "General", date: new Date().toISOString().slice(0, 10) });
   const [feeForm, setFeeForm] = useState({ studentId: "", month: "", year: new Date().getFullYear().toString(), amount: "1500", paymentMethod: "Cash" });
   const [expenseForm, setExpenseForm] = useState({ category: "General", description: "", amount: "", date: new Date().toISOString().slice(0, 10) });
 
   const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  const saveStudent = () => {
+    if (!studentForm.name.trim()) { toast({ title: "Error", description: "Student name is required.", variant: "destructive" }); return; }
+    const newStudent: Student = { id: `s${Date.now()}`, name: studentForm.name, fatherName: studentForm.fatherName, motherName: "", className: studentForm.className || "Deeniyat Alif", jamaat: "General", phone: studentForm.phone, address: "", status: "Active", admissionDate: new Date().toISOString().slice(0, 10) };
+    setStudents([...students, newStudent]);
+    toast({ title: isUrdu ? "طالب علم شامل ہو گیا" : "Student Added", description: studentForm.name });
+    setStudentForm({ name: "", fatherName: "", className: "", phone: "" });
+    setActiveModal(null);
+  };
 
   const saveTeacher = () => {
     if (!teacherForm.name.trim()) { toast({ title: "Error", description: "Teacher name is required.", variant: "destructive" }); return; }
@@ -382,17 +392,18 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick Actions — 4 Prominent Cards */}
+      {/* Quick Actions — 5 Prominent Cards */}
       <div>
         <p className={`text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 ${isUrdu ? "urdu-text text-right" : ""}`}>
           {tr("quickActions")}
         </p>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {[
-            { modal: "teacher" as const, icon: UserCog, label: isUrdu ? "استاد شامل کریں" : "Add Teacher", sub: isUrdu ? "نئے استاد کا اندراج" : "Register new teacher", grad: "from-blue-600 to-blue-700" },
-            { modal: "donation" as const, icon: HeartHandshake, label: isUrdu ? "عطیہ ریکارڈ کریں" : "Record Donation", sub: isUrdu ? "عطیہ درج کریں" : "Log a donation receipt", grad: "from-purple-600 to-purple-700" },
-            { modal: "fee" as const, icon: CreditCard, label: isUrdu ? "فیس ریکارڈ کریں" : "Record Fee", sub: isUrdu ? "طالب علم کی فیس" : "Collect student fee", grad: "from-emerald-600 to-emerald-700" },
-            { modal: "expense" as const, icon: FileText, label: isUrdu ? "خرچ شامل کریں" : "Add Expense", sub: isUrdu ? "اخراجات ریکارڈ کریں" : "Record an expense", grad: "from-orange-500 to-orange-600" },
+            { modal: "student" as const,  icon: Users,          label: isUrdu ? "طالب علم شامل کریں" : "Add Student",     sub: isUrdu ? "نئے طالب علم کا اندراج" : "Enrol a new student", grad: "from-primary to-primary/80" },
+            { modal: "teacher" as const,  icon: UserCog,        label: isUrdu ? "استاد شامل کریں" : "Add Teacher",        sub: isUrdu ? "نئے استاد کا اندراج" : "Register new teacher", grad: "from-blue-600 to-blue-700" },
+            { modal: "donation" as const, icon: HeartHandshake, label: isUrdu ? "عطیہ ریکارڈ کریں" : "Record Donation",  sub: isUrdu ? "عطیہ درج کریں" : "Log a donation receipt", grad: "from-purple-600 to-purple-700" },
+            { modal: "fee" as const,      icon: CreditCard,     label: isUrdu ? "فیس ریکارڈ کریں" : "Record Fee",        sub: isUrdu ? "طالب علم کی فیس" : "Collect student fee", grad: "from-emerald-600 to-emerald-700" },
+            { modal: "expense" as const,  icon: FileText,       label: isUrdu ? "خرچ شامل کریں" : "Add Expense",         sub: isUrdu ? "اخراجات ریکارڈ کریں" : "Record an expense", grad: "from-orange-500 to-orange-600" },
           ].map(({ modal, icon: Icon, label, sub, grad }) => (
             <button
               key={modal}
@@ -695,6 +706,49 @@ export default function Dashboard() {
       <FAB />
 
       {/* ── Quick Action Modals ──────────────────────────────────────────── */}
+
+      {/* Add Student Modal */}
+      <Dialog open={activeModal === "student"} onOpenChange={o => !o && setActiveModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className={isUrdu ? "urdu-text" : ""}>{isUrdu ? "طالب علم شامل کریں" : "Add Student"}</DialogTitle>
+          </DialogHeader>
+          <div className={`space-y-3 py-1 ${isUrdu ? "urdu-text" : ""}`} dir={isUrdu ? "rtl" : "ltr"}>
+            <div className="space-y-1.5">
+              <Label>{isUrdu ? "طالب علم کا نام" : "Student Name"} *</Label>
+              <Input placeholder={isUrdu ? "مثلاً: عبداللہ" : "e.g. Abdullah"} value={studentForm.name} onChange={e => setStudentForm(f => ({ ...f, name: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "والد کا نام" : "Father's Name"}</Label>
+                <Input placeholder={isUrdu ? "والد کا نام" : "Father name"} value={studentForm.fatherName} onChange={e => setStudentForm(f => ({ ...f, fatherName: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{isUrdu ? "فون" : "Phone"}</Label>
+                <Input placeholder="9876543210" value={studentForm.phone} onChange={e => setStudentForm(f => ({ ...f, phone: e.target.value.replace(/\D/g, "").slice(0, 10) }))} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{isUrdu ? "کلاس" : "Class"}</Label>
+              <Select value={studentForm.className} onValueChange={v => setStudentForm(f => ({ ...f, className: v }))}>
+                <SelectTrigger><SelectValue placeholder={isUrdu ? "کلاس منتخب کریں" : "Select class"} /></SelectTrigger>
+                <SelectContent>
+                  {CLASS_GROUPS.map(g => (
+                    <div key={g.label}>
+                      <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1">{g.icon} {g.label}</div>
+                      {g.classes.map(c => <SelectItem key={c} value={c} className="pl-5">{c}</SelectItem>)}
+                    </div>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setActiveModal(null)}>{isUrdu ? "منسوخ" : "Cancel"}</Button>
+            <Button onClick={saveStudent} data-testid="modal-save-student">{isUrdu ? "محفوظ کریں" : "Save Student"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Add Teacher Modal */}
       <Dialog open={activeModal === "teacher"} onOpenChange={o => !o && setActiveModal(null)}>

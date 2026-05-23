@@ -129,56 +129,73 @@ export const CLASS_OPTIONS: string[] = CLASS_GROUPS.flatMap(g => g.classes);
 
 export const JAMAAT_OPTIONS = ["Hifz", "Nazera", "Alim", "General"];
 
-// ── Sample data ────────────────────────────────────────────────────────────
-const initialStudents: Student[] = [
-  { id: "s1", name: "Ahmed Khan",     fatherName: "Rashid Khan",   motherName: "Fatima Khan",   className: "Hifz Alif",      jamaat: "Hifz",    phone: "9876543210", address: "Kalgaon", dob: "2012-03-15", admissionDate: "2020-06-01", status: "Active" },
-  { id: "s2", name: "Mohammed Ali",   fatherName: "Salim Ali",     motherName: "Amina Ali",     className: "Hifz Alif",      jamaat: "Hifz",    phone: "9876543211", address: "Kalgaon", dob: "2012-07-22", admissionDate: "2020-06-01", status: "Active" },
-  { id: "s3", name: "Ibrahim Sheikh", fatherName: "Yusuf Sheikh",  motherName: "Khadija Sheikh",className: "Arbi Awwal",     jamaat: "Nazera",  phone: "9876543212", address: "Kalgaon", dob: "2011-11-05", admissionDate: "2019-06-01", status: "Active" },
-  { id: "s4", name: "Usman Patel",    fatherName: "Ismail Patel",  motherName: "Maryam Patel",  className: "Deeniyat Alif",  jamaat: "General", phone: "9876543213", address: "Kalgaon", dob: "2011-04-18", admissionDate: "2019-06-01", status: "Active" },
-  { id: "s5", name: "Hasan Ansari",   fatherName: "Hussain Ansari",motherName: "Zainab Ansari", className: "Farsi Awwal",    jamaat: "Alim",    phone: "9876543214", address: "Kalgaon", dob: "2010-09-30", admissionDate: "2018-06-01", status: "Active" },
+// ── Reset all data keys ────────────────────────────────────────────────────
+const DATA_KEYS = [
+  "students","teachers","donations","fees","expenses","attendance",
+  "hifz_progress","exam_results","salaries","staff","donors",
+  "notifications","timetable_entries","qaida_progress","salary_records",
 ];
 
-const initialTeachers: Teacher[] = [
-  { id: "t1", name: "Maulana Abdul Rahman",  email: "darulum@teacher", phone: "9876500001", assignedClass: "Hifz Alif",     qualification: "Dars-e-Nizami", joiningDate: "2018-01-15", status: "Active" },
-  { id: "t2", name: "Ustad Mohammed Yusuf",  email: "teacher2@dsik.edu", phone: "9876500002", assignedClass: "Arbi Awwal", qualification: "Fazil",         joiningDate: "2019-03-01", status: "Active" },
+export function resetAllData() {
+  DATA_KEYS.forEach(k => localStorage.removeItem(k));
+  localStorage.removeItem("db_init_version");
+  window.location.reload();
+}
+
+// ── Sample seed data (v2) ──────────────────────────────────────────────────
+const INIT_VERSION = "v2";
+
+const sampleStudents: Student[] = [
+  { id: "s1", name: "Abdullah",  fatherName: "Ahmed",  motherName: "", className: "Deeniyat Alif", jamaat: "General", phone: "9876543210", address: "Kalgaon", status: "Active", admissionDate: new Date().toISOString().slice(0,10) },
+  { id: "s2", name: "Fatima",    fatherName: "Yusuf",  motherName: "", className: "Deeniyat Baa",  jamaat: "General", phone: "9876543211", address: "Kalgaon", status: "Active", admissionDate: new Date().toISOString().slice(0,10) },
+  { id: "s3", name: "Muhammad",  fatherName: "Omar",   motherName: "", className: "Arbi Awwal",    jamaat: "Nazera",  phone: "9876543212", address: "Kalgaon", status: "Active", admissionDate: new Date().toISOString().slice(0,10) },
+  { id: "s4", name: "Ayesha",    fatherName: "Bilal",  motherName: "", className: "Hifz Alif",     jamaat: "Hifz",    phone: "9876543213", address: "Kalgaon", status: "Active", admissionDate: new Date().toISOString().slice(0,10) },
+  { id: "s5", name: "Hassan",    fatherName: "Ali",    motherName: "", className: "Farsi Awwal",   jamaat: "Alim",    phone: "9876543214", address: "Kalgaon", status: "Active", admissionDate: new Date().toISOString().slice(0,10) },
 ];
 
-const initialDonations = [
-  { id: "don1", receiptNo: "DSIK/DON/2026/00001", donorName: "Abdullah Merchant", phone: "9988776655", amount: 25000, donationType: "General",      paymentMethod: "Cash",          transactionId: "",      date: new Date(2026, 4, 10).toISOString() },
-  { id: "don2", receiptNo: "DSIK/DON/2026/00002", donorName: "Yusuf Chapra",      phone: "9988776644", amount: 15000, donationType: "Zakat",         paymentMethod: "Bank Transfer", transactionId: "TXN001",date: new Date(2026, 4, 12).toISOString() },
-  { id: "don3", receiptNo: "DSIK/DON/2026/00003", donorName: "Ibrahim Memon",     phone: "9988776633", amount: 10000, donationType: "Sadaqah",       paymentMethod: "UPI",           transactionId: "UPI002",date: new Date(2026, 4, 15).toISOString() },
-  { id: "don4", receiptNo: "DSIK/DON/2026/00004", donorName: "Rashid Shaikh",     phone: "9988776622", amount: 50000, donationType: "Construction",  paymentMethod: "Bank Transfer", transactionId: "TXN003",date: new Date(2026, 4, 18).toISOString() },
-  { id: "don5", receiptNo: "DSIK/DON/2026/00005", donorName: "Salim Vohra",       phone: "9988776611", amount: 5000,  donationType: "Fitrana",       paymentMethod: "Cash",          transactionId: "",      date: new Date(2026, 4, 20).toISOString() },
+const sampleTeachers: Teacher[] = [
+  { id: "t1", name: "Qari Sahab",    email: "darulum@teacher",  phone: "9876543215", assignedClass: "Hifz Alif",     qualification: "Hifz-e-Quran",  joiningDate: new Date().toISOString().slice(0,10), status: "Active" },
+  { id: "t2", name: "Maulana Sahab", email: "teacher2@dsik.edu",phone: "9876543216", assignedClass: "Deeniyat Alif", qualification: "Dars-e-Nizami", joiningDate: new Date().toISOString().slice(0,10), status: "Active" },
 ];
 
-const initialFees = [
-  { id: "fee1", receiptNo: "DSIK/FEE/2026/00001", studentId: "s1", month: "January",  year: "2026", amount: 1500, paymentMethod: "Cash",          status: "paid",    date: new Date(2026, 0, 5).toISOString() },
-  { id: "fee2", receiptNo: "DSIK/FEE/2026/00002", studentId: "s2", month: "January",  year: "2026", amount: 1500, paymentMethod: "Bank Transfer", status: "paid",    date: new Date(2026, 0, 7).toISOString() },
-  { id: "fee3", receiptNo: "DSIK/FEE/2026/00003", studentId: "s3", month: "February", year: "2026", amount: 1500, paymentMethod: "Online/UPI",    status: "paid",    date: new Date(2026, 1, 3).toISOString() },
-  { id: "fee4", receiptNo: "DSIK/FEE/2026/00004", studentId: "s4", month: "February", year: "2026", amount: 1500, paymentMethod: "Cash",          status: "pending", date: new Date(2026, 1, 10).toISOString() },
-  { id: "fee5", receiptNo: "DSIK/FEE/2026/00005", studentId: "s5", month: "March",    year: "2026", amount: 1500, paymentMethod: "Cash",          status: "paid",    date: new Date(2026, 2, 4).toISOString() },
-];
+const today  = new Date().toISOString();
+const yesterday = new Date(Date.now() - 86400000).toISOString();
+const lastWeek  = new Date(Date.now() - 7 * 86400000).toISOString();
 
-const initialExpenses = [
-  { id: "exp1", category: "Salary",      description: "Teacher salaries for April", amount: 45000, date: new Date(2026, 3, 30).toISOString() },
-  { id: "exp2", category: "Electricity", description: "Monthly electricity bill",   amount: 3500,  date: new Date(2026, 4, 5).toISOString() },
-  { id: "exp3", category: "Books",       description: "Quran and Islamic books",    amount: 8000,  date: new Date(2026, 4, 10).toISOString() },
-  { id: "exp4", category: "Maintenance", description: "Classroom renovation",       amount: 12000, date: new Date(2026, 4, 15).toISOString() },
+const sampleDonations = [
+  { id: "don1", receiptNo: "DSIK/DON/2026/00001", donorName: "Mr. Rahman",  phone: "9876540001", amount: 5000,  donationType: "Zakat",   paymentMethod: "Cash", transactionId: "", date: today     },
+  { id: "don2", receiptNo: "DSIK/DON/2026/00002", donorName: "Mrs. Fatima", phone: "9876540002", amount: 2500,  donationType: "Sadaqah", paymentMethod: "Cash", transactionId: "", date: yesterday },
+  { id: "don3", receiptNo: "DSIK/DON/2026/00003", donorName: "Mr. Ibrahim", phone: "9876540003", amount: 10000, donationType: "General", paymentMethod: "Bank Transfer", transactionId: "TXN001", date: lastWeek  },
 ];
 
 export function initializeData() {
-  if (getLS("students", []).length === 0) setLS("students", initialStudents);
-  if (getLS("teachers", []).length === 0) setLS("teachers", initialTeachers);
-  if (getLS("fees", []).length === 0) setLS("fees", initialFees);
-  if (getLS("expenses", []).length === 0) setLS("expenses", initialExpenses);
-  if (getLS("donations", []).length === 0) setLS("donations", initialDonations);
-  if (getLS("attendance", []).length === 0) setLS("attendance", []);
-  if (getLS("hifz_progress", []).length === 0) setLS("hifz_progress", []);
-  if (getLS("exam_results", []).length === 0) setLS("exam_results", []);
-  if (getLS("salaries", []).length === 0) setLS("salaries", []);
-  if (getLS("staff", []).length === 0) setLS("staff", []);
-  if (getLS("donors", []).length === 0) setLS("donors", []);
-  if (getLS("notifications", []).length === 0) setLS("notifications", []);
+  const currentVersion = localStorage.getItem("db_init_version");
+
+  if (currentVersion !== INIT_VERSION) {
+    // Clear all old data and reseed with new sample data
+    DATA_KEYS.forEach(k => localStorage.removeItem(k));
+    setLS("students",         sampleStudents);
+    setLS("teachers",         sampleTeachers);
+    setLS("donations",        sampleDonations);
+    setLS("fees",             []);
+    setLS("expenses",         []);
+    setLS("attendance",       []);
+    setLS("hifz_progress",    []);
+    setLS("exam_results",     []);
+    setLS("salaries",         []);
+    setLS("timetable_entries",[]);
+    setLS("qaida_progress",   []);
+    setLS("donors",           []);
+    setLS("notifications",    []);
+    localStorage.setItem("db_init_version", INIT_VERSION);
+    localStorage.setItem("madrasa_info", JSON.stringify({
+      name: "Darul Uloom Sirajul Islam Kalgaon",
+      established: "",
+      address: "",
+      phone: "",
+      email: "",
+    }));
+  }
 }
 
 export function exportToCSV(headers: string[], rows: string[][], filename: string) {

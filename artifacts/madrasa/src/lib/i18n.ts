@@ -17,6 +17,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   timetable: { en: "Timetable", ur: "نظام الاوقات" },
   islamic: { en: "Islamic", ur: "اسلامی" },
   communication: { en: "Communication", ur: "مواصلات" },
+  settings:      { en: "Settings",      ur: "ترتیبات" },
   addStudent: { en: "Add Student", ur: "طالب علم شامل کریں" },
   addTeacher: { en: "Add Teacher", ur: "استاد شامل کریں" },
   markAttendance: { en: "Mark Attendance", ur: "حاضری لگائیں" },

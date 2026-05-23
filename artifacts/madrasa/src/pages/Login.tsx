@@ -29,7 +29,7 @@ export default function Login() {
       if (cred.role === "teacher") {
         const teachers = getLS<Teacher[]>("teachers", []);
         const matched = teachers.find(t =>
-          t.email.toLowerCase() === username.trim().toLowerCase()
+          t.email?.toLowerCase() === username.trim().toLowerCase()
         );
         resolvedClass = matched?.assignedClass || "";
       }

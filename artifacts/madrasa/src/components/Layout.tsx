@@ -1,15 +1,14 @@
 import { ReactNode, useState, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
-import { Menu, X, Languages } from "lucide-react";
+import { Menu, X, Languages, ShieldCheck } from "lucide-react";
 import { Button } from "./ui/button";
-import { useAuth } from "@/lib/storage";
+import { useAuth, initializeData } from "@/lib/storage";
 import { useLocation } from "wouter";
-import { initializeData } from "@/lib/storage";
 import { useLang } from "@/lib/i18n";
 
 export function Layout({ children }: { children: ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { role } = useAuth();
+  const { role, userName } = useAuth();
   const [location, setLocation] = useLocation();
   const { lang, setLang } = useLang();
 
@@ -21,7 +20,8 @@ export function Layout({ children }: { children: ReactNode }) {
     if (!role && location !== "/login") {
       setLocation("/login");
     } else if (role && location === "/login") {
-      setLocation("/dashboard");
+      const dest = role === "teacher" ? "/teacher-portal" : "/dashboard";
+      setLocation(dest);
     }
   }, [role, location, setLocation]);
 
@@ -30,6 +30,11 @@ export function Layout({ children }: { children: ReactNode }) {
   }
 
   if (!role) return null;
+
+  const roleBadge =
+    role === "admin"   ? { label: "Admin",   cls: "bg-primary/10 text-primary border-primary/20" } :
+    role === "teacher" ? { label: "Teacher", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" } :
+                         { label: "Parent",  cls: "bg-blue-50 text-blue-700 border-blue-200" };
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row w-full overflow-hidden">
@@ -71,8 +76,17 @@ export function Layout({ children }: { children: ReactNode }) {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-[100dvh] overflow-y-auto w-full relative">
-        {/* Top bar with language toggle (desktop) */}
-        <div className="hidden md:flex items-center justify-end px-8 py-2 border-b border-border bg-card/50">
+        {/* Top bar (desktop) */}
+        <div className="hidden md:flex items-center justify-between px-8 py-2 border-b border-border bg-card/50">
+          {/* User badge */}
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">{userName || roleBadge.label}</span>
+            <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${roleBadge.cls}`}>
+              {roleBadge.label}
+            </span>
+          </div>
+          {/* Lang toggle */}
           <button
             onClick={() => setLang(lang === "en" ? "ur" : "en")}
             className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-md border border-border text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"

@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { useLS, Student, CLASS_OPTIONS, JAMAAT_OPTIONS, exportToCSV } from "@/lib/storage";
+import { useLS, Student, CLASS_GROUPS, JAMAAT_OPTIONS, exportToCSV } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -187,12 +187,21 @@ export default function Students() {
           <Input placeholder="Search by name, class or father..." className="pl-9" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         </div>
         <Select value={filterClass} onValueChange={setFilterClass}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-44">
             <SelectValue placeholder="All Classes" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Classes</SelectItem>
-            {classes.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            {CLASS_GROUPS.map(group => (
+              <div key={group.label}>
+                <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
+                  {group.icon} {group.label}
+                </div>
+                {group.classes.filter(c => classes.includes(c)).map(c => (
+                  <SelectItem key={c} value={c} className="pl-5">{c}</SelectItem>
+                ))}
+              </div>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -311,7 +320,16 @@ export default function Students() {
                 <Select value={form.className} onValueChange={v => setField("className", v)}>
                   <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
                   <SelectContent>
-                    {CLASS_OPTIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    {CLASS_GROUPS.map(group => (
+                      <div key={group.label}>
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
+                          {group.icon} {group.label}
+                        </div>
+                        {group.classes.map(c => (
+                          <SelectItem key={c} value={c} className="pl-5">{c}</SelectItem>
+                        ))}
+                      </div>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

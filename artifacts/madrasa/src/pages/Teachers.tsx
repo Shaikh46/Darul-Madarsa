@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useLS, Teacher, CLASS_OPTIONS, exportToCSV } from "@/lib/storage";
+import { useLS, Teacher, CLASS_GROUPS, exportToCSV } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -186,7 +186,16 @@ export default function Teachers() {
                 <Select value={form.assignedClass} onValueChange={v => setField("assignedClass", v)}>
                   <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
                   <SelectContent>
-                    {CLASS_OPTIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    {CLASS_GROUPS.map(group => (
+                      <div key={group.label}>
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
+                          {group.icon} {group.label}
+                        </div>
+                        {group.classes.map(c => (
+                          <SelectItem key={c} value={c} className="pl-5">{c}</SelectItem>
+                        ))}
+                      </div>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

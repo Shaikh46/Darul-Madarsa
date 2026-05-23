@@ -1,0 +1,143 @@
+UPGRADE my Madrasa Management App "Darul Uloom Sirajul Islam Kalgaon" with these changes:
+
+## 1. FIXED LOGIN CREDENTIALS (Hardcoded)
+
+Replace existing login system with these EXACT credentials:
+
+### Admin Login:
+- Email/ID: darulum@admin
+- Password: 78607860
+- Role: ADMIN (Full access to EVERYTHING)
+
+### Teacher Login:
+- Email/ID: darulum@teacher
+- Password: 068706
+- Role: TEACHER (Limited access only)
+
+### Parent Login (Optional/Demo):
+- Email/ID: parent@demo.com
+- Password: parent123
+- Role: PARENT (View only)
+
+## 2. TEACHER ROLE - LIMITED ACCESS (Very Important)
+
+When someone logs in with Teacher ID (darulum@teacher), they can ONLY see:
+
+### What Teacher CAN See/Do:
+✅ Student Attendance (mark attendance for their class)
+✅ Norani Qaida (view and mark student progress)
+✅ Their Assigned Classes only
+
+### What Teacher CANNOT See (Hidden):
+❌ Student Management (add/edit/delete students)
+❌ Fee Management
+❌ Expense Recording
+❌ Staff Salary
+❌ Donation Management
+❌ Exam Results (can view but not edit)
+❌ Push Notifications
+❌ Reports & Settings
+
+### Teacher Dashboard should show:
+- Welcome message with teacher name
+- Today's attendance button
+- Qaida progress tracking
+- List of their assigned classes only
+
+## 3. ADD ALL THESE CLASSES
+
+Add these as selectable classes for students:
+
+### Deeniyat Classes:
+- Deeniyat Alif
+- Deeniyat Baa
+
+### Farsi Classes:
+- Farsi Awwal
+- Farsi Duwwam
+
+### Arabic Classes:
+- Arbi Awwal
+- Arbi Duwwam
+- Arbi Suwwam
+- Arbi Chahrum
+- Arbi Panjum
+
+### Hifz Classes:
+- Hifz Alif
+- Hifz Baa
+
+### Class Categories Display:
+When adding/editing a student, show classes in groups:
+📚 DEENIYAT CLASSES
+○ Deeniyat Alif
+○ Deeniyat Baa
+
+📖 FARSI CLASSES
+○ Farsi Awwal
+○ Farsi Duwwam
+
+🕌 ARABIC CLASSES
+○ Arbi Awwal
+○ Arbi Duwwam
+○ Arbi Suwwam
+○ Arbi Chahrum
+○ Arbi Panjum
+
+🌟 HIFZ CLASSES
+○ Hifz Alif
+○ Hifz Baa
+
+text
+
+## 4. TEACHER CLASS ASSIGNMENT
+
+- Each teacher is assigned to ONE specific class
+- Admin can assign which class a teacher handles
+- When teacher logs in, they only see students from THEIR class
+
+Example assignment:
+- Teacher 1 → Deeniyat Alif class
+- Teacher 2 → Hifz Alif class
+
+Add this to teacher profile:
+```javascript
+teachers: {
+  teacher_id: string,
+  full_name: string,
+  email: string,  // darulum@teacher
+  password: "068706",
+  assigned_class: "Deeniyat Alif" / "Hifz Baa" etc.,
+  role: "teacher"
+}
+5. LOGIN PAGE DESIGN
+Create a clean login page with:
+
+Madrasa name and logo
+
+Email/ID input field
+
+Password input field
+
+Show/Hide password toggle
+
+Login button
+
+Role indicator after login (Admin/Teacher badge)
+
+Login validation:
+
+If darulum@admin + 78607860 → Admin Dashboard
+
+If darulum@teacher + 068706 → Teacher Dashboard
+
+If wrong credentials → Show error: "Invalid email or password"
+
+6. SESSION MANAGEMENT
+After login, show user role at top (Admin or Teacher)
+
+Add Logout button
+
+Without login, cannot access any page
+
+On logout, redirect to login page

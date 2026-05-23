@@ -16,6 +16,7 @@ import {
   MoonStar,
   MessageSquare,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -27,20 +28,20 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { key: "dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["admin"] },
-  { key: "students", href: "/students", icon: Users, roles: ["admin", "teacher", "parent"] },
-  { key: "teachers", href: "/teachers", icon: UserCog, roles: ["admin"] },
-  { key: "attendance", href: "/attendance", icon: CalendarCheck, roles: ["admin", "teacher", "parent"] },
-  { key: "hifzProgress", href: "/hifz-progress", icon: BookOpen, roles: ["admin", "teacher", "parent"] },
-  { key: "results", href: "/results", icon: GraduationCap, roles: ["admin", "teacher", "parent"] },
-  { key: "teacherPortal", href: "/teacher-portal", icon: Briefcase, roles: ["teacher"] },
-  { key: "fees", href: "/fees", icon: CreditCard, roles: ["admin", "parent"] },
-  { key: "expenses", href: "/expenses", icon: Receipt, roles: ["admin"] },
-  { key: "salaries", href: "/salaries", icon: Wallet, roles: ["admin"] },
-  { key: "donations", href: "/donations", icon: HeartHandshake, roles: ["admin"] },
-  { key: "noraniQaida", href: "/norani-qaida", icon: BookOpen, roles: ["admin", "teacher", "parent"] },
-  { key: "islamic", href: "/islamic", icon: MoonStar, roles: ["admin", "teacher", "parent"] },
-  { key: "communication", href: "/communication", icon: MessageSquare, roles: ["admin"] },
+  { key: "dashboard",     href: "/dashboard",     icon: LayoutDashboard, roles: ["admin"] },
+  { key: "students",      href: "/students",       icon: Users,           roles: ["admin", "parent"] },
+  { key: "teachers",      href: "/teachers",       icon: UserCog,         roles: ["admin"] },
+  { key: "attendance",    href: "/attendance",     icon: CalendarCheck,   roles: ["admin", "teacher", "parent"] },
+  { key: "hifzProgress",  href: "/hifz-progress",  icon: BookOpen,        roles: ["admin", "parent"] },
+  { key: "results",       href: "/results",        icon: GraduationCap,   roles: ["admin", "parent"] },
+  { key: "teacherPortal", href: "/teacher-portal", icon: Briefcase,       roles: ["teacher"] },
+  { key: "noraniQaida",   href: "/norani-qaida",   icon: BookOpen,        roles: ["admin", "teacher", "parent"] },
+  { key: "fees",          href: "/fees",           icon: CreditCard,      roles: ["admin", "parent"] },
+  { key: "expenses",      href: "/expenses",       icon: Receipt,         roles: ["admin"] },
+  { key: "salaries",      href: "/salaries",       icon: Wallet,          roles: ["admin"] },
+  { key: "donations",     href: "/donations",      icon: HeartHandshake,  roles: ["admin"] },
+  { key: "islamic",       href: "/islamic",        icon: MoonStar,        roles: ["admin", "teacher", "parent"] },
+  { key: "communication", href: "/communication",  icon: MessageSquare,   roles: ["admin"] },
 ];
 
 interface SidebarProps {
@@ -49,7 +50,7 @@ interface SidebarProps {
 
 export function Sidebar({ onClose }: SidebarProps) {
   const [location] = useLocation();
-  const { role, logout } = useAuth();
+  const { role, userName, teacherClass, logout } = useAuth();
   const { lang, tr } = useLang();
 
   if (!role) return null;
@@ -57,17 +58,43 @@ export function Sidebar({ onClose }: SidebarProps) {
   const filteredNav = navItems.filter((item) => item.roles.includes(role));
   const isUrdu = lang === "ur";
 
+  const roleBadgeColor =
+    role === "admin"   ? "bg-primary/20 text-primary border-primary/30" :
+    role === "teacher" ? "bg-emerald-100 text-emerald-800 border-emerald-300" :
+                         "bg-blue-100 text-blue-800 border-blue-300";
+
+  const roleLabel =
+    role === "admin"   ? (isUrdu ? "ایڈمن" : "Admin") :
+    role === "teacher" ? (isUrdu ? "استاد" : "Teacher") :
+                         (isUrdu ? "والدین" : "Parent");
+
   return (
     <div
       className={`flex flex-col h-full bg-sidebar border-r border-sidebar-border w-64 text-sidebar-foreground ${isUrdu ? "urdu-text" : ""}`}
       dir={isUrdu ? "rtl" : "ltr"}
     >
-      <div className="p-6 border-b border-sidebar-border bg-sidebar-primary text-sidebar-primary-foreground flex flex-col items-center justify-center space-y-2">
-        <MoonStar className="w-10 h-10 text-accent" />
-        <h1 className={`text-lg font-bold text-center leading-tight ${isUrdu ? "urdu-text" : ""}`}>
+      <div className="p-5 border-b border-sidebar-border bg-sidebar-primary text-sidebar-primary-foreground flex flex-col items-center justify-center space-y-2">
+        <MoonStar className="w-9 h-9 text-accent" />
+        <h1 className={`text-base font-bold text-center leading-tight ${isUrdu ? "urdu-text" : ""}`}>
           {isUrdu ? "دارالعلوم سراج الاسلام" : "Darul Uloom Sirajul Islam"}
         </h1>
-        <p className="text-xs opacity-90">{isUrdu ? "کلگاؤں" : "Kalgaon"}</p>
+        <p className="text-xs opacity-80">{isUrdu ? "کلگاؤں" : "Kalgaon"}</p>
+      </div>
+
+      {/* Logged-in user info */}
+      <div className={`px-4 py-3 border-b border-sidebar-border bg-sidebar-primary/50 flex items-center gap-3 ${isUrdu ? "flex-row-reverse" : ""}`}>
+        <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0">
+          <ShieldCheck className="w-4 h-4 text-accent" />
+        </div>
+        <div className={`flex-1 min-w-0 ${isUrdu ? "text-right" : ""}`}>
+          <p className={`text-xs font-semibold text-sidebar-foreground truncate ${isUrdu ? "urdu-text" : ""}`}>{userName || roleLabel}</p>
+          {role === "teacher" && teacherClass && (
+            <p className="text-xs text-sidebar-foreground/60 truncate">{teacherClass}</p>
+          )}
+          <span className={`inline-block mt-0.5 text-xs px-2 py-0.5 rounded-full border font-medium ${roleBadgeColor} ${isUrdu ? "urdu-text" : ""}`}>
+            {roleLabel}
+          </span>
+        </div>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
@@ -94,10 +121,6 @@ export function Sidebar({ onClose }: SidebarProps) {
       </nav>
 
       <div className="p-4 border-t border-sidebar-border">
-        <div className={`mb-4 px-2 ${isUrdu ? "text-right" : ""}`}>
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">{tr("loggedInAs")}</p>
-          <p className="font-semibold capitalize text-sm">{role}</p>
-        </div>
         <Button
           variant="outline"
           className={`w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20 ${isUrdu ? "flex-row-reverse" : ""}`}

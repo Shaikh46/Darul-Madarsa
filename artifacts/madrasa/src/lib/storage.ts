@@ -40,13 +40,50 @@ export function useLS<T>(key: string, defaultVal: T): [T, (val: T) => void] {
   return [val, setAndSave];
 }
 
+// ── Hardcoded credentials ──────────────────────────────────────────────────
+export interface Credential {
+  username: string;
+  password: string;
+  role: Role;
+  displayName: string;
+}
+
+export const CREDENTIALS: Credential[] = [
+  { username: "darulum@admin",   password: "78607860", role: "admin",   displayName: "Administrator" },
+  { username: "darulum@teacher", password: "068706",   role: "teacher", displayName: "Teacher" },
+  { username: "parent@demo.com", password: "parent123",role: "parent",  displayName: "Parent" },
+];
+
+export function tryLogin(username: string, password: string): Credential | null {
+  return CREDENTIALS.find(
+    c => c.username.toLowerCase() === username.trim().toLowerCase() && c.password === password
+  ) ?? null;
+}
+
+// ── Auth hook ──────────────────────────────────────────────────────────────
 export const useAuth = () => {
   const [role, setRole] = useLS<Role>("app_role", null);
-  const login = (newRole: Role) => { setRole(newRole); };
-  const logout = () => { setRole(null); };
-  return { role, login, logout };
+  const [userName, setUserName] = useLS<string>("app_user_name", "");
+  const [teacherClass, setTeacherClass] = useLS<string>("app_teacher_class", "");
+
+  const login = (cred: Credential, resolvedClass?: string) => {
+    setRole(cred.role);
+    setUserName(cred.displayName);
+    if (cred.role === "teacher") {
+      setTeacherClass(resolvedClass || "");
+    }
+  };
+
+  const logout = () => {
+    setRole(null);
+    setUserName("");
+    setTeacherClass("");
+  };
+
+  return { role, userName, teacherClass, login, logout };
 };
 
+// ── Student type ──────────────────────────────────────────────────────────
 export interface Student {
   id: string;
   name: string;
@@ -62,6 +99,7 @@ export interface Student {
   photo?: string;
 }
 
+// ── Teacher type ──────────────────────────────────────────────────────────
 export interface Teacher {
   id: string;
   name: string;
@@ -73,43 +111,59 @@ export interface Teacher {
   status: "Active" | "Inactive";
 }
 
-export const CLASS_OPTIONS = ["Nursery", "KG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
+// ── Class options ─────────────────────────────────────────────────────────
+export interface ClassGroup {
+  label: string;
+  icon: string;
+  classes: string[];
+}
+
+export const CLASS_GROUPS: ClassGroup[] = [
+  { label: "Deeniyat Classes", icon: "📚", classes: ["Deeniyat Alif", "Deeniyat Baa"] },
+  { label: "Farsi Classes",    icon: "📖", classes: ["Farsi Awwal", "Farsi Duwwam"] },
+  { label: "Arabic Classes",   icon: "🕌", classes: ["Arbi Awwal", "Arbi Duwwam", "Arbi Suwwam", "Arbi Chahrum", "Arbi Panjum"] },
+  { label: "Hifz Classes",     icon: "🌟", classes: ["Hifz Alif", "Hifz Baa"] },
+];
+
+export const CLASS_OPTIONS: string[] = CLASS_GROUPS.flatMap(g => g.classes);
+
 export const JAMAAT_OPTIONS = ["Hifz", "Nazera", "Alim", "General"];
 
+// ── Sample data ────────────────────────────────────────────────────────────
 const initialStudents: Student[] = [
-  { id: "s1", name: "Ahmed Khan", fatherName: "Rashid Khan", motherName: "Fatima Khan", className: "5th", jamaat: "Hifz", phone: "9876543210", address: "Kalgaon", dob: "2012-03-15", admissionDate: "2020-06-01", status: "Active" },
-  { id: "s2", name: "Mohammed Ali", fatherName: "Salim Ali", motherName: "Amina Ali", className: "5th", jamaat: "Hifz", phone: "9876543211", address: "Kalgaon", dob: "2012-07-22", admissionDate: "2020-06-01", status: "Active" },
-  { id: "s3", name: "Ibrahim Sheikh", fatherName: "Yusuf Sheikh", motherName: "Khadija Sheikh", className: "6th", jamaat: "Nazera", phone: "9876543212", address: "Kalgaon", dob: "2011-11-05", admissionDate: "2019-06-01", status: "Active" },
-  { id: "s4", name: "Usman Patel", fatherName: "Ismail Patel", motherName: "Maryam Patel", className: "6th", jamaat: "Nazera", phone: "9876543213", address: "Kalgaon", dob: "2011-04-18", admissionDate: "2019-06-01", status: "Active" },
-  { id: "s5", name: "Hasan Ansari", fatherName: "Hussain Ansari", motherName: "Zainab Ansari", className: "7th", jamaat: "Alim", phone: "9876543214", address: "Kalgaon", dob: "2010-09-30", admissionDate: "2018-06-01", status: "Active" },
+  { id: "s1", name: "Ahmed Khan",     fatherName: "Rashid Khan",   motherName: "Fatima Khan",   className: "Hifz Alif",      jamaat: "Hifz",    phone: "9876543210", address: "Kalgaon", dob: "2012-03-15", admissionDate: "2020-06-01", status: "Active" },
+  { id: "s2", name: "Mohammed Ali",   fatherName: "Salim Ali",     motherName: "Amina Ali",     className: "Hifz Alif",      jamaat: "Hifz",    phone: "9876543211", address: "Kalgaon", dob: "2012-07-22", admissionDate: "2020-06-01", status: "Active" },
+  { id: "s3", name: "Ibrahim Sheikh", fatherName: "Yusuf Sheikh",  motherName: "Khadija Sheikh",className: "Arbi Awwal",     jamaat: "Nazera",  phone: "9876543212", address: "Kalgaon", dob: "2011-11-05", admissionDate: "2019-06-01", status: "Active" },
+  { id: "s4", name: "Usman Patel",    fatherName: "Ismail Patel",  motherName: "Maryam Patel",  className: "Deeniyat Alif",  jamaat: "General", phone: "9876543213", address: "Kalgaon", dob: "2011-04-18", admissionDate: "2019-06-01", status: "Active" },
+  { id: "s5", name: "Hasan Ansari",   fatherName: "Hussain Ansari",motherName: "Zainab Ansari", className: "Farsi Awwal",    jamaat: "Alim",    phone: "9876543214", address: "Kalgaon", dob: "2010-09-30", admissionDate: "2018-06-01", status: "Active" },
 ];
 
 const initialTeachers: Teacher[] = [
-  { id: "t1", name: "Maulana Abdul Rahman", email: "abdulrahman@dsik.edu", phone: "9876500001", assignedClass: "5th", qualification: "Dars-e-Nizami", joiningDate: "2018-01-15", status: "Active" },
-  { id: "t2", name: "Ustad Mohammed Yusuf", email: "myusuf@dsik.edu", phone: "9876500002", assignedClass: "6th", qualification: "Fazil", joiningDate: "2019-03-01", status: "Active" },
+  { id: "t1", name: "Maulana Abdul Rahman",  email: "darulum@teacher", phone: "9876500001", assignedClass: "Hifz Alif",     qualification: "Dars-e-Nizami", joiningDate: "2018-01-15", status: "Active" },
+  { id: "t2", name: "Ustad Mohammed Yusuf",  email: "teacher2@dsik.edu", phone: "9876500002", assignedClass: "Arbi Awwal", qualification: "Fazil",         joiningDate: "2019-03-01", status: "Active" },
 ];
 
 const initialDonations = [
-  { id: "don1", receiptNo: "DSIK/DON/2026/00001", donorName: "Abdullah Merchant", phone: "9988776655", amount: 25000, donationType: "General", paymentMethod: "Cash", transactionId: "", date: new Date(2026, 4, 10).toISOString() },
-  { id: "don2", receiptNo: "DSIK/DON/2026/00002", donorName: "Yusuf Chapra", phone: "9988776644", amount: 15000, donationType: "Zakat", paymentMethod: "Bank Transfer", transactionId: "TXN001", date: new Date(2026, 4, 12).toISOString() },
-  { id: "don3", receiptNo: "DSIK/DON/2026/00003", donorName: "Ibrahim Memon", phone: "9988776633", amount: 10000, donationType: "Sadaqah", paymentMethod: "UPI", transactionId: "UPI002", date: new Date(2026, 4, 15).toISOString() },
-  { id: "don4", receiptNo: "DSIK/DON/2026/00004", donorName: "Rashid Shaikh", phone: "9988776622", amount: 50000, donationType: "Construction", paymentMethod: "Bank Transfer", transactionId: "TXN003", date: new Date(2026, 4, 18).toISOString() },
-  { id: "don5", receiptNo: "DSIK/DON/2026/00005", donorName: "Salim Vohra", phone: "9988776611", amount: 5000, donationType: "Fitrana", paymentMethod: "Cash", transactionId: "", date: new Date(2026, 4, 20).toISOString() },
+  { id: "don1", receiptNo: "DSIK/DON/2026/00001", donorName: "Abdullah Merchant", phone: "9988776655", amount: 25000, donationType: "General",      paymentMethod: "Cash",          transactionId: "",      date: new Date(2026, 4, 10).toISOString() },
+  { id: "don2", receiptNo: "DSIK/DON/2026/00002", donorName: "Yusuf Chapra",      phone: "9988776644", amount: 15000, donationType: "Zakat",         paymentMethod: "Bank Transfer", transactionId: "TXN001",date: new Date(2026, 4, 12).toISOString() },
+  { id: "don3", receiptNo: "DSIK/DON/2026/00003", donorName: "Ibrahim Memon",     phone: "9988776633", amount: 10000, donationType: "Sadaqah",       paymentMethod: "UPI",           transactionId: "UPI002",date: new Date(2026, 4, 15).toISOString() },
+  { id: "don4", receiptNo: "DSIK/DON/2026/00004", donorName: "Rashid Shaikh",     phone: "9988776622", amount: 50000, donationType: "Construction",  paymentMethod: "Bank Transfer", transactionId: "TXN003",date: new Date(2026, 4, 18).toISOString() },
+  { id: "don5", receiptNo: "DSIK/DON/2026/00005", donorName: "Salim Vohra",       phone: "9988776611", amount: 5000,  donationType: "Fitrana",       paymentMethod: "Cash",          transactionId: "",      date: new Date(2026, 4, 20).toISOString() },
 ];
 
 const initialFees = [
-  { id: "fee1", receiptNo: "DSIK/FEE/2026/00001", studentId: "s1", month: "2026-01", amount: 1500, paymentMethod: "Cash", status: "paid", date: new Date(2026, 0, 5).toISOString() },
-  { id: "fee2", receiptNo: "DSIK/FEE/2026/00002", studentId: "s2", month: "2026-01", amount: 1500, paymentMethod: "Bank Transfer", status: "paid", date: new Date(2026, 0, 7).toISOString() },
-  { id: "fee3", receiptNo: "DSIK/FEE/2026/00003", studentId: "s3", month: "2026-02", amount: 1500, paymentMethod: "Online/UPI", status: "paid", date: new Date(2026, 1, 3).toISOString() },
-  { id: "fee4", receiptNo: "DSIK/FEE/2026/00004", studentId: "s4", month: "2026-02", amount: 1500, paymentMethod: "Cash", status: "pending", date: new Date(2026, 1, 10).toISOString() },
-  { id: "fee5", receiptNo: "DSIK/FEE/2026/00005", studentId: "s5", month: "2026-03", amount: 1500, paymentMethod: "Cash", status: "paid", date: new Date(2026, 2, 4).toISOString() },
+  { id: "fee1", receiptNo: "DSIK/FEE/2026/00001", studentId: "s1", month: "January",  year: "2026", amount: 1500, paymentMethod: "Cash",          status: "paid",    date: new Date(2026, 0, 5).toISOString() },
+  { id: "fee2", receiptNo: "DSIK/FEE/2026/00002", studentId: "s2", month: "January",  year: "2026", amount: 1500, paymentMethod: "Bank Transfer", status: "paid",    date: new Date(2026, 0, 7).toISOString() },
+  { id: "fee3", receiptNo: "DSIK/FEE/2026/00003", studentId: "s3", month: "February", year: "2026", amount: 1500, paymentMethod: "Online/UPI",    status: "paid",    date: new Date(2026, 1, 3).toISOString() },
+  { id: "fee4", receiptNo: "DSIK/FEE/2026/00004", studentId: "s4", month: "February", year: "2026", amount: 1500, paymentMethod: "Cash",          status: "pending", date: new Date(2026, 1, 10).toISOString() },
+  { id: "fee5", receiptNo: "DSIK/FEE/2026/00005", studentId: "s5", month: "March",    year: "2026", amount: 1500, paymentMethod: "Cash",          status: "paid",    date: new Date(2026, 2, 4).toISOString() },
 ];
 
 const initialExpenses = [
-  { id: "exp1", category: "Salary", description: "Teacher salaries for April", amount: 45000, date: new Date(2026, 3, 30).toISOString() },
-  { id: "exp2", category: "Electricity", description: "Monthly electricity bill", amount: 3500, date: new Date(2026, 4, 5).toISOString() },
-  { id: "exp3", category: "Books", description: "Quran and Islamic books", amount: 8000, date: new Date(2026, 4, 10).toISOString() },
-  { id: "exp4", category: "Maintenance", description: "Classroom renovation", amount: 12000, date: new Date(2026, 4, 15).toISOString() },
+  { id: "exp1", category: "Salary",      description: "Teacher salaries for April", amount: 45000, date: new Date(2026, 3, 30).toISOString() },
+  { id: "exp2", category: "Electricity", description: "Monthly electricity bill",   amount: 3500,  date: new Date(2026, 4, 5).toISOString() },
+  { id: "exp3", category: "Books",       description: "Quran and Islamic books",    amount: 8000,  date: new Date(2026, 4, 10).toISOString() },
+  { id: "exp4", category: "Maintenance", description: "Classroom renovation",       amount: 12000, date: new Date(2026, 4, 15).toISOString() },
 ];
 
 export function initializeData() {

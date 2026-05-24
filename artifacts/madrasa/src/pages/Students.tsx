@@ -226,7 +226,7 @@ export default function Students() {
                 <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
                   {group.icon} {trClassGroup(group.label, lang)}
                 </div>
-                {group.classes.filter(c => classes.includes(c)).map(c => (
+                {group.classes.map(c => (
                   <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>
                 ))}
               </div>

@@ -101,20 +101,16 @@ export default function HifzProgress() {
             <SelectValue placeholder={isUrdu ? "کلاس منتخب کریں" : "Select class"} />
           </SelectTrigger>
           <SelectContent>
-            {CLASS_GROUPS.map(group => {
-              const groupClasses = group.classes.filter(c => classes.includes(c));
-              if (groupClasses.length === 0) return null;
-              return (
-                <div key={group.label}>
-                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
-                    {group.icon} {trClassGroup(group.label, lang)}
-                  </div>
-                  {groupClasses.map(c => (
-                    <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>
-                  ))}
+            {CLASS_GROUPS.map(group => (
+              <div key={group.label}>
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
+                  {group.icon} {trClassGroup(group.label, lang)}
                 </div>
-              );
-            })}
+                {group.classes.map(c => (
+                  <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>
+                ))}
+              </div>
+            ))}
           </SelectContent>
         </Select>
       </div>

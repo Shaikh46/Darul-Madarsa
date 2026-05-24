@@ -207,10 +207,10 @@ export default function Timetable() {
                 selectedClass === cls
                   ? "bg-primary text-primary-foreground border-primary"
                   : "bg-card text-foreground border-border hover:bg-muted"
-              }`}
+              } ${isUrdu ? "urdu-text" : ""}`}
               data-testid={`class-tab-${cls}`}
             >
-              {cls}
+              {trClass(cls, lang)}
             </button>
           ))}
         </div>

@@ -1,0 +1,300 @@
+ADD NAMAZ TIMINGS to my Madrasa Management App "Darul Uloom Sirajul Islam Kalgaon" with COMPLETE Admin editable settings.
+
+## REQUIREMENT 1: RESET OLD TIMINGS - USE THESE EXACT TIMINGS
+
+Remove any existing prayer timings and use these EXACT timings:
+
+| Prayer | Azan Time | Jamaat Time |
+|--------|-----------|-------------|
+| Fajr | 4:50 AM | 5:15 AM |
+| Zuhr | 1:40 PM | 2:00 PM |
+| Asr | 5:15 PM | 5:30 PM |
+| Maghrib | 6:57 PM | 6:57 PM |
+| Isha | 8:30 PM | 8:45 PM |
+
+## DISPLAY FORMAT (Show on Dashboard and Islamic Calendar page):
+┌─────────────────────────────────────────────────────────────────┐
+│ 🕌 NAMAZ TIMINGS │
+├─────────────────────────────────────────────────────────────────┤
+│ │
+│ ┌────────────┬──────────────┬──────────────┬─────────────────┐ │
+│ │ Prayer │ Azan Time │ Jamaat Time │ Next Prayer │ │
+│ ├────────────┼──────────────┼──────────────┼─────────────────┤ │
+│ │ 🌅 Fajr │ 4:50 AM │ 5:15 AM │ 🔴 Next: Zuhr │ │
+│ │ ☀️ Zuhr │ 1:40 PM │ 2:00 PM │ │ │
+│ │ 🌤️ Asr │ 5:15 PM │ 5:30 PM │ │ │
+│ │ 🌙 Maghrib │ 6:57 PM │ 6:57 PM │ │ │
+│ │ 🌃 Isha │ 8:30 PM │ 8:45 PM │ │ │
+│ └────────────┴──────────────┴──────────────┴─────────────────┘ │
+│ │
+│ ⏰ Next Prayer: Zuhr at 1:40 PM (Azan) | 2:00 PM (Jamaat) │
+│ 📍 Location: Kalgaon │
+│ │
+└─────────────────────────────────────────────────────────────────┘
+
+text
+
+## REQUIREMENT 2: SETTINGS PAGE - EDITABLE NAMAZ TIMINGS
+
+Add a new section in Settings page called "Namaz Timings Settings" where Admin can edit timings.
+
+### Settings Form Layout:
+┌─────────────────────────────────────────────────────────────────┐
+│ ⚙️ NAMAZ TIMINGS SETTINGS │
+├─────────────────────────────────────────────────────────────────┤
+│ │
+│ 📌 Only Admin can edit these timings │
+│ │
+│ ┌─────────────────────────────────────────────────────────────┐│
+│ │ 🌅 FAJR ││
+│ │ Azan Time: [04:50] [AM ▼] ││
+│ │ Jamaat Time: [05:15] [AM ▼] ││
+│ └─────────────────────────────────────────────────────────────┘│
+│ │
+│ ┌─────────────────────────────────────────────────────────────┐│
+│ │ ☀️ ZUHR ││
+│ │ Azan Time: [01:40] [PM ▼] ││
+│ │ Jamaat Time: [02:00] [PM ▼] ││
+│ └─────────────────────────────────────────────────────────────┘│
+│ │
+│ ┌─────────────────────────────────────────────────────────────┐│
+│ │ 🌤️ ASR ││
+│ │ Azan Time: [05:15] [PM ▼] ││
+│ │ Jamaat Time: [05:30] [PM ▼] ││
+│ └─────────────────────────────────────────────────────────────┘│
+│ │
+│ ┌─────────────────────────────────────────────────────────────┐│
+│ │ 🌙 MAGHRIB ││
+│ │ Azan Time: [06:57] [PM ▼] ││
+│ │ Jamaat Time: [06:57] [PM ▼] (Same as Azan) ││
+│ └─────────────────────────────────────────────────────────────┘│
+│ │
+│ ┌─────────────────────────────────────────────────────────────┐│
+│ │ 🌃 ISHA ││
+│ │ Azan Time: [08:30] [PM ▼] ││
+│ │ Jamaat Time: [08:45] [PM ▼] ││
+│ └─────────────────────────────────────────────────────────────┘│
+│ │
+│ [💾 SAVE ALL TIMINGS] [🔄 RESET TO DEFAULT] │
+│ │
+│ Default timings: Fajr(4:50/5:15), Zuhr(1:40/2:00), │
+│ Asr(5:15/5:30), Maghrib(6:57/6:57), Isha(8:30/8:45) │
+│ │
+└─────────────────────────────────────────────────────────────────┘
+
+text
+
+## REQUIREMENT 3: NEXT PRAYER CALCULATION
+
+Auto-calculate and display the next upcoming prayer based on current time:
+
+```javascript
+function getNextPrayer() {
+  const now = new Date();
+  const currentTime = now.getHours() * 60 + now.getMinutes();
+  
+  const prayers = [
+    { name: "Fajr", azanHour: 4, azanMin: 50, jamaatHour: 5, jamaatMin: 15 },
+    { name: "Zuhr", azanHour: 13, azanMin: 40, jamaatHour: 14, jamaatMin: 0 },
+    { name: "Asr", azanHour: 17, azanMin: 15, jamaatHour: 17, jamaatMin: 30 },
+    { name: "Maghrib", azanHour: 18, azanMin: 57, jamaatHour: 18, jamaatMin: 57 },
+    { name: "Isha", azanHour: 20, azanMin: 30, jamaatHour: 20, jamaatMin: 45 }
+  ];
+  
+  for (let prayer of prayers) {
+    const prayerTime = prayer.azanHour * 60 + prayer.azanMin;
+    if (prayerTime > currentTime) {
+      return prayer;
+    }
+  }
+  return prayers[0]; // Return Fajr for next day
+}
+REQUIREMENT 4: COUNTDOWN TIMER
+Add countdown timer to next prayer:
+
+text
+┌─────────────────────────────────────────────────────────────────┐
+│  ⏳ NEXT PRAYER: ZUHR                                           │
+│                                                                  │
+│  Azan in: 02h 15m 30s                                           │
+│  Jamaat in: 02h 35m 30s                                         │
+│                                                                  │
+│  [████████░░░░░░░░░░░░░░░░░░░░░░░░] 35%                        │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+REQUIREMENT 5: STORAGE STRUCTURE
+javascript
+// Save namaz timings to localStorage
+namazTimings = {
+  fajr: { azan: "4:50 AM", azanHour: 4, azanMin: 50, jamaat: "5:15 AM", jamaatHour: 5, jamaatMin: 15 },
+  zuhr: { azan: "1:40 PM", azanHour: 13, azanMin: 40, jamaat: "2:00 PM", jamaatHour: 14, jamaatMin: 0 },
+  asr: { azan: "5:15 PM", azanHour: 17, azanMin: 15, jamaat: "5:30 PM", jamaatHour: 17, jamaatMin: 30 },
+  maghrib: { azan: "6:57 PM", azanHour: 18, azanMin: 57, jamaat: "6:57 PM", jamaatHour: 18, jamaatMin: 57 },
+  isha: { azan: "8:30 PM", azanHour: 20, azanMin: 30, jamaat: "8:45 PM", jamaatHour: 20, jamaatMin: 45 }
+};
+
+// Function to save timings
+function saveNamazTimings() {
+  const timings = {
+    fajr: {
+      azan: document.getElementById('fajrAzan').value,
+      jamaat: document.getElementById('fajrJamaat').value
+    },
+    zuhr: {
+      azan: document.getElementById('zuhrAzan').value,
+      jamaat: document.getElementById('zuhrJamaat').value
+    },
+    asr: {
+      azan: document.getElementById('asrAzan').value,
+      jamaat: document.getElementById('asrJamaat').value
+    },
+    maghrib: {
+      azan: document.getElementById('maghribAzan').value,
+      jamaat: document.getElementById('maghribJamaat').value
+    },
+    isha: {
+      azan: document.getElementById('ishaAzan').value,
+      jamaat: document.getElementById('ishaJamaat').value
+    }
+  };
+  localStorage.setItem('namazTimings', JSON.stringify(timings));
+  displayNamazTimings();
+  alert('Namaz timings saved successfully!');
+}
+
+// Function to reset to default timings
+function resetToDefaultTimings() {
+  const defaultTimings = {
+    fajr: { azan: "4:50 AM", jamaat: "5:15 AM" },
+    zuhr: { azan: "1:40 PM", jamaat: "2:00 PM" },
+    asr: { azan: "5:15 PM", jamaat: "5:30 PM" },
+    maghrib: { azan: "6:57 PM", jamaat: "6:57 PM" },
+    isha: { azan: "8:30 PM", jamaat: "8:45 PM" }
+  };
+  localStorage.setItem('namazTimings', JSON.stringify(defaultTimings));
+  displayNamazTimings();
+  alert('Reset to default timings successful!');
+}
+REQUIREMENT 6: DISPLAY ON DASHBOARD
+Add Namaz Timings widget on main dashboard:
+
+text
+┌─────────────────────────────────────────────────────────────────┐
+│  🕌 NAMAZ TIMINGS                                   [Edit in Settings] │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  🌅 Fajr      4:50 AM (Azan)     5:15 AM (Jamaat)               │
+│  ☀️ Zuhr      1:40 PM (Azan)     2:00 PM (Jamaat)  ← NEXT       │
+│  🌤️ Asr       5:15 PM (Azan)     5:30 PM (Jamaat)               │
+│  🌙 Maghrib   6:57 PM (Azan)     6:57 PM (Jamaat)               │
+│  🌃 Isha      8:30 PM (Azan)     8:45 PM (Jamaat)               │
+│                                                                  │
+│  ⏰ Time until Zuhr Azan: 2 hours 15 minutes                    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+REQUIREMENT 7: URDU TRANSLATIONS
+English	Urdu
+Namaz Timings	نماز کے اوقات
+Azan Time	اذان کا وقت
+Jamaat Time	جماعت کا وقت
+Next Prayer	اگلی نماز
+Fajr	فجر
+Zuhr	ظہر
+Asr	عصر
+Maghrib	مغرب
+Isha	عشاء
+Edit in Settings	ترتیبات میں ترمیم کریں
+Save All Timings	تمام اوقات محفوظ کریں
+Reset to Default	ڈیفالٹ پر ری سیٹ کریں
+REQUIREMENT 8: SETTINGS MENU ITEM
+Ensure Settings menu item exists in sidebar:
+
+html
+<a href="#" onclick="showPage('settings')" class="nav-item">
+  <i class="fas fa-cog"></i>
+  <span class="menu-text-en">Settings</span>
+  <span class="menu-text-ur" style="display:none">ترتیبات</span>
+</a>
+VERIFICATION CHECKLIST:
+Old namaz timings are removed
+
+New timings (Fajr 4:50/5:15, Zuhr 1:40/2:00, Asr 5:15/5:30, Maghrib 6:57/6:57, Isha 8:30/8:45) are displayed
+
+Namaz timings show on Dashboard
+
+Settings page has Namaz Timings Settings section
+
+Admin can edit each prayer time
+
+Admin can save changes
+
+Admin can reset to default timings
+
+Changes save to localStorage
+
+Next prayer is calculated correctly
+
+Countdown timer shows time until next prayer
+
+Urdu translation works for all namaz-related text
+
+DELIVERY:
+Reset old timings, add new exact timings
+
+Add editable namaz timings in Settings (Admin only)
+
+Display namaz timings on Dashboard
+
+Next prayer calculation and countdown
+
+Urdu support for all text
+
+Keep all existing features
+
+ONE complete HTML file
+
+START BUILDING NOW. Use the exact timings: Fajr(4:50/5:15), Zuhr(1:40/2:00), Asr(5:15/5:30), Maghrib(6:57/6:57), Isha(8:30/8:45).
+
+text
+
+---
+
+## 📊 Summary of What This Adds
+
+| Feature | Details |
+|---------|---------|
+| **Namaz Timings** | Fajr, Zuhr, Asr, Maghrib, Isha with Azan & Jamaat |
+| **Dashboard Widget** | Shows all 5 prayer times |
+| **Settings Page** | Admin can edit any prayer time |
+| **Reset Button** | Restore to default timings |
+| **Next Prayer** | Auto-detects next prayer |
+| **Countdown Timer** | Shows time remaining |
+
+---
+
+## ✅ Exact Timings Being Added
+
+| Prayer | Azan | Jamaat |
+|--------|------|--------|
+| Fajr | 4:50 AM | 5:15 AM |
+| Zuhr | 1:40 PM | 2:00 PM |
+| Asr | 5:15 PM | 5:30 PM |
+| Maghrib | 6:57 PM | 6:57 PM |
+| Isha | 8:30 PM | 8:45 PM |
+
+---
+
+## 🔧 Settings Page Preview
+┌─────────────────────────────────────────────────────────────────┐
+│ ⚙️ NAMAZ TIMINGS SETTINGS │
+├─────────────────────────────────────────────────────────────────┤
+│ │
+│ 🌅 FAJR Azan: [04:50 AM] Jamaat: [05:15 AM] │
+│ ☀️ ZUHR Azan: [01:40 PM] Jamaat: [02:00 PM] │
+│ 🌤️ ASR Azan: [05:15 PM] Jamaat: [05:30 PM] │
+│ 🌙 MAGHRIB Azan: [06:57 PM] Jamaat: [06:57 PM] │
+│ 🌃 ISHA Azan: [08:30 PM] Jamaat: [08:45 PM] │
+│ │
+│ [💾 SAVE ALL] [🔄 RESET TO DEFAULT] │
+│ │
+└─────────────────────────────────────────────────────────────────┘

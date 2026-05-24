@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth, tryLogin, getLS, Teacher } from "@/lib/storage";
 import { useLang } from "@/lib/i18n";
 import { Eye, EyeOff, ShieldCheck, BookOpen, Lock, User } from "lucide-react";
@@ -10,9 +10,16 @@ export default function Login() {
   const isUrdu = lang === "ur";
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isUsernameReadOnly, setIsUsernameReadOnly] = useState(true);
+  const [isPasswordReadOnly, setIsPasswordReadOnly] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setUsername("");
+    setPassword("");
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +50,8 @@ export default function Login() {
     if (type === "admin")   { setUsername("darulum@admin");   setPassword("78607860"); }
     if (type === "teacher") { setUsername("darulum@teacher"); setPassword("068706"); }
     if (type === "parent")  { setUsername("parent@demo.com"); setPassword("parent123"); }
+    setIsUsernameReadOnly(false);
+    setIsPasswordReadOnly(false);
     setError("");
   };
 
@@ -93,7 +102,7 @@ export default function Login() {
               </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-4" noValidate>
+            <form onSubmit={handleLogin} className="space-y-4" noValidate autoComplete="off">
               <div className="space-y-1.5">
                 <label className={`text-sm font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("emailOrId")}</label>
                 <div className="relative">
@@ -104,7 +113,9 @@ export default function Login() {
                     onChange={e => { setUsername(e.target.value); setError(""); }}
                     placeholder="darulum@admin"
                     className={`w-full ${isUrdu ? "pr-10 pl-4 text-right" : "pl-10 pr-4"} py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground transition-all`}
-                    autoComplete="username"
+                    autoComplete="off"
+                    readOnly={isUsernameReadOnly}
+                    onFocus={() => setIsUsernameReadOnly(false)}
                     data-testid="input-username"
                   />
                 </div>
@@ -120,7 +131,9 @@ export default function Login() {
                     onChange={e => { setPassword(e.target.value); setError(""); }}
                     placeholder={tr("enterPasswordPh")}
                     className={`w-full ${isUrdu ? "pr-10 pl-12 text-right" : "pl-10 pr-12"} py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground transition-all ${isUrdu ? "urdu-text" : ""}`}
-                    autoComplete="current-password"
+                    autoComplete="new-password"
+                    readOnly={isPasswordReadOnly}
+                    onFocus={() => setIsPasswordReadOnly(false)}
                     data-testid="input-password"
                   />
                   <button

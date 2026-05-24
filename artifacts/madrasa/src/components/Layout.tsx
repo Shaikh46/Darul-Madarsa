@@ -1,6 +1,6 @@
 import { ReactNode, useState, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
-import { Menu, X, Languages, ShieldCheck } from "lucide-react";
+import { Menu, X, Languages, ShieldCheck, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth, initializeData } from "@/lib/storage";
 import { useLocation } from "wouter";
@@ -18,12 +18,24 @@ export function Layout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!role && location !== "/login") {
-      setLocation("/login");
+      setLocation("/login", { replace: true });
     } else if (role && location === "/login") {
       const dest = role === "teacher" ? "/teacher-portal" : "/dashboard";
-      setLocation(dest);
+      setLocation(dest, { replace: true });
     }
   }, [role, location, setLocation]);
+
+  const isDashboardPage = location === "/dashboard" || location === "/teacher-portal" || location === "/login";
+  const showBackButton = !!role && !isDashboardPage;
+
+  const goBack = () => {
+    if (role) {
+      const dest = role === "teacher" ? "/teacher-portal" : "/dashboard";
+      setLocation(dest);
+    } else {
+      setLocation("/login");
+    }
+  };
 
   if (!role && location === "/login") {
     return <>{children}</>;
@@ -98,6 +110,17 @@ export function Layout({ children }: { children: ReactNode }) {
           </button>
         </div>
         <div className="p-4 md:p-8 flex-1 max-w-7xl mx-auto w-full">
+          {showBackButton && (
+            <button
+              onClick={goBack}
+              className={`mb-4 flex items-center gap-2 px-3.5 py-1.5 rounded-lg border border-border bg-card text-xs font-semibold text-foreground hover:bg-muted/80 shadow-sm transition-all duration-200 cursor-pointer ${isUrdu ? "flex-row-reverse" : ""}`}
+              data-testid="btn-back"
+              id="backButton"
+            >
+              <ArrowLeft className={`w-3.5 h-3.5 ${isUrdu ? "rotate-180" : ""}`} />
+              <span className={isUrdu ? "urdu-text" : ""}>{isUrdu ? "← پیچھے" : "← Back"}</span>
+            </button>
+          )}
           {children}
         </div>
       </main>

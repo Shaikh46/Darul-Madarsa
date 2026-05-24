@@ -17,6 +17,8 @@ export const translations: Record<string, Record<Lang, string>> = {
   timetable: { en: "Timetable", ur: "نظام الاوقات" },
   islamic: { en: "Islamic", ur: "اسلامی" },
   hadeesBook: { en: "Hadees Book", ur: "حدیث کی کتاب" },
+  duasAzkar: { en: "Duas & Azkar", ur: "دعائیں و اذکار" },
+  duasSubtitle: { en: "Daily duas, prayer supplications & more in English, Hindi, Urdu", ur: "روزانہ کی دعائیں، نماز کی دعائیں اور دیگر، انگریزی، ہندی، اردو میں" },
   hadeesSubtitle: { en: "Authentic ahadith from Sahih Bukhari, Muslim & more", ur: "صحیح بخاری، مسلم اور دیگر کتب سے مستند احادیث" },
   hijriCalendar: { en: "Hijri Calendar", ur: "ہجری کیلنڈر" },
   importantEvents: { en: "Important Events", ur: "اہم تقریبات" },

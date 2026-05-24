@@ -1,0 +1,345 @@
+ADD COMPLETE DUA & AZKAR BOOK to my Madrasa Management App "Darul Uloom Sirajul Islam Kalgaon" with THREE LANGUAGE SUPPORT (English, Hindi, Urdu).
+
+## FEATURE OVERVIEW:
+Create a beautiful Dua & Azkar Book containing:
+- Daily Duas (Morning & Evening)
+- Salah Duas (Prayer Duas)
+- Quranic Duas (Duas from Quran)
+- Special Occasion Duas
+
+## LANGUAGE SUPPORT:
+Every Dua must be displayed in THREE languages:
+1. **English** - Translation
+2. **Hindi** - हिंदी अनुवाद
+3. **Urdu** - اردو ترجمہ
+
+User can toggle between languages using existing language button or add separate language selector for Dua book.
+
+## DUA DATABASE (50+ Duas):
+
+### SECTION 1: MORNING & EVENING DUAS (10 Duas)
+
+| # | Arabic Text | English | Hindi | Urdu |
+|---|-------------|---------|-------|------|
+| 1 | بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ | In the name of Allah, the Most Gracious, the Most Merciful | अल्लाह के नाम से जो बड़ा कृपाशील और अत्यंत दयावान है | اللہ کے نام سے جو بڑا مہربان اور نہایت رحم والا ہے |
+| 2 | الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ | All praise is due to Allah, Lord of the worlds | सारी प्रशंसा अल्लाह के लिए है, जो सारे संसार का पालनहार है | سب تعریف اللہ کے لیے ہے جو تمام جہانوں کا پالنے والا ہے |
+| 3 | أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ | I seek refuge with Allah from the accursed Satan | मैं अल्लाह की शरण लेता हूँ शैतान से | میں اللہ کی پناہ مانگتا ہوں شیطان مردود سے |
+| 4 | سُبْحَانَ اللَّهِ وَبِحَمْدِهِ | Glory be to Allah and praise Him | अल्लाह पाक है और उसी की प्रशंसा है | اللہ پاک ہے اور اسی کی تعریف ہے |
+| 5 | لا إِلَهَ إِلاَّ اللَّهُ | There is no god but Allah | अल्लाह के अलावा कोई पूज्य नहीं | اللہ کے سوا کوئی معبود نہیں |
+| 6 | اللَّهُ أَكْبَرُ | Allah is the Greatest | अल्लाह सबसे बड़ा है | اللہ سب سے بڑا ہے |
+| 7 | أَسْتَغْفِرُ اللَّهَ | I seek forgiveness from Allah | मैं अल्लाह से क्षमा चाहता हूँ | میں اللہ سے مغفرت مانگتا ہوں |
+| 8 | حَسْبِيَ اللَّهُ | Allah is sufficient for me | अल्लाह मेरे लिए काफी है | اللہ میرے لیے کافی ہے |
+| 9 | اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ | O Allah, send blessings upon Muhammad | ऐ अल्लाह, मुहम्मद पर रहमत नाजिल फरमा | اے اللہ، محمد پر رحمت نازل فرما |
+| 10 | رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً | Our Lord, give us good in this world | हमारे पालनहार, हमें दुनिया में भलाई दे | ہمارے پروردگار، ہمیں دنیا میں بھلائی دے |
+
+### SECTION 2: SALAH DUAS (Prayer Duas - 15 Duas)
+
+| # | Dua Name | Arabic Text | English | Hindi | Urdu |
+|---|----------|-------------|---------|-------|------|
+| 1 | Dua for Starting Prayer (Takbir) | اللَّهُ أَكْبَرُ | Allah is the Greatest | अल्लाह सबसे बड़ा है | اللہ سب سے بڑا ہے |
+| 2 | Dua for Ruku | سُبْحَانَ رَبِّيَ الْعَظِيمِ | Glory be to my Lord, the Almighty | मेरे महान पालनहार की प्रशंसा है | اپنے عظیم رب کی پاکی بیان کرتا ہوں |
+| 3 | Dua for Sujud | سُبْحَانَ رَبِّيَ الْأَعْلَى | Glory be to my Lord, the Most High | मेरे सर्वोच्च पालनहार की प्रशंसा है | اپنے بلند ترین رب کی پاکی بیان کرتا ہوں |
+| 4 | Dua Between Sujuds | رَبِّ اغْفِرْ لِي | My Lord, forgive me | मेरे पालनहार, मुझे क्षमा कर | میرے رب، مجھے بخش دے |
+| 5 | Dua for Tashahhud | التَّحِيَّاتُ لِلَّهِ | All greetings are for Allah | सभी अभिवादन अल्लाह के लिए हैं | تمام تعریفیں اللہ کے لیے ہیں |
+| 6 | Dua for Durood Ibrahim | اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ | O Allah, send blessings upon Muhammad | ऐ अल्लाह, मुहम्मद पर रहमत नाजिल कर | اے اللہ، محمد پر رحمت نازل فرما |
+| 7 | Dua after Tashahhud | رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً | Our Lord, give us good in this world | हमारे पालनहार, हमें दुनिया में भलाई दे | ہمارے رب، ہمیں دنیا میں بھلائی دے |
+| 8 | Dua for Qunoot | اللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ | O Allah, guide me among those You have guided | ऐ अल्लाह, मुझे उन लोगों के साथ सीधा रास्ता दिखा जिन्हें तूने सीधा रास्ता दिखाया | اے اللہ، مجھے ان لوگوں کے ساتھ ہدایت دے جنہیں تو نے ہدایت دی |
+
+### SECTION 3: QURANIC DUAS (15 Duas from Quran)
+
+| # | Surah | Verse | Arabic Text | English | Hindi | Urdu |
+|---|-------|-------|-------------|---------|-------|------|
+| 1 | Al-Fatiha | 1:6 | اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ | Guide us to the straight path | हमें सीधा रास्ता दिखा | ہمیں سیدھا راستہ دکھا |
+| 2 | Al-Baqarah | 2:127 | رَبَّنَا تَقَبَّلْ مِنَّا | Our Lord, accept from us | हमारे पालनहार, हमसे कबूल कर | ہمارے رب، ہم سے قبول فرما |
+| 3 | Al-Baqarah | 2:201 | رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً | Our Lord, give us good in this world | हमारे पालनहार, हमें दुनिया में भलाई दे | ہمارے رب، ہمیں دنیا میں بھلائی دے |
+| 4 | Al-Imran | 3:8 | رَبَّنَا لا تُزِغْ قُلُوبَنَا | Our Lord, do not let our hearts deviate | हमारे पालनहार, हमारे दिलों को टेढ़ा न कर | ہمارے رب، ہمارے دلوں کو ٹیڑھا نہ کر |
+| 5 | Al-Imran | 3:193 | رَبَّنَا فَاغْفِرْ لَنَا ذُنُوبَنَا | Our Lord, forgive us our sins | हमारे पालनहार, हमारे गुनाह माफ कर | ہمارے رب، ہمارے گناہ معاف فرما |
+| 6 | Ibrahim | 14:40 | رَبِّ اجْعَلْنِي مُقِيمَ الصَّلَاةِ | My Lord, make me an establisher of prayer | मेरे पालनहार, मुझे नमाज़ कायम करने वाला बना | میرے رب، مجھے نماز قائم کرنے والا بنا |
+| 7 | Ibrahim | 14:41 | رَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ | Our Lord, forgive me and my parents | हमारे पालनहार, मुझे और मेरे माता-पिता को माफ कर | ہمارے رب، مجھے اور میرے والدین کو بخش دے |
+| 8 | Al-Isra | 17:80 | رَبِّ أَدْخِلْنِي مُدْخَلَ صِدْقٍ | My Lord, admit me with an honorable entrance | मेरे पालनहार, मुझे सच्चाई के साथ दाखिल कर | میرے رب، مجھے سچائی کے ساتھ داخل کر |
+| 9 | Al-Kahf | 18:10 | رَبَّنَا آتِنَا مِنْ لَدُنْكَ رَحْمَةً | Our Lord, grant us mercy from Yourself | हमारे पालनहार, हमें अपनी रहमत दे | ہمارے رب، ہمیں اپنی رحمت دے |
+| 10 | Taha | 20:25-28 | رَبِّ اشْرَحْ لِي صَدْرِي | My Lord, expand my chest | मेरे पालनहार, मेरा सीना खोल दे | میرے رب، میرا سینہ کھول دے |
+
+### SECTION 4: SPECIAL OCCASION DUAS (10 Duas)
+
+| # | Occasion | Arabic Text | English | Hindi | Urdu |
+|---|----------|-------------|---------|-------|------|
+| 1 | Entering Masjid | اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ | O Allah, open for me the doors of Your mercy | ऐ अल्लाह, मेरे लिए अपनी रहमत के दरवाजे खोल | اے اللہ، میرے لیے اپنی رحمت کے دروازے کھول |
+| 2 | Leaving Masjid | اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ | O Allah, I ask You of Your bounty | ऐ अल्लाह, मैं तुझसे तेरी दयालुता मांगता हूँ | اے اللہ، میں تجھ سے تیری فضل مانگتا ہوں |
+| 3 | Before Eating | بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ | In the name of Allah and upon the blessings of Allah | अल्लाह के नाम पर और अल्लाह की बरकत से | اللہ کے نام پر اور اللہ کی برکت سے |
+| 4 | After Eating | الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي وَسَقَانِي | Praise be to Allah who fed me and gave me drink | सारी प्रशंसा अल्लाह के लिए है जिसने मुझे खिलाया और पिलायا | تمام تعریف اس اللہ کے لیے ہے جس نے مجھے کھلایا اور پلایا |
+| 5 | When Sneezing | الْحَمْدُ لِلَّهِ | Praise be to Allah | सारी प्रशंसा अल्लाह के लिए है | تمام تعریف اللہ کے لیے ہے |
+| 6 | When Hearing Sneeze Response | يَرْحَمُكَ اللَّهُ | May Allah have mercy on you | अल्लाह तुम पर रहम करे | اللہ تم پر رحم کرے |
+| 7 | Entering Home | اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلِجِ | O Allah, I ask You for the best of entry | ऐ अल्लाह, मैं तुझसे बेहतरीन दाखिले की मांग करता हूँ | اے اللہ، میں تجھ سے بہترین داخلے کا سوال کرتا ہوں |
+| 8 | Leaving Home | بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ | In the name of Allah, I put my trust in Allah | अल्लाह के नाम पर, मैंने अल्लाह पर भरोसा किया | اللہ کے نام پر، میں نے اللہ پر توکل کیا |
+| 9 | When Sick | أَسْأَلُ اللَّهَ الْعَظِيمَ رَبَّ الْعَرْشِ الْعَظِيمِ أَنْ يَشْفِيَكَ | I ask Allah the Great, Lord of the Great Throne, to cure you | मैं अल्लाह से दुआ करता हूँ कि वह तुम्हें ठीक करे | میں اللہ سے دعا کرتا ہوں کہ وہ تمہیں شفا دے |
+| 10 | For Parents | رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا | My Lord, have mercy on them as they raised me when I was small | मेरे पालनहार, उन पर रहम कर जैसा उन्होंने मुझे बचपन में पाला | میرے رب، ان پر رحم فرما جیسا انہوں نے مجھے بچپن میں پالا |
+
+## DISPLAY FORMAT FOR EACH DUA:
+
+When a Dua is selected, show this layout:
+┌─────────────────────────────────────────────────────────────────┐
+│ DUA #1 - Morning Dua │
+│ Language: [English] [हिंदी] [اردو] │
+├─────────────────────────────────────────────────────────────────┤
+│ │
+│ Arabic Text (with beautiful calligraphy font): │
+│ ┌─────────────────────────────────────────────────────────────┐│
+│ │ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ││
+│ └─────────────────────────────────────────────────────────────┘│
+│ │
+│ Translation (Selected Language): │
+│ ┌─────────────────────────────────────────────────────────────┐│
+│ │ In the name of Allah, the Most Gracious, the Most Merciful ││
+│ └─────────────────────────────────────────────────────────────┘│
+│ │
+│ Benefits / Virtues: │
+│ "Whoever recites this Dua in the morning, will be protected │
+│ until evening" │
+│ │
+│ 📖 Reference: Quran / Hadith │
+│ 🔁 Repeat: 3 times │
+│ │
+│ [🔊 Listen] [📋 Copy] [⭐ Save to Favorites] [📤 Share] │
+│ │
+└─────────────────────────────────────────────────────────────────┘
+
+text
+
+## FEATURES TO IMPLEMENT:
+
+### 1. Category Navigation:
+┌─────────────────────────────────────────────────────────────────┐
+│ 📖 DUA & AZKAR BOOK │
+├─────────────────────────────────────────────────────────────────┤
+│ [🌅 Morning] [🌙 Evening] [🕌 Salah] [📖 Quranic] [🎉 Special] │
+├─────────────────────────────────────────────────────────────────┤
+│ │
+│ List of Duas in selected category: │
+│ ┌─────────────────────────────────────────────────────────────┐│
+│ │ • Dua #1 - Morning Dua (Bismillah) ││
+│ │ • Dua #2 - Morning Dua (Alhamdulillah) ││
+│ │ • Dua #3 - Dua for Protection ││
+│ │ • Dua #4 - Dua for Forgiveness ││
+│ │ • Dua #5 - Dua for Success ││
+│ └─────────────────────────────────────────────────────────────┘│
+│ │
+└─────────────────────────────────────────────────────────────────┘
+
+text
+
+### 2. Search Feature:
+┌─────────────────────────────────────────────────────────────────┐
+│ 🔍 Search Dua: [________________] 🔎 │
+│ │
+│ Results for "forgiveness": │
+│ • Dua for Forgiveness - Morning Dua │
+│ • Dua for Forgiveness - Quranic Dua (Al-Imran 3:193) │
+│ • Dua for Forgiveness - After Prayer │
+└─────────────────────────────────────────────────────────────────┘
+
+text
+
+### 3. Audio Pronunciation (Simulated):
+Add audio buttons for each Dua:
+- Click 🔊 to hear pronunciation
+- Show "Audio coming soon" message or integrate text-to-speech
+
+### 4. Favorites Section:
+- Save favorite Duas
+- Quick access to saved Duas
+- Store in localStorage
+
+### 5. Copy to Clipboard:
+- Copy Arabic text
+- Copy translation
+- Copy full Dua
+
+### 6. Share via WhatsApp:
+- Share Dua with translation
+- Share with reference
+
+## COMPLETE CSS FOR ARABIC TEXT:
+
+```css
+.arabic-text {
+  font-family: 'Amiri', 'Scheherazade', 'Uthman Taha', 'Noto Naskh Arabic', serif;
+  font-size: 1.8rem;
+  line-height: 2.2;
+  text-align: right;
+  direction: rtl;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  margin: 10px 0;
+}
+
+.dua-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.dua-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+MENU ADDITION:
+Add this to sidebar navigation:
+
+html
+<a href="#" onclick="showPage('duaBook')" class="nav-item">
+  <i class="fas fa-hands-praying"></i> 
+  <span class="menu-text-en">Dua & Azkar Book</span>
+  <span class="menu-text-ur" style="display:none">دعا و اذکار کی کتاب</span>
+</a>
+DATABASE STRUCTURE:
+javascript
+duas = [
+  {
+    id: 1,
+    category: "morning",
+    arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+    english: "In the name of Allah, the Most Gracious, the Most Merciful",
+    hindi: "अल्लाह के नाम से जो बड़ा कृपाशील और अत्यंत दयावान है",
+    urdu: "اللہ کے نام سے جو بڑا مہربان اور نہایت رحم والا ہے",
+    reference: "Quran 1:1",
+    repetition: "1 time",
+    benefit: "Blessings in all actions"
+  },
+  // ... more duas
+]
+LANGUAGE TOGGLE INTEGRATION:
+javascript
+function setDuaLanguage(lang) {
+  const duas = document.querySelectorAll('.dua-translation');
+  duas.forEach(dua => {
+    if (lang === 'english') {
+      dua.innerText = dua.dataset.english;
+    } else if (lang === 'hindi') {
+      dua.innerText = dua.dataset.hindi;
+    } else if (lang === 'urdu') {
+      dua.innerText = dua.dataset.urdu;
+    }
+  });
+}
+VERIFICATION CHECKLIST:
+All 50+ Duas added with Arabic text
+
+English translation available for every Dua
+
+Hindi translation available for every Dua
+
+Urdu translation available for every Dua
+
+Category tabs working (Morning, Evening, Salah, Quranic, Special)
+
+Search feature working
+
+Favorites save to localStorage
+
+Copy to clipboard working
+
+Share via WhatsApp working
+
+Audio button shows message
+
+Language toggle switches between English, Hindi, Urdu
+
+Beautiful Arabic calligraphy font
+
+DELIVERY:
+Complete Dua & Azkar Book with 50+ Duas
+
+THREE language support (English, Hindi, Urdu)
+
+All features working (search, favorites, share, copy)
+
+Keep all existing features
+
+ONE complete HTML file
+
+START BUILDING NOW. Make sure every Dua has all three translations.
+
+text
+
+---
+
+## 📊 Summary of What This Adds
+
+| Feature | Details |
+|---------|---------|
+| **Total Duas** | 50+ Duas across 5 categories |
+| **Languages** | English, Hindi, Urdu |
+| **Categories** | Morning, Evening, Salah, Quranic, Special |
+| **Features** | Search, Favorites, Copy, Share, Audio |
+
+---
+
+## ✅ Dua Categories Breakdown
+
+| Category | Number of Duas | Examples |
+|----------|---------------|----------|
+| 🌅 Morning Duas | 10 | Bismillah, Alhamdulillah, Protection |
+| 🌙 Evening Duas | 10 | Forgiveness, Mercy, Protection |
+| 🕌 Salah Duas | 15 | Takbir, Ruku, Sujud, Tashahhud |
+| 📖 Quranic Duas | 15 | From Surah Al-Fatiha, Al-Baqarah, etc. |
+| 🎉 Special Occasion | 10 | Entering home, eating, sneezing, sick |
+
+---
+
+## 🖼️ How It Will Look
+
+**English Mode:**
+📖 DUA & AZKAR BOOK
+
+🌅 Morning 🌙 Evening 🕌 Salah 📖 Quranic 🎉 Special
+
+┌─────────────────────────────────────────────────┐
+│ DUA #1 - Morning Dua │
+│ │
+│ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ │
+│ │
+│ In the name of Allah, the Most Gracious, │
+│ the Most Merciful │
+│ │
+│ 📖 Quran 1:1 | 🔁 1 time | ⭐ Save | 🔊 Listen │
+└─────────────────────────────────────────────────┘
+
+text
+
+**Hindi Mode:**
+📖 दुआ और अज़कार बुक
+
+🌅 सुबह 🌙 शाम 🕌 नमाज 📖 कुरानिक 🎉 विशेष
+
+┌─────────────────────────────────────────────────┐
+│ दुआ #1 - सुबह की दुआ │
+│ │
+│ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ │
+│ │
+│ अल्लाह के नाम से जो बड़ा कृपाशील और अत्यंत │
+│ दयावान है │
+│ │
+│ 📖 कुरान 1:1 | 🔁 1 बार | ⭐ सहेजें | 🔊 सुनें │
+└─────────────────────────────────────────────────┘
+
+text
+
+**Urdu Mode:**
+📖 دعا و اذکار کی کتاب
+
+🌅 صبح 🌙 شام 🕌 نماز 📖 قرآنی 🎉 خصوصی
+
+┌─────────────────────────────────────────────────┐
+│ دعا #1 - صبح کی دعا │
+│ │
+│ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ │
+│ │
+│ اللہ کے نام سے جو بڑا مہربان اور نہایت رحم والا ہے │
+│ │
+│ 📖 قرآن 1:1 | 🔁 1 بار | ⭐ محفوظ کریں | 🔊 سنیں │
+└─────────────────────────────────────────────────┘

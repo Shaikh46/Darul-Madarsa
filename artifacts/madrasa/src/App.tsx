@@ -25,6 +25,7 @@ import NoraniQaida from "@/pages/NoraniQaida";
 import Timetable from "@/pages/Timetable";
 import Settings from "@/pages/Settings";
 import Hadees from "@/pages/Hadees";
+import Duas from "@/pages/Duas";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ function Router() {
         <Route path="/timetable" component={Timetable} />
         <Route path="/islamic" component={Islamic} />
         <Route path="/hadees" component={Hadees} />
+        <Route path="/duas" component={Duas} />
         <Route path="/communication" component={Communication} />
         <Route path="/settings" component={Settings} />
         <Route path="/" component={Dashboard} />

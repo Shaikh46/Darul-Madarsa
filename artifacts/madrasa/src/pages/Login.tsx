@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth, tryLogin, getLS, Teacher } from "@/lib/storage";
+import { useAuth, tryLogin, getLS, Teacher, Role } from "@/lib/storage";
 import { useLang } from "@/lib/i18n";
 import { Eye, EyeOff, ShieldCheck, BookOpen, Lock, User } from "lucide-react";
 import logoImg from "@assets/logo.png_1779548283551.jpeg";
@@ -15,6 +15,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
 
   // Guarantee empty fields on mount — no browser auto-fill leaks through
   useEffect(() => {
@@ -22,12 +23,16 @@ export default function Login() {
     setPassword("");
   }, []);
 
-  const performLogin = (u: string, p: string) => {
+  const performLogin = (
+    usernameInput: string,
+    passwordInput: string,
+    role: Exclude<Role, null>
+  ) => {
     setError("");
     setLoading(true);
     setTimeout(() => {
-      const cred = tryLogin(u, p);
-      if (!cred) {
+      const cred = tryLogin(usernameInput, passwordInput);
+      if (!cred || cred.role !== role) {
         setError(tr("invalidCreds"));
         setLoading(false);
         return;
@@ -36,7 +41,8 @@ export default function Login() {
       if (cred.role === "teacher") {
         const teachers = getLS<Teacher[]>("teachers", []);
         const matched = teachers.find(
-          (t) => t.email?.toLowerCase() === u.trim().toLowerCase()
+          (t) =>
+            t.email?.toLowerCase() === usernameInput.trim().toLowerCase()
         );
         resolvedClass = matched?.assignedClass || "";
       }
@@ -47,6 +53,12 @@ export default function Login() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedRole) {
+      setError(
+        isUrdu ? "براہ کرم اپنا عہدہ منتخب کریں۔" : "Please select your role."
+      );
+      return;
+    }
     if (!username.trim()) {
       setError(
         isUrdu
@@ -63,22 +75,12 @@ export default function Login() {
       );
       return;
     }
-    performLogin(username, password);
+    performLogin(username, password, selectedRole);
   };
 
-  // One-click login buttons: fill fields AND immediately log in
-  const quickLogin = (type: "admin" | "teacher" | "parent") => {
-    let u = "";
-    let p = "";
-    if (type === "admin") { u = "darulum@admin"; p = "78607860"; }
-    if (type === "teacher") { u = "darulum@teacher"; p = "068706"; }
-    if (type === "parent") { u = "parent@demo.com"; p = "parent123"; }
-    setIsUsernameReadOnly(false);
-    setIsPasswordReadOnly(false);
-    setUsername(u);
-    setPassword(p);
-    setError("");
-    performLogin(u, p);
+  // Role selection buttons: only set role
+  const selectRole = (role: Exclude<Role, null>) => {
+    setSelectedRole(role);
   };
 
   return (
@@ -263,14 +265,15 @@ export default function Login() {
               </button>
             </form>
 
-            {/* One-Click Login Buttons — NO "Quick fill" label */}
+            {/* Role Selection Buttons */}
             <div className="pt-2 border-t border-border">
               <div className="grid grid-cols-3 gap-2">
                 <button
-                  onClick={() => quickLogin("admin")}
+                  onClick={() => selectRole("admin")}
                   disabled={loading}
-                  className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                  className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed ${selectedRole === "admin" ? "border-primary bg-primary/10" : "border-border hover:bg-primary/5 hover:border-primary/30"}`}
                   data-testid="demo-admin"
+                  aria-pressed={selectedRole === "admin"}
                 >
                   <ShieldCheck className="w-4 h-4 text-primary" />
                   <span
@@ -280,10 +283,11 @@ export default function Login() {
                   </span>
                 </button>
                 <button
-                  onClick={() => quickLogin("teacher")}
+                  onClick={() => selectRole("teacher")}
                   disabled={loading}
-                  className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                  className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed ${selectedRole === "teacher" ? "border-primary bg-primary/10" : "border-border hover:bg-primary/5 hover:border-primary/30"}`}
                   data-testid="demo-teacher"
+                  aria-pressed={selectedRole === "teacher"}
                 >
                   <BookOpen className="w-4 h-4 text-primary" />
                   <span
@@ -293,10 +297,11 @@ export default function Login() {
                   </span>
                 </button>
                 <button
-                  onClick={() => quickLogin("parent")}
+                  onClick={() => selectRole("parent")}
                   disabled={loading}
-                  className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                  className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed ${selectedRole === "parent" ? "border-primary bg-primary/10" : "border-border hover:bg-primary/5 hover:border-primary/30"}`}
                   data-testid="demo-parent"
+                  aria-pressed={selectedRole === "parent"}
                 >
                   <User className="w-4 h-4 text-primary" />
                   <span

@@ -16,20 +16,17 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Guarantee empty fields on mount — no browser auto-fill leaks through
   useEffect(() => {
     setUsername("");
     setPassword("");
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const performLogin = (u: string, p: string) => {
     setError("");
-    if (!username.trim()) { setError(isUrdu ? "براہ کرم اپنا ای میل / آئی ڈی درج کریں۔" : "Please enter your Email / ID."); return; }
-    if (!password) { setError(isUrdu ? "براہ کرم اپنا پاس ورڈ درج کریں۔" : "Please enter your password."); return; }
-
     setLoading(true);
     setTimeout(() => {
-      const cred = tryLogin(username, password);
+      const cred = tryLogin(u, p);
       if (!cred) {
         setError(tr("invalidCreds"));
         setLoading(false);
@@ -38,7 +35,9 @@ export default function Login() {
       let resolvedClass = "";
       if (cred.role === "teacher") {
         const teachers = getLS<Teacher[]>("teachers", []);
-        const matched = teachers.find(t => t.email?.toLowerCase() === username.trim().toLowerCase());
+        const matched = teachers.find(
+          (t) => t.email?.toLowerCase() === u.trim().toLowerCase()
+        );
         resolvedClass = matched?.assignedClass || "";
       }
       login(cred, resolvedClass);
@@ -46,17 +45,47 @@ export default function Login() {
     }, 400);
   };
 
-  const fillDemo = (type: "admin" | "teacher" | "parent") => {
-    if (type === "admin")   { setUsername("darulum@admin");   setPassword("78607860"); }
-    if (type === "teacher") { setUsername("darulum@teacher"); setPassword("068706"); }
-    if (type === "parent")  { setUsername("parent@demo.com"); setPassword("parent123"); }
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!username.trim()) {
+      setError(
+        isUrdu
+          ? "براہ کرم اپنا ای میل / آئی ڈی درج کریں۔"
+          : "Please enter your Email / ID."
+      );
+      return;
+    }
+    if (!password) {
+      setError(
+        isUrdu
+          ? "براہ کرم اپنا پاس ورڈ درج کریں۔"
+          : "Please enter your password."
+      );
+      return;
+    }
+    performLogin(username, password);
+  };
+
+  // One-click login buttons: fill fields AND immediately log in
+  const quickLogin = (type: "admin" | "teacher" | "parent") => {
+    let u = "";
+    let p = "";
+    if (type === "admin") { u = "darulum@admin"; p = "78607860"; }
+    if (type === "teacher") { u = "darulum@teacher"; p = "068706"; }
+    if (type === "parent") { u = "parent@demo.com"; p = "parent123"; }
     setIsUsernameReadOnly(false);
     setIsPasswordReadOnly(false);
+    setUsername(u);
+    setPassword(p);
     setError("");
+    performLogin(u, p);
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 ${isUrdu ? "urdu-text" : ""}`} dir={isUrdu ? "rtl" : "ltr"}>
+    <div
+      className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 ${isUrdu ? "urdu-text" : ""}`}
+      dir={isUrdu ? "rtl" : "ltr"}
+    >
       <div className="w-full max-w-md">
         {/* Language Toggle */}
         <div className="flex justify-end mb-3">
@@ -70,48 +99,86 @@ export default function Login() {
         </div>
 
         <div className="bg-card rounded-2xl shadow-2xl border border-border overflow-hidden">
+          {/* Header */}
           <div className="bg-primary px-8 py-8 text-center text-primary-foreground relative overflow-hidden">
             <div className="relative">
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white/40 shadow-lg overflow-hidden p-1">
-                <img src={logoImg} alt="Darul Uloom Sirajul Islam Kalgaon" className="w-full h-full object-contain rounded-full" />
+                <img
+                  src={logoImg}
+                  alt="Darul Uloom Sirajul Islam Kalgaon"
+                  className="w-full h-full object-contain rounded-full"
+                />
               </div>
-              <h1 className={`text-xl font-bold leading-tight ${isUrdu ? "urdu-text" : ""}`} style={{ color: "#FFD700" }}>
+              <h1
+                className={`text-xl font-bold leading-tight ${isUrdu ? "urdu-text" : ""}`}
+                style={{ color: "#FFD700" }}
+              >
                 {tr("brandLine1")}
               </h1>
-              <p className={`text-white text-sm font-semibold mt-0.5 tracking-wide ${isUrdu ? "urdu-text" : ""}`}>
+              <p
+                className={`text-white text-sm font-semibold mt-0.5 tracking-wide ${isUrdu ? "urdu-text" : ""}`}
+              >
                 {tr("brandLine2")}
               </p>
-              <p className={`text-primary-foreground/80 text-xs mt-1 ${isUrdu ? "urdu-text" : ""}`}>
+              <p
+                className={`text-primary-foreground/80 text-xs mt-1 ${isUrdu ? "urdu-text" : ""}`}
+              >
                 {tr("brandSubtitle")}
               </p>
               {!isUrdu && (
-                <p className="text-accent text-xs mt-1" style={{ fontFamily: "'Noto Nastaliq Urdu', serif", direction: "rtl" }}>
+                <p
+                  className="text-accent text-xs mt-1"
+                  style={{
+                    fontFamily: "'Noto Nastaliq Urdu', serif",
+                    direction: "rtl",
+                  }}
+                >
                   دارالعلوم سراج الاسلام کلگاؤں
                 </p>
               )}
             </div>
           </div>
 
+          {/* Form */}
           <div className="px-8 py-6 space-y-5">
             <div className="text-center">
-              <h2 className={`text-lg font-semibold text-foreground ${isUrdu ? "urdu-text" : ""}`}>
+              <h2
+                className={`text-lg font-semibold text-foreground ${isUrdu ? "urdu-text" : ""}`}
+              >
                 {tr("signInHeading")}
               </h2>
-              <p className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>
+              <p
+                className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}
+              >
                 {tr("enterCredentials")}
               </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-4" noValidate autoComplete="off">
+            <form
+              onSubmit={handleLogin}
+              className="space-y-4"
+              noValidate
+              autoComplete="off"
+            >
+              {/* Email / ID */}
               <div className="space-y-1.5">
-                <label className={`text-sm font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("emailOrId")}</label>
+                <label
+                  className={`text-sm font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}
+                >
+                  {tr("emailOrId")}
+                </label>
                 <div className="relative">
-                  <User className={`absolute ${isUrdu ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground`} />
+                  <User
+                    className={`absolute ${isUrdu ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground`}
+                  />
                   <input
                     type="text"
                     value={username}
-                    onChange={e => { setUsername(e.target.value); setError(""); }}
-                    placeholder="darulum@admin"
+                    onChange={(e) => {
+                      setUsername(e.target.value);
+                      setError("");
+                    }}
+                    placeholder={isUrdu ? "ای میل / آئی ڈی" : "Email / ID"}
                     className={`w-full ${isUrdu ? "pr-10 pl-4 text-right" : "pl-10 pr-4"} py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground transition-all`}
                     autoComplete="off"
                     readOnly={isUsernameReadOnly}
@@ -121,14 +188,24 @@ export default function Login() {
                 </div>
               </div>
 
+              {/* Password */}
               <div className="space-y-1.5">
-                <label className={`text-sm font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("passwordLabel")}</label>
+                <label
+                  className={`text-sm font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}
+                >
+                  {tr("passwordLabel")}
+                </label>
                 <div className="relative">
-                  <Lock className={`absolute ${isUrdu ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground`} />
+                  <Lock
+                    className={`absolute ${isUrdu ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground`}
+                  />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={e => { setPassword(e.target.value); setError(""); }}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setError("");
+                    }}
                     placeholder={tr("enterPasswordPh")}
                     className={`w-full ${isUrdu ? "pr-10 pl-12 text-right" : "pl-10 pr-12"} py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground transition-all ${isUrdu ? "urdu-text" : ""}`}
                     autoComplete="new-password"
@@ -138,55 +215,108 @@ export default function Login() {
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword(v => !v)}
+                    onClick={() => setShowPassword((v) => !v)}
                     className={`absolute ${isUrdu ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors`}
                     tabIndex={-1}
-                    aria-label={showPassword ? (isUrdu ? "پاس ورڈ چھپائیں" : "Hide password") : (isUrdu ? "پاس ورڈ دکھائیں" : "Show password")}
+                    aria-label={
+                      showPassword
+                        ? isUrdu
+                          ? "پاس ورڈ چھپائیں"
+                          : "Hide password"
+                        : isUrdu
+                        ? "پاس ورڈ دکھائیں"
+                        : "Show password"
+                    }
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
 
+              {/* Error */}
               {error && (
-                <div className={`flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm ${isUrdu ? "urdu-text" : ""}`} data-testid="login-error">
+                <div
+                  className={`flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm ${isUrdu ? "urdu-text" : ""}`}
+                  data-testid="login-error"
+                >
                   <span className="mt-0.5">⚠</span>
                   <span>{error}</span>
                 </div>
               )}
 
+              {/* Sign In Button */}
               <button
                 type="submit"
                 disabled={loading}
                 className={`w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded-lg transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed text-sm ${isUrdu ? "urdu-text" : ""}`}
                 data-testid="btn-login"
               >
-                {loading ? (isUrdu ? "سائن ان ہو رہا ہے..." : "Signing in...") : tr("signInBtn")}
+                {loading
+                  ? isUrdu
+                    ? "سائن ان ہو رہا ہے..."
+                    : "Signing in..."
+                  : tr("signInBtn")}
               </button>
             </form>
 
+            {/* One-Click Login Buttons — NO "Quick fill" label */}
             <div className="pt-2 border-t border-border">
-              <p className={`text-xs text-muted-foreground text-center mb-3 ${isUrdu ? "urdu-text" : ""}`}>{tr("quickFillDemo")}</p>
               <div className="grid grid-cols-3 gap-2">
-                <button onClick={() => fillDemo("admin")} className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs" data-testid="demo-admin">
+                <button
+                  onClick={() => quickLogin("admin")}
+                  disabled={loading}
+                  className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                  data-testid="demo-admin"
+                >
                   <ShieldCheck className="w-4 h-4 text-primary" />
-                  <span className={`font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("roleAdmin")}</span>
+                  <span
+                    className={`font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}
+                  >
+                    {tr("roleAdmin")}
+                  </span>
                 </button>
-                <button onClick={() => fillDemo("teacher")} className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs" data-testid="demo-teacher">
+                <button
+                  onClick={() => quickLogin("teacher")}
+                  disabled={loading}
+                  className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                  data-testid="demo-teacher"
+                >
                   <BookOpen className="w-4 h-4 text-primary" />
-                  <span className={`font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("roleTeacher")}</span>
+                  <span
+                    className={`font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}
+                  >
+                    {tr("roleTeacher")}
+                  </span>
                 </button>
-                <button onClick={() => fillDemo("parent")} className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs" data-testid="demo-parent">
+                <button
+                  onClick={() => quickLogin("parent")}
+                  disabled={loading}
+                  className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                  data-testid="demo-parent"
+                >
                   <User className="w-4 h-4 text-primary" />
-                  <span className={`font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("roleParent")}</span>
+                  <span
+                    className={`font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}
+                  >
+                    {tr("roleParent")}
+                  </span>
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <p className={`text-center text-xs text-muted-foreground mt-4 ${isUrdu ? "urdu-text" : ""}`}>
-          {isUrdu ? "دارالعلوم سراج الاسلام کلگاؤں" : "Darul Uloom Sirajul Islam Kalgaon"} &copy; {new Date().getFullYear()}
+        <p
+          className={`text-center text-xs text-muted-foreground mt-4 ${isUrdu ? "urdu-text" : ""}`}
+        >
+          {isUrdu
+            ? "دارالعلوم سراج الاسلام کلگاؤں"
+            : "Darul Uloom Sirajul Islam Kalgaon"}{" "}
+          &copy; {new Date().getFullYear()}
         </p>
       </div>
     </div>

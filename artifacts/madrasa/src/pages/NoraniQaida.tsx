@@ -89,7 +89,7 @@ export default function NoraniQaida() {
   const [students] = useLS<Student[]>("students", []);
   const [progressList, setProgressList] = useLS<QaidaProgress[]>("qaida_progress", []);
   const [assessments, setAssessments] = useLS<QaidaAssessment[]>("qaida_assessments", []);
-  const { lang } = useLang();
+  const { lang, tr } = useLang();
   const { toast } = useToast();
   const isUrdu = lang === "ur";
 
@@ -117,7 +117,7 @@ export default function NoraniQaida() {
     progressList.find(p => p.studentId === studentId);
 
   const handleSaveProgress = () => {
-    if (!progressStudentId) { toast({ title: "Error", description: "Select a student", variant: "destructive" }); return; }
+    if (!progressStudentId) { toast({ title: tr("errorTitle"), description: tr("selectStudentTitle"), variant: "destructive" }); return; }
     const lessonNum = parseInt(progressLesson);
     const existing = progressList.find(p => p.studentId === progressStudentId);
     const now = new Date().toISOString();
@@ -152,7 +152,7 @@ export default function NoraniQaida() {
   };
 
   const handleSaveAssessment = () => {
-    if (!assessStudentId) { toast({ title: "Error", description: "Select a student", variant: "destructive" }); return; }
+    if (!assessStudentId) { toast({ title: tr("errorTitle"), description: tr("selectStudentTitle"), variant: "destructive" }); return; }
     const newAssessment: QaidaAssessment = {
       id: `qa_${Date.now()}`,
       studentId: assessStudentId,

@@ -8,13 +8,10 @@ import { Input } from "@/components/ui/input";
 import { ScrollText, Search, Heart, Share2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-type DuaLang = "en" | "hi" | "ur";
-
 export default function Duas() {
   const { lang, tr } = useLang();
   const isUrdu = lang === "ur";
   const { toast } = useToast();
-  const [duaLang, setDuaLang] = useState<DuaLang>(lang === "ur" ? "ur" : "en");
   const [section, setSection] = useState<DuaSection | "all">("all");
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
@@ -26,10 +23,8 @@ export default function Duas() {
     if (q) {
       list = list.filter(d =>
         d.title.en.toLowerCase().includes(q) ||
-        d.title.hi.includes(query.trim()) ||
         d.title.ur.includes(query.trim()) ||
         d.translation.en.toLowerCase().includes(q) ||
-        d.translation.hi.includes(query.trim()) ||
         d.translation.ur.includes(query.trim())
       );
     }
@@ -47,13 +42,13 @@ export default function Duas() {
 
   const shareWhatsApp = () => {
     if (!current) return;
-    const t = `${current.title[duaLang]}\n\n${current.arabic}\n\n${current.translation[duaLang]}${current.reference ? `\n\n— ${current.reference}` : ""}`;
+    const t = `${current.title[lang]}\n\n${current.arabic}\n\n${current.translation[lang]}${current.reference ? `\n\n— ${current.reference}` : ""}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(t)}`, "_blank");
   };
 
   const copyText = async () => {
     if (!current) return;
-    const t = `${current.title[duaLang]}\n\n${current.arabic}\n\n${current.translation[duaLang]}${current.reference ? `\n\n— ${current.reference}` : ""}`;
+    const t = `${current.title[lang]}\n\n${current.arabic}\n\n${current.translation[lang]}${current.reference ? `\n\n— ${current.reference}` : ""}`;
     try {
       await navigator.clipboard.writeText(t);
       toast({ title: isUrdu ? "نقل ہو گیا" : "Copied", description: isUrdu ? "دعا کلپ بورڈ میں نقل ہو گئی" : "Dua copied to clipboard" });
@@ -62,14 +57,7 @@ export default function Duas() {
     }
   };
 
-  const langButtons: { key: DuaLang; label: string }[] = [
-    { key: "en", label: "English" },
-    { key: "hi", label: "हिंदी" },
-    { key: "ur", label: "اردو" },
-  ];
-
-  const sectionLabel = (s: typeof DUA_SECTIONS[number]) =>
-    duaLang === "ur" ? s.ur : duaLang === "hi" ? s.hi : s.en;
+  const sectionLabel = (s: typeof DUA_SECTIONS[number]) => (isUrdu ? s.ur : s.en);
 
   return (
     <div className="space-y-6">
@@ -81,29 +69,19 @@ export default function Duas() {
         <p className={`text-muted-foreground mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("duasSubtitle")}</p>
       </div>
 
-      <div className="flex flex-wrap gap-3 items-center justify-between">
-        <div className="flex gap-1 border rounded-md p-1 bg-card">
-          {langButtons.map(b => (
-            <Button
-              key={b.key}
-              variant={duaLang === b.key ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setDuaLang(b.key)}
-              data-testid={`btn-dua-lang-${b.key}`}
-            >
-              {b.label}
-            </Button>
-          ))}
-        </div>
+      <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px] max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder={duaLang === "ur" ? "دعا تلاش کریں..." : duaLang === "hi" ? "दुआ खोजें..." : "Search dua..."}
+            placeholder={isUrdu ? "دعا تلاش کریں..." : "Search dua..."}
             value={query}
             onChange={(e) => { setQuery(e.target.value); setIndex(0); }}
-            className="pl-9"
+            className={`pl-9 ${isUrdu ? "urdu-text" : ""}`}
             data-testid="input-dua-search"
           />
+        </div>
+        <div className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>
+          {filtered.length} {isUrdu ? "دعائیں" : "duas"} · {favorites.length} {isUrdu ? "پسندیدہ" : "favorites"}
         </div>
       </div>
 
@@ -113,8 +91,9 @@ export default function Duas() {
           size="sm"
           onClick={() => { setSection("all"); setIndex(0); }}
           data-testid="btn-dua-section-all"
+          className={isUrdu ? "urdu-text" : ""}
         >
-          {duaLang === "ur" ? "سب" : duaLang === "hi" ? "सभी" : "All"} ({DUAS.length})
+          {isUrdu ? "سب" : "All"} ({DUAS.length})
         </Button>
         {DUA_SECTIONS.map(s => {
           const count = DUAS.filter(d => d.section === s.key).length;
@@ -125,6 +104,7 @@ export default function Duas() {
               size="sm"
               onClick={() => { setSection(s.key); setIndex(0); }}
               data-testid={`btn-dua-section-${s.key}`}
+              className={isUrdu ? "urdu-text" : ""}
             >
               <span className="mr-1">{s.icon}</span>
               {sectionLabel(s)} ({count})
@@ -138,15 +118,15 @@ export default function Duas() {
           <CardHeader className="bg-primary/5 border-b">
             <div className="flex justify-between items-center flex-wrap gap-2">
               <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                  {duaLang === "ur" ? `دعا #${current.id}` : duaLang === "hi" ? `दुआ #${current.id}` : `Dua #${current.id}`}
+                <p className={`text-xs text-muted-foreground uppercase tracking-wider ${isUrdu ? "urdu-text" : ""}`}>
+                  {isUrdu ? `دعا #${current.id}` : `Dua #${current.id}`}
                 </p>
-                <CardTitle className={`text-xl mt-1 ${duaLang === "ur" ? "urdu-text" : ""}`} dir={duaLang === "ur" ? "rtl" : "ltr"}>
-                  {current.title[duaLang]}
+                <CardTitle className={`text-xl mt-1 ${isUrdu ? "urdu-text" : ""}`} dir={isUrdu ? "rtl" : "ltr"}>
+                  {current.title[lang]}
                 </CardTitle>
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" size="icon" onClick={toggleFav} data-testid="btn-fav-dua" title="Favorite">
+                <Button variant="ghost" size="icon" onClick={toggleFav} data-testid="btn-fav-dua" title={isUrdu ? "پسندیدہ" : "Favorite"}>
                   <Heart className={`w-5 h-5 ${isFav ? "fill-red-500 text-red-500" : ""}`} />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={shareWhatsApp} data-testid="btn-share-dua" title="WhatsApp">
@@ -162,39 +142,32 @@ export default function Duas() {
               </p>
             </div>
             <div className="space-y-2 pt-4 border-t">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {duaLang === "ur" ? "ترجمہ" : duaLang === "hi" ? "अनुवाद" : "Translation"}
+              <p className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider ${isUrdu ? "urdu-text" : ""}`}>
+                {isUrdu ? "ترجمہ" : "Translation"}
               </p>
               <p
-                className={`text-lg leading-relaxed ${duaLang === "ur" ? "urdu-text" : ""}`}
-                dir={duaLang === "ur" ? "rtl" : "ltr"}
+                className={`text-lg leading-relaxed ${isUrdu ? "urdu-text leading-loose" : ""}`}
+                dir={isUrdu ? "rtl" : "ltr"}
               >
-                {current.translation[duaLang]}
+                {current.translation[lang]}
               </p>
             </div>
-            {current.reference && (
-              <div className="pt-3 border-t flex justify-between items-center">
-                <span className="text-sm font-medium text-primary">
-                  {duaLang === "ur" ? "حوالہ: " : duaLang === "hi" ? "संदर्भ: " : "Reference: "}
+            <div className="pt-3 border-t flex justify-between items-center flex-wrap gap-2">
+              {current.reference && (
+                <span className={`text-sm font-medium text-primary ${isUrdu ? "urdu-text" : ""}`}>
+                  {isUrdu ? "حوالہ: " : "Reference: "}
                   {current.reference}
                 </span>
-                <Button variant="outline" size="sm" onClick={copyText} data-testid="btn-copy-dua">
-                  {duaLang === "ur" ? "نقل کریں" : duaLang === "hi" ? "कॉपी करें" : "Copy"}
-                </Button>
-              </div>
-            )}
-            {!current.reference && (
-              <div className="pt-3 border-t flex justify-end">
-                <Button variant="outline" size="sm" onClick={copyText} data-testid="btn-copy-dua">
-                  {duaLang === "ur" ? "نقل کریں" : duaLang === "hi" ? "कॉपी करें" : "Copy"}
-                </Button>
-              </div>
-            )}
+              )}
+              <Button variant="outline" size="sm" onClick={copyText} data-testid="btn-copy-dua" className={`${isUrdu ? "urdu-text" : ""} ${!current.reference ? "ml-auto" : ""}`}>
+                {isUrdu ? "نقل کریں" : "Copy"}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ) : (
-        <div className="p-8 text-center border rounded-md text-muted-foreground bg-card">
-          {duaLang === "ur" ? "کوئی دعا نہیں ملی" : duaLang === "hi" ? "कोई दुआ नहीं मिली" : "No dua found"}
+        <div className={`p-8 text-center border rounded-md text-muted-foreground bg-card ${isUrdu ? "urdu-text" : ""}`}>
+          {isUrdu ? "کوئی دعا نہیں ملی" : "No dua found"}
         </div>
       )}
 
@@ -205,11 +178,12 @@ export default function Duas() {
             onClick={() => setIndex(Math.max(0, safeIndex - 1))}
             disabled={safeIndex === 0}
             data-testid="btn-prev-dua"
+            className={isUrdu ? "urdu-text" : ""}
           >
             <ChevronLeft className="w-4 h-4 mr-1" />
-            {duaLang === "ur" ? "پچھلی" : duaLang === "hi" ? "पिछली" : "Previous"}
+            {isUrdu ? "پچھلی" : "Previous"}
           </Button>
-          <span className="text-sm font-medium">
+          <span className={`text-sm font-medium ${isUrdu ? "urdu-text" : ""}`}>
             {safeIndex + 1} / {filtered.length}
           </span>
           <Button
@@ -217,8 +191,9 @@ export default function Duas() {
             onClick={() => setIndex(Math.min(filtered.length - 1, safeIndex + 1))}
             disabled={safeIndex >= filtered.length - 1}
             data-testid="btn-next-dua"
+            className={isUrdu ? "urdu-text" : ""}
           >
-            {duaLang === "ur" ? "اگلی" : duaLang === "hi" ? "अगली" : "Next"}
+            {isUrdu ? "اگلی" : "Next"}
             <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         </div>

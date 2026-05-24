@@ -18,7 +18,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   islamic: { en: "Islamic", ur: "اسلامی" },
   hadeesBook: { en: "Hadees Book", ur: "حدیث کی کتاب" },
   duasAzkar: { en: "Duas & Azkar", ur: "دعائیں و اذکار" },
-  duasSubtitle: { en: "Daily duas, prayer supplications & more in English, Hindi, Urdu", ur: "روزانہ کی دعائیں، نماز کی دعائیں اور دیگر، انگریزی، ہندی، اردو میں" },
+  duasSubtitle: { en: "Daily duas, prayer supplications & more", ur: "روزانہ کی دعائیں، نماز کی دعائیں اور دیگر" },
   hadeesSubtitle: { en: "Authentic ahadith from Sahih Bukhari, Muslim & more", ur: "صحیح بخاری، مسلم اور دیگر کتب سے مستند احادیث" },
   hijriCalendar: { en: "Hijri Calendar", ur: "ہجری کیلنڈر" },
   importantEvents: { en: "Important Events", ur: "اہم تقریبات" },
@@ -356,6 +356,69 @@ export const translations: Record<string, Record<Lang, string>> = {
   general:            { en: "General", ur: "عام" },
   construction:       { en: "Construction Fund", ur: "تعمیراتی فنڈ" },
   studentFund:        { en: "Student Fund", ur: "طلباء فنڈ" },
+
+  // ── Common alerts / toast titles ──
+  errorTitle:        { en: "Error",            ur: "خرابی" },
+  successTitle:      { en: "Success",          ur: "کامیاب" },
+  warningTitle:      { en: "Warning",          ur: "انتباہ" },
+  areYouSure:        { en: "Are you sure?",    ur: "کیا آپ کو یقین ہے؟" },
+  dataSavedOk:       { en: "Data saved successfully", ur: "ڈیٹا کامیابی سے محفوظ ہوگیا" },
+  deleteOk:          { en: "Delete successful", ur: "حذف کرنا کامیاب" },
+  fillAllFields:     { en: "Please fill all fields", ur: "براہ کرم تمام فیلڈز بھریں" },
+  noDataFound:       { en: "No data found",    ur: "کوئی ڈیٹا نہیں ملا" },
+  studentNameReq:    { en: "Student name is required.", ur: "طالب علم کا نام درکار ہے۔" },
+  teacherNameReq:    { en: "Teacher name is required.", ur: "استاد کا نام درکار ہے۔" },
+  donorAmountReq:    { en: "Donor name and amount required.", ur: "عطیہ دہندہ کا نام اور رقم درکار ہے۔" },
+  studentMonthAmtReq:{ en: "Student, month and amount required.", ur: "طالب علم، مہینہ اور رقم درکار ہیں۔" },
+  descAmountReq:     { en: "Description and amount required.", ur: "تفصیل اور رقم درکار ہیں۔" },
+  studentUpdated:    { en: "Student Updated",  ur: "طالب علم اپ ڈیٹ ہو گیا" },
+  studentDeleted:    { en: "Student Deleted",  ur: "طالب علم حذف ہو گیا" },
+  importSuccessful:  { en: "Import Successful", ur: "درآمد کامیاب" },
+  progressSaved:     { en: "Progress Saved",   ur: "پیشرفت محفوظ ہو گئی" },
+  assessmentSaved:   { en: "Assessment Saved", ur: "تشخیص محفوظ ہو گئی" },
+  studentAddedOk2:   { en: "Student Added",    ur: "طالب علم شامل ہو گیا" },
+  teacherAddedOk:    { en: "Teacher Added",    ur: "استاد شامل ہو گیا" },
+  donationRecorded:  { en: "Donation Recorded", ur: "عطیہ ریکارڈ ہو گیا" },
+  feeRecorded:       { en: "Fee Recorded",     ur: "فیس ریکارڈ ہو گئی" },
+  expenseAdded:      { en: "Expense Added",    ur: "خرچ شامل ہو گیا" },
+  selectStudentTitle:{ en: "Select a student", ur: "طالب علم منتخب کریں" },
+
+  // ── Short day labels (weekdays) ──
+  monShort: { en: "Mon", ur: "پیر" },
+  tueShort: { en: "Tue", ur: "منگل" },
+  wedShort: { en: "Wed", ur: "بدھ" },
+  thuShort: { en: "Thu", ur: "جمعرات" },
+  friShort: { en: "Fri", ur: "جمعہ" },
+  satShort: { en: "Sat", ur: "ہفتہ" },
+  sunShort: { en: "Sun", ur: "اتوار" },
+
+  // ── Dashboard / Hifz overview cells ──
+  studentsInHifz:   { en: "Students in Hifz",   ur: "حفظ کے طلباء" },
+  avgJuzCompleted:  { en: "Avg Juz Completed",  ur: "اوسط مکمل پارے" },
+  leader:           { en: "Leader",             ur: "سرفہرست" },
+  amountLabel:      { en: "Amount",             ur: "رقم" },
+  fee:              { en: "Fee",                ur: "فیس" },
+  donation:         { en: "Donation",           ur: "عطیہ" },
+  feeCollected:     { en: "Fee collected",      ur: "فیس وصول" },
+  ofTarget:         { en: "of target",          ur: "ہدف کا" },
+
+  // ── Login page ──
+  brandLine1:        { en: "DARUL ULOOM",                  ur: "دارالعلوم" },
+  brandLine2:        { en: "SIRAJUL ISLAM KALGAON",        ur: "سراج الاسلام کلگاؤں" },
+  brandSubtitle:     { en: "Madarsa Management System",    ur: "مدرسہ مینجمنٹ سسٹم" },
+  signInHeading:     { en: "Sign In",                       ur: "سائن ان" },
+  enterCredentials:  { en: "Enter your credentials to continue", ur: "جاری رکھنے کے لیے اپنی تفصیلات درج کریں" },
+  emailOrId:         { en: "Email / ID",                    ur: "ای میل / آئی ڈی" },
+  passwordLabel:     { en: "Password",                      ur: "پاس ورڈ" },
+  enterPasswordPh:   { en: "Enter password",                ur: "پاس ورڈ درج کریں" },
+  invalidCreds:      { en: "Invalid email or password",     ur: "غلط ای میل یا پاس ورڈ" },
+  quickFillDemo:     { en: "Quick fill demo credentials:",  ur: "ڈیمو تفصیلات سے بھریں:" },
+  signInBtn:         { en: "Sign In",                       ur: "سائن ان کریں" },
+
+  // ── Misc ──
+  editAction:        { en: "Edit",     ur: "ترمیم" },
+  deleteAction:      { en: "Delete",   ur: "حذف" },
+  copyAction:        { en: "Copy",     ur: "نقل کریں" },
 };
 
 export function useLanguage() {

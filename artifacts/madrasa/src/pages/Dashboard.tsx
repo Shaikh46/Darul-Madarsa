@@ -55,7 +55,7 @@ const feeData = [
 
 const PIE_COLORS = ["#008000", "#DAA520", "#2563eb", "#9333ea", "#10b981"];
 
-const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const WEEKDAY_KEYS = ["monShort", "tueShort", "wedShort", "thuShort", "friShort", "satShort", "sunShort"];
 const weekAttendance = [0, 0, 0, 0, 0, 0, 0];
 
 function getHijriDate(lang: "en" | "ur" = "en"): string {
@@ -146,10 +146,12 @@ export default function Dashboard() {
   const [feeForm, setFeeForm] = useState({ studentId: "", month: "", year: new Date().getFullYear().toString(), amount: "1500", paymentMethod: "Cash" });
   const [expenseForm, setExpenseForm] = useState({ category: "General", description: "", amount: "", date: new Date().toISOString().slice(0, 10) });
 
-  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const MONTH_KEYS = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+  const MONTHS = MONTH_KEYS.map(k => tr(k));
+  const weekDays = WEEKDAY_KEYS.map(k => tr(k));
 
   const saveStudent = () => {
-    if (!studentForm.name.trim()) { toast({ title: "Error", description: "Student name is required.", variant: "destructive" }); return; }
+    if (!studentForm.name.trim()) { toast({ title: tr("errorTitle"), description: tr("studentNameReq"), variant: "destructive" }); return; }
     const newStudent: Student = { id: `s${Date.now()}`, name: studentForm.name, fatherName: studentForm.fatherName, motherName: "", className: studentForm.className || "Deeniyat Alif", jamaat: "General", phone: studentForm.phone, address: "", status: "Active", admissionDate: new Date().toISOString().slice(0, 10) };
     setStudents([...students, newStudent]);
     toast({ title: isUrdu ? "طالب علم شامل ہو گیا" : "Student Added", description: studentForm.name });
@@ -158,7 +160,7 @@ export default function Dashboard() {
   };
 
   const saveTeacher = () => {
-    if (!teacherForm.name.trim()) { toast({ title: "Error", description: "Teacher name is required.", variant: "destructive" }); return; }
+    if (!teacherForm.name.trim()) { toast({ title: tr("errorTitle"), description: tr("teacherNameReq"), variant: "destructive" }); return; }
     const newTeacher: Teacher = { id: `t${Date.now()}`, name: teacherForm.name, email: teacherForm.email, phone: teacherForm.phone, assignedClass: teacherForm.assignedClass, qualification: teacherForm.qualification, joiningDate: new Date().toISOString().slice(0, 10), status: "Active" };
     setTeachers([...teachers, newTeacher]);
     toast({ title: isUrdu ? "استاد شامل ہو گیا" : "Teacher Added", description: teacherForm.name });
@@ -167,7 +169,7 @@ export default function Dashboard() {
   };
 
   const saveDonation = () => {
-    if (!donationForm.donorName.trim() || !donationForm.amount) { toast({ title: "Error", description: "Donor name and amount required.", variant: "destructive" }); return; }
+    if (!donationForm.donorName.trim() || !donationForm.amount) { toast({ title: tr("errorTitle"), description: tr("donorAmountReq"), variant: "destructive" }); return; }
     const receiptNo = `DSIK/DON/${new Date().getFullYear()}/${String(donations.length + 1).padStart(5, "0")}`;
     const newDon: Donation = { id: `don${Date.now()}`, receiptNo, donorName: donationForm.donorName, phone: donationForm.phone, amount: parseFloat(donationForm.amount), donationType: donationForm.donationType, date: new Date(donationForm.date).toISOString() };
     setDonations([newDon, ...donations]);
@@ -177,7 +179,7 @@ export default function Dashboard() {
   };
 
   const saveFee = () => {
-    if (!feeForm.studentId || !feeForm.month || !feeForm.amount) { toast({ title: "Error", description: "Student, month and amount required.", variant: "destructive" }); return; }
+    if (!feeForm.studentId || !feeForm.month || !feeForm.amount) { toast({ title: tr("errorTitle"), description: tr("studentMonthAmtReq"), variant: "destructive" }); return; }
     const student = students.find(s => s.id === feeForm.studentId);
     const receiptNo = `DSIK/FEE/${feeForm.year}/${String(fees.length + 1).padStart(5, "0")}`;
     const newFee: Fee = { id: `fee${Date.now()}`, receiptNo, studentId: feeForm.studentId, studentName: student?.name, month: feeForm.month, year: feeForm.year, amount: parseFloat(feeForm.amount), paymentMethod: feeForm.paymentMethod, status: "paid", date: new Date().toISOString() } as Fee & { studentId: string; month: string; year: string; paymentMethod: string };
@@ -188,7 +190,7 @@ export default function Dashboard() {
   };
 
   const saveExpense = () => {
-    if (!expenseForm.description.trim() || !expenseForm.amount) { toast({ title: "Error", description: "Description and amount required.", variant: "destructive" }); return; }
+    if (!expenseForm.description.trim() || !expenseForm.amount) { toast({ title: tr("errorTitle"), description: tr("descAmountReq"), variant: "destructive" }); return; }
     const newExp: Expense = { id: `exp${Date.now()}`, category: expenseForm.category, description: expenseForm.description, amount: parseFloat(expenseForm.amount), date: new Date(expenseForm.date).toISOString() } as Expense & { category: string; description: string };
     setExpenses([newExp, ...expenses]);
     toast({ title: isUrdu ? "خرچ شامل ہو گیا" : "Expense Added", description: `₹${expenseForm.amount} — ${expenseForm.description}` });
@@ -235,14 +237,14 @@ export default function Dashboard() {
 
   const recentActivity = [
     ...donations.slice(0, 3).map((d) => ({
-      type: "Donation",
+      type: tr("donation"),
       label: `${d.donorName} — ₹${d.amount}`,
       date: d.date,
       color: "bg-purple-100 text-purple-700",
     })),
     ...fees.slice(0, 2).map((f) => ({
-      type: "Fee",
-      label: `Fee collected — ₹${f.amount}`,
+      type: tr("fee"),
+      label: `${tr("feeCollected")} — ₹${f.amount}`,
       date: f.date,
       color: "bg-blue-100 text-blue-700",
     })),
@@ -370,7 +372,7 @@ export default function Dashboard() {
         >
           <div className="flex items-start justify-between mb-2">
             <CreditCard className="w-8 h-8 opacity-80" />
-            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">0% target</span>
+            <span className={`text-xs bg-white/20 rounded-full px-2 py-0.5 ${isUrdu ? "urdu-text" : ""}`}>0% {tr("ofTarget")}</span>
           </div>
           <p className="text-3xl font-bold">₹{totalFees.toLocaleString()}</p>
           <p className={`text-white/70 text-xs mt-1 mb-2 ${isUrdu ? "urdu-text" : ""}`}>{tr("monthlyFees")}</p>
@@ -465,7 +467,7 @@ export default function Dashboard() {
                   <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
                   <Tooltip
                     contentStyle={{ backgroundColor: "hsl(var(--card))", borderRadius: "8px", border: "1px solid hsl(var(--border))" }}
-                    formatter={(v: number) => [`₹${v.toLocaleString()}`, "Amount"]}
+                    formatter={(v: number) => [`₹${v.toLocaleString()}`, tr("amountLabel")]}
                   />
                   <Line type="monotone" dataKey="amount" stroke="#008000" strokeWidth={2.5} dot={{ fill: "#008000", r: 4 }} activeDot={{ r: 6 }} />
                 </LineChart>
@@ -561,9 +563,9 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-3">
             {[
-              { label: "Eid ul Adha", date: "Jun 7, 2026", color: "bg-green-500" },
-              { label: "Fee Collection", date: "Jun 1, 2026", color: "bg-blue-500" },
-              { label: "Monthly Meeting", date: "May 28, 2026", color: "bg-amber-500" },
+              { label: isUrdu ? "عید الاضحیٰ" : "Eid ul Adha", date: "Jun 7, 2026", color: "bg-green-500" },
+              { label: isUrdu ? "فیس وصولی" : "Fee Collection", date: "Jun 1, 2026", color: "bg-blue-500" },
+              { label: isUrdu ? "ماہانہ میٹنگ" : "Monthly Meeting", date: "May 28, 2026", color: "bg-amber-500" },
             ].map(({ label, date, color }) => (
               <div key={label} className={`flex items-center gap-3 ${isUrdu ? "flex-row-reverse" : ""}`}>
                 <div className={`w-2 h-2 rounded-full flex-shrink-0 ${color}`} />
@@ -642,25 +644,25 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className={`flex justify-between ${isUrdu ? "flex-row-reverse" : ""}`}>
-              <span className="text-sm text-muted-foreground">Students in Hifz</span>
+              <span className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("studentsInHifz")}</span>
               <span className="font-bold">{hifzProgress.length}</span>
             </div>
             <div className={`flex justify-between ${isUrdu ? "flex-row-reverse" : ""}`}>
-              <span className="text-sm text-muted-foreground">Avg Juz Completed</span>
+              <span className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("avgJuzCompleted")}</span>
               <span className="font-bold">{avgJuz} / 30</span>
             </div>
             {leader && (
               <div className={`flex justify-between items-center ${isUrdu ? "flex-row-reverse" : ""}`}>
-                <span className="text-sm text-muted-foreground">Leader</span>
-                <span className="text-sm font-semibold text-primary">
-                  {leader.studentName} (Juz {leader.currentJuz})
+                <span className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("leader")}</span>
+                <span className={`text-sm font-semibold text-primary ${isUrdu ? "urdu-text" : ""}`}>
+                  {leader.studentName} ({tr("juz")} {leader.currentJuz})
                 </span>
               </div>
             )}
             {hifzProgress.length > 0 && (
               <div>
                 <div className={`flex justify-between text-xs text-muted-foreground mb-1 ${isUrdu ? "flex-row-reverse" : ""}`}>
-                  <span>Overall Progress</span>
+                  <span className={isUrdu ? "urdu-text" : ""}>{tr("overallProgress")}</span>
                   <span>{Math.round((parseFloat(avgJuz) / 30) * 100)}%</span>
                 </div>
                 <Progress value={(parseFloat(avgJuz) / 30) * 100} className="h-2" />
@@ -676,7 +678,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className={`text-base ${isUrdu ? "urdu-text" : ""}`}>
-              This Week's Attendance
+              {isUrdu ? "اس ہفتے کی حاضری" : "This Week's Attendance"}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -698,7 +700,7 @@ export default function Dashboard() {
             <div className={`flex items-center gap-4 mt-4 text-xs text-muted-foreground ${isUrdu ? "flex-row-reverse" : ""}`}>
               <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-600 inline-block" /> 90%+</span>
               <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-yellow-500 inline-block" /> 70-89%</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500 inline-block" /> Below 70%</span>
+              <span className={`flex items-center gap-1 ${isUrdu ? "urdu-text flex-row-reverse" : ""}`}><span className="w-3 h-3 rounded bg-red-500 inline-block" /> {isUrdu ? "70% سے کم" : "Below 70%"}</span>
             </div>
           </CardContent>
         </Card>

@@ -23,11 +23,15 @@ export default function Login() {
     setPassword("");
   }, []);
 
-  const performLogin = (u: string, p: string, role: Exclude<Role, null>) => {
+  const performLogin = (
+    usernameInput: string,
+    passwordInput: string,
+    role: Exclude<Role, null>
+  ) => {
     setError("");
     setLoading(true);
     setTimeout(() => {
-      const cred = tryLogin(u, p);
+      const cred = tryLogin(usernameInput, passwordInput);
       if (!cred || cred.role !== role) {
         setError(tr("invalidCreds"));
         setLoading(false);
@@ -37,7 +41,8 @@ export default function Login() {
       if (cred.role === "teacher") {
         const teachers = getLS<Teacher[]>("teachers", []);
         const matched = teachers.find(
-          (t) => t.email?.toLowerCase() === u.trim().toLowerCase()
+          (t) =>
+            t.email?.toLowerCase() === usernameInput.trim().toLowerCase()
         );
         resolvedClass = matched?.assignedClass || "";
       }
@@ -74,8 +79,8 @@ export default function Login() {
   };
 
   // Role selection buttons: only set role
-  const selectRole = (type: Exclude<Role, null>) => {
-    setSelectedRole(type);
+  const selectRole = (role: Exclude<Role, null>) => {
+    setSelectedRole(role);
   };
 
   return (

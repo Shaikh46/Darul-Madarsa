@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { CheckCircle2, Circle, Clock } from "lucide-react";
 
 interface ProgressRecord {
   studentId: string;
@@ -18,12 +19,50 @@ interface ProgressRecord {
   updatedAt: string;
 }
 
+const JUZ_NAMES_EN = [
+  "Alif Laam Meem", "Sayaqool", "Tilkal Rusulu", "Lan Tana Lol Birra", "Wal Muhsanaat",
+  "La Yuhibbullah", "Wa Iza Samiu", "Wa Lau Annana", "Qalal Malao", "Wa A'lamu",
+  "Ya'tazerona", "Wa Mamin Da'abat", "Wa Ma Ubrioo", "Rubama", "Subhanallazi",
+  "Qal Alam", "Iqtarabath", "Qadd Aflaha", "Wa Qalallazina", "A'man Khalaq",
+  "Utlu Ma Oohi", "Wa Manyaqnut", "Wa Mali", "Faman Azlam", "Elahe Yuruddu",
+  "Ha'a Meem", "Qala Fama Khatbukum", "Qadd Sami Allah", "Tabarakallazi", "Amma"
+];
+
+const JUZ_NAMES_UR = [
+  "الم", "سیقول", "تلک الرسل", "لن تنالوا البر", "والمحصنات",
+  "لا یحب اللہ", "وإذا سمعوا", "ولو أننا", "قال الملأ", "واعلموا",
+  "یعتذرون", "وما من دابۃ", "وما أبرئ", "ربما", "سبحان الذی",
+  "قال ألم", "اقترب", "قد أفلح", "وقال الذین", "أمن خلق",
+  "اتل ما أوحی", "ومن یقنت", "ومالی", "فمن أظلم", "إلیہ یرد",
+  "حم", "قال فما خطبکم", "قد سمع اللہ", "تبارک الذی", "عم"
+];
+
+type JuzStatus = "completed" | "in_progress" | "pending";
+
+interface JuzMap { [juzNum: number]: JuzStatus; }
+
 export default function HifzProgress() {
   const { lang, tr } = useLang();
   const isUrdu = lang === "ur";
   const [students] = useLS<Student[]>("students", []);
   const [progress, setProgress] = useLS<ProgressRecord[]>("hifz_progress", []);
+  const [juzMap, setJuzMap] = useLS<Record<string, JuzMap>>("hifz_juz_map", {});
   const [selectedClass, setSelectedClass] = useState<string>("");
+
+  const getJuzStatus = (studentId: string, juz: number): JuzStatus => {
+    return juzMap[studentId]?.[juz] || "pending";
+  };
+
+  const cycleJuz = (studentId: string, juz: number) => {
+    const cur = getJuzStatus(studentId, juz);
+    const next: JuzStatus = cur === "pending" ? "in_progress" : cur === "in_progress" ? "completed" : "pending";
+    setJuzMap({ ...juzMap, [studentId]: { ...(juzMap[studentId] || {}), [juz]: next } });
+  };
+
+  const completedCount = (studentId: string) => {
+    const m = juzMap[studentId] || {};
+    return Array.from({ length: 30 }, (_, i) => i + 1).filter(j => m[j] === "completed").length;
+  };
 
   const classes = Array.from(new Set(students.map(s => s.className)));
   const currentStudents = students.filter(s => s.className === selectedClass);
@@ -167,6 +206,51 @@ export default function HifzProgress() {
                       defaultValue={hifzData?.remarks || nazeraData?.remarks || ""}
                       onBlur={(e) => handleUpdate(student.id, "hifz", { remarks: e.target.value })}
                     />
+                  </div>
+
+                  <div className="space-y-2 pt-4 border-t">
+                    <div className="flex justify-between items-center">
+                      <h3 className={`font-semibold text-primary ${isUrdu ? "urdu-text" : ""}`}>{tr("juzTracker")}</h3>
+                      <span className="text-sm font-medium">
+                        {completedCount(student.id)} / 30
+                      </span>
+                    </div>
+                    <Progress value={(completedCount(student.id) / 30) * 100} className="h-2" />
+                    <p className={`text-xs text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>
+                      {isUrdu ? "حالت تبدیل کرنے کے لیے جزو پر کلک کریں" : "Click a Juz to cycle status"}
+                    </p>
+                    <div className="grid grid-cols-5 gap-1.5 mt-2">
+                      {Array.from({ length: 30 }, (_, i) => i + 1).map(j => {
+                        const status = getJuzStatus(student.id, j);
+                        const name = (isUrdu ? JUZ_NAMES_UR : JUZ_NAMES_EN)[j - 1];
+                        return (
+                          <button
+                            key={j}
+                            type="button"
+                            onClick={() => cycleJuz(student.id, j)}
+                            title={`${tr("juz")} ${j}: ${name}`}
+                            className={`aspect-square rounded-md border-2 text-xs font-semibold flex flex-col items-center justify-center transition-colors ${
+                              status === "completed"
+                                ? "bg-emerald-100 border-emerald-500 text-emerald-700"
+                                : status === "in_progress"
+                                ? "bg-amber-100 border-amber-500 text-amber-700"
+                                : "bg-card border-border text-muted-foreground hover:border-primary"
+                            }`}
+                            data-testid={`btn-juz-${student.id}-${j}`}
+                          >
+                            <span>{j}</span>
+                            {status === "completed" && <CheckCircle2 className="w-3 h-3" />}
+                            {status === "in_progress" && <Clock className="w-3 h-3" />}
+                            {status === "pending" && <Circle className="w-3 h-3 opacity-30" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="flex gap-3 text-xs mt-2 flex-wrap">
+                      <span className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-emerald-100 border border-emerald-500" /><span className={isUrdu ? "urdu-text" : ""}>{tr("completed")}</span></span>
+                      <span className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-amber-100 border border-amber-500" /><span className={isUrdu ? "urdu-text" : ""}>{tr("inProgress")}</span></span>
+                      <span className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-card border border-border" /><span className={isUrdu ? "urdu-text" : ""}>{tr("pending")}</span></span>
+                    </div>
                   </div>
 
                 </CardContent>

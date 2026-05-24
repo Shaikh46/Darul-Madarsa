@@ -1,0 +1,343 @@
+ADD THREE NEW FEATURES to my Madrasa Management App "Darul Uloom Sirajul Islam Kalgaon" with COMPLETE Urdu and English support:
+
+## FEATURE 1: ISLAMIC CALENDAR (Hijri Calendar) till 2038
+
+### Requirements:
+Create a complete Islamic/Hijri Calendar that shows dates from 1447 Hijri to 1460 Hijri (approx 2026-2038 Gregorian)
+
+### Calendar Features:
+- Show both Hijri and Gregorian dates side by side
+- Highlight important Islamic dates (Ramadan, Eid, Ashura, etc.)
+- Monthly view with navigation (previous/next month/year)
+- Today button to jump to current date
+- Urdu/English toggle for month names and day names
+
+### Islamic Months in Both Languages:
+| English | Urdu |
+|---------|------|
+| Muharram | محرم |
+| Safar | صفر |
+| Rabi ul Awwal | ربیع الاول |
+| Rabi us Sani | ربیع الثانی |
+| Jamadi ul Awwal | جمادی الاول |
+| Jamadi us Sani | جمادی الثانی |
+| Rajab | رجب |
+| Shaban | شعبان |
+| Ramadan | رمضان |
+| Shawwal | شوال |
+| Dhul Qadah | ذوالقعدہ |
+| Dhul Hijjah | ذوالحجہ |
+
+### Important Islamic Dates till 2038 (Database):
+```javascript
+islamicEvents = {
+  "1 Muharram": "Islamic New Year / نیا اسلامی سال",
+  "10 Muharram": "Ashura / عاشورہ",
+  "12 Rabi ul Awwal": "Eid Milad un Nabi / عید میلاد النبی",
+  "27 Rajab": "Al Isra wal Miraj / معراج",
+  "15 Shaban": "Shab e Barat / شب برات",
+  "1 Ramadan": "First Ramadan / پہلا رمضان",
+  "27 Ramadan": "Laylat al Qadr / شب قدر",
+  "1 Shawwal": "Eid ul Fitr / عید الفطر",
+  "9 Dhul Hijjah": "Day of Arafah / یوم عرفہ",
+  "10 Dhul Hijjah": "Eid ul Adha / عید الاضحی"
+}
+Calendar Display:
+text
+┌─────────────────────────────────────────────────┐
+│  📅 ISLAMIC CALENDAR              [English | اردو] │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│                   محرم 1447                       │
+│                   January 2026                   │
+│                                                  │
+│  ┌────┬────┬────┬────┬────┬────┬────┐           │
+│  │اتوار│پیر│منگل│بدھ│جمعرات│جمعہ│ہفتہ│           │
+│  ├────┼────┼────┼────┼────┼────┼────┤           │
+│  │ 1  │ 2  │ 3  │ 4  │ 5  │ 6  │ 7  │           │
+│  │ 1  │ 2  │ 3  │ 4  │ 5  │ 6  │ 7  │           │
+│  └────┴────┴────┴────┴────┴────┴────┘           │
+│                                                  │
+│  Important Events this Month:                   │
+│  • 1 Muharram - Islamic New Year                │
+│                                                  │
+└─────────────────────────────────────────────────┘
+FEATURE 2: HADEES BOOK with Meanings (Sahih Bukhari & Muslim selected)
+Requirements:
+Add a Hadees section with authentic Ahadith from Sahih Bukhari and Sahih Muslim, each with:
+
+Arabic text
+
+Urdu translation
+
+English translation
+
+Reference (Book & Hadith number)
+
+Hadees Database (40 Ahadith - Core Collection):
+Include these famous Ahadith:
+
+#	English Text	Urdu Translation	Reference
+1	"Actions are judged by intentions"	"اعمال کا دارومدار نیتوں پر ہے"	Bukhari 1
+2	"Seeking knowledge is obligatory on every Muslim"	"علم حاصل کرنا ہر مسلمان پر فرض ہے"	Ibn Majah 224
+3	"The best among you are those who learn Quran and teach it"	"تم میں سب سے بہتر وہ ہے جو قرآن سیکھے اور سکھائے"	Bukhari 5027
+4	"None of you truly believes until he loves for his brother what he loves for himself"	"تم میں سے کوئی شخص اس وقت تک مومن نہیں ہوتا جب تک وہ اپنے بھائی کے لیے وہی پسند نہ کرے جو اپنے لیے پسند کرتا ہے"	Bukhari 13
+5	"God is beautiful and loves beauty"	"اللہ تعالیٰ خوبصورت ہے اور خوبصورتی کو پسند کرتا ہے"	Muslim 91
+6	"The strong believer is better than the weak believer"	"مومنِ قوی مومنِ ضعیف سے بہتر ہے"	Muslim 2664
+7	"Speak good or remain silent"	"اچھی بات کرو یا خاموش رہو"	Bukhari 6475
+8	"Do not be angry"	"غصہ نہ کرو"	Bukhari 6116
+9	"Cleanliness is half of faith"	"پاکیزگی ایمان کا آدھا حصہ ہے"	Muslim 223
+10	"The best of you is the best to his family"	"تم میں سب سے بہتر وہ ہے جو اپنے گھر والوں کے لیے بہتر ہو"	Tirmidhi 3895
+Display Format:
+text
+┌─────────────────────────────────────────────────┐
+│  📖 HADEES BOOK                    [English | اردو] │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│  Hadith #1                                       │
+│  ┌─────────────────────────────────────────────┐ │
+│  │ Arabic:                                     │ │
+│  │ "إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ"        │ │
+│  │                                              │ │
+│  │ English: "Actions are judged by intentions" │ │
+│  │                                              │ │
+│  │ Urdu: "اعمال کا دارومدار نیتوں پر ہے"       │ │
+│  │                                              │ │
+│  │ Reference: Sahih Bukhari, Book 1, Hadith 1  │ │
+│  └─────────────────────────────────────────────┘ │
+│                                                  │
+│  [< Previous]  [1/40]  [Next >]                 │
+│                                                  │
+└─────────────────────────────────────────────────┘
+Hadees Features:
+Navigation buttons (Next/Previous)
+
+Jump to any Hadith number
+
+Search by keyword (English/Urdu)
+
+Save favorite Ahadith
+
+Share Hadith via WhatsApp
+
+Audio recitation option (if available, show "Coming Soon")
+
+FEATURE 3: HAFIZ QURAN TRACKER
+Requirements:
+Create a Quran completion tracker for students enrolled in Hifz classes.
+
+Tracker Features:
+Display all 30 Juz (Parahs) of Quran
+
+Track which Juz student has memorized
+
+Track which Surahs are completed
+
+Progress percentage calculator
+
+Revision tracker (last revision date)
+
+Teacher can mark Juz as completed
+
+Student/Parent can view progress
+
+Quran Structure:
+javascript
+quranStructure = {
+  juz: [1 to 30],
+  juzNames: {
+    1: "Alif Laam Meem",
+    2: "Sayaqool",
+    3: "Tilkal Rusulu",
+    // ... up to 30
+  },
+  surahs: 114,
+  totalPages: 604,
+  totalVerses: 6236
+}
+Hifz Tracker Display:
+text
+┌─────────────────────────────────────────────────┐
+│  🌟 HAFIZ QURAN TRACKER          [English | اردو] │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│  Student: Abdullah                  Class: Hifz Alif │
+│  Current Juz: 15/30               Progress: 50% │
+│                                                  │
+│  ████████████████░░░░░░░░░░░░░░░░  50%          │
+│                                                  │
+│  ┌─────────────────────────────────────────────┐ │
+│  │ JUZ COMPLETION STATUS                       │ │
+│  ├──────┬────────────────────┬────────────────┤ │
+│  │ Juz #│ Name               │ Status         │ │
+│  ├──────┼────────────────────┼────────────────┤ │
+│  │ 1    │ Alif Laam Meem     │ ✅ Complete    │ │
+│  │ 2    │ Sayaqool           │ ✅ Complete    │ │
+│  │ 3    │ Tilkal Rusulu      │ 🔄 In Progress │ │
+│  │ 4    │ Lan Tanalul Birra  │ ⏳ Pending     │ │
+│  │ 5    │ Wal Muhsanatu      │ ⏳ Pending     │ │
+│  └──────┴────────────────────┴────────────────┘ │
+│                                                  │
+│  [Update Progress] [Generate Certificate]       │
+│                                                  │
+└─────────────────────────────────────────────────┘
+Teacher View (Update Progress):
+text
+┌─────────────────────────────────────────────────┐
+│  UPDATE HIFZ PROGRESS                            │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│  Select Student: [Abdullah ▼]                   │
+│                                                  │
+│  Juz: [15 ▼]     Status: [✅ Completed]         │
+│                                                  │
+│  Revision Date: [24/05/2026]                    │
+│                                                  │
+│  Teacher Remarks: [Very good progress]          │
+│                                                  │
+│  [SAVE PROGRESS]                                 │
+│                                                  │
+└─────────────────────────────────────────────────┘
+Hifz Certificate:
+When student completes all 30 Juz, generate "Hafiz Quran Completion Certificate":
+
+text
+═══════════════════════════════════════════
+   DARUL ULOOM SIRAJUL ISLAM KALGAON
+         
+   CERTIFICATE OF QURAN COMPLETION
+         
+   This is to certify that
+         
+        [Student Name]
+         
+   has successfully completed the memorization
+   of the Holy Quran (Hifz)
+         
+   Date: [Date]              Signature: [Qari Name]
+═══════════════════════════════════════════
+Hifz Statistics Dashboard (Admin):
+text
+┌─────────────────────────────────────────────────┐
+│  HIFZ STATISTICS                                 │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│  Total Hifz Students: 25                        │
+│  Full Hafiz Completed: 5 (20%)                  │
+│  Half Quran (15+ Juz): 8 (32%)                  │
+│  Quarter Quran (7+ Juz): 6 (24%)                │
+│  Below 7 Juz: 6 (24%)                           │
+│                                                  │
+│  Average Progress: 35%                          │
+│                                                  │
+└─────────────────────────────────────────────────┘
+COMPLETE URDU TRANSLATIONS FOR ALL FEATURES:
+Islamic Calendar Urdu:
+English	Urdu
+Islamic Calendar	اسلامی کیلنڈر
+Hijri	ہجری
+Gregorian	عیسوی
+Important Events	اہم ایام
+Today	آج
+Previous Month	پچھلا مہینہ
+Next Month	اگلا مہینہ
+Hadees Book Urdu:
+English	Urdu
+Hadees Book	حدیث کی کتاب
+Arabic	عربی
+Translation	ترجمہ
+Reference	حوالہ
+Search Hadees	حدیث تلاش کریں
+Favorite	پسندیدہ
+Share	شیئر کریں
+Hafiz Quran Urdu:
+English	Urdu
+Hafiz Quran Tracker	حافظ قرآن ٹریکر
+Juz Completed	پارہ مکمل
+Memorization Progress	حفظ کی پیشرفت
+Revision	دہرائی
+Completion Certificate	سند تکمیل
+MENU ADDITIONS:
+Add these to sidebar navigation:
+
+html
+<a href="#" onclick="showPage('islamicCalendar')">
+  <i class="fas fa-calendar-alt"></i> Islamic Calendar
+</a>
+<a href="#" onclick="showPage('hadeesBook')">
+  <i class="fas fa-book-quran"></i> Hadees Book
+</a>
+<a href="#" onclick="showPage('hafizTracker')">
+  <i class="fas fa-star-and-crescent"></i> Hafiz Quran
+</a>
+DATABASE STRUCTURE ADDITIONS:
+javascript
+// Hifz Progress
+hifz_progress: {
+  student_id: string,
+  student_name: string,
+  class: string,
+  juz_completed: [1,2,3...],
+  current_juz: number,
+  start_date: timestamp,
+  completion_date: timestamp,
+  last_revision_date: timestamp,
+  teacher_remarks: string,
+  certificate_issued: boolean
+}
+
+// Favorite Hadees
+favorite_hadees: {
+  student_id: string,
+  hadith_id: number
+}
+DELIVERY REQUIREMENTS:
+Islamic Calendar working till year 2038 (1460 Hijri)
+
+Hadees Book with 40+ authentic Ahadith with English & Urdu translations
+
+Hafiz Quran Tracker with Juz-by-Juz progress
+
+ALL three features must support Urdu/English toggle
+
+Teacher can update Hifz progress for their students
+
+Admin can view Hifz statistics
+
+ONE complete HTML file
+
+Keep ALL existing features
+
+START BUILDING NOW. Add all three features with complete bilingual support.
+
+text
+
+---
+
+## 📊 Summary of What This Adds
+
+| Feature | Description | Urdu Support |
+|---------|-------------|--------------|
+| **Islamic Calendar** | Hijri dates till 2038, important events | ✅ Full |
+| **Hadees Book** | 40+ Ahadith with Arabic, English, Urdu | ✅ Full |
+| **Hafiz Quran Tracker** | Juz-by-Juz memorization tracking | ✅ Full |
+
+---
+
+## ✅ Features Breakdown
+
+### Islamic Calendar (till 2038)
+- All 12 Islamic months
+- Important dates (Ramadan, Eid, Ashura, etc.)
+- Gregorian to Hijri conversion
+
+### Hadees Book
+- 40 core Ahadith from Bukhari & Muslim
+- Arabic text + English + Urdu meanings
+- Search, favorite, share features
+
+### Hafiz Quran Tracker
+- Track 30 Juz completion
+- Progress percentage
+- Revision tracker
+- Completion certificate

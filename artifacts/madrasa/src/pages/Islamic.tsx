@@ -1,25 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MoonStar, Clock, CalendarDays } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MoonStar, Clock, CalendarDays, ChevronLeft, ChevronRight, Star } from "lucide-react";
+import {
+  gregToHijri, formatHijri, getEventForHijri,
+  HIJRI_MONTHS_EN, HIJRI_MONTHS_UR, WEEKDAYS_EN, WEEKDAYS_UR,
+} from "@/lib/hijri";
 
-function getHijriDate(lang: "en" | "ur" = "en"): string {
-  const ANCHOR_GREG = new Date(2026, 4, 18);
-  const AVG = 29.53059;
-  const AVG_YEAR = AVG * 12;
-  const ANCHOR_TOTAL = (1447 - 1) * AVG_YEAR + (12 - 1) * AVG + (1 - 1);
-  const today = new Date();
-  const diffDays = Math.round((today.getTime() - ANCHOR_GREG.getTime()) / 86400000);
-  const total = ANCHOR_TOTAL + diffDays;
-  const hYear = Math.floor(total / AVG_YEAR) + 1;
-  const rem1 = total % AVG_YEAR;
-  const hMonth = Math.min(Math.floor(rem1 / AVG) + 1, 12);
-  const hDay = Math.min(Math.floor(rem1 % AVG) + 1, 30);
-  const monthsEn = ["Muharram","Safar","Rabi ul Awwal","Rabi ul Thani","Jamadi ul Awwal","Jamadi ul Thani","Rajab","Sha'ban","Ramadan","Shawwal","Zil Qa'dah","Zil Hijjah"];
-  const monthsUr = ["محرم","صفر","ربیع الاول","ربیع الثانی","جمادی الاول","جمادی الثانی","رجب","شعبان","رمضان","شوال","ذوالقعدہ","ذوالحجہ"];
-  const mIdx = Math.max(0, Math.min(hMonth - 1, 11));
-  if (lang === "ur") return `${hDay} ${monthsUr[mIdx]} ${hYear} ہجری`;
-  return `${hDay} ${monthsEn[mIdx]} ${hYear} AH`;
+function getHijriDate(lang: "en" | "ur"): string {
+  return formatHijri(gregToHijri(new Date()), lang);
 }
 
 export default function Islamic() {
@@ -56,6 +46,54 @@ export default function Islamic() {
   const gregorianDate = time.toLocaleDateString(isUrdu ? "ar-SA" : "en-US", {
     weekday: "long", year: "numeric", month: "long", day: "numeric"
   });
+
+  const [calCursor, setCalCursor] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
+
+  const calData = useMemo(() => {
+    const year = calCursor.getFullYear();
+    const month = calCursor.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startWeekday = firstDay.getDay();
+    const daysInMonth = lastDay.getDate();
+    const cells: { date: Date | null; hijri: ReturnType<typeof gregToHijri> | null; event: string | null }[] = [];
+    for (let i = 0; i < startWeekday; i++) cells.push({ date: null, hijri: null, event: null });
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, month, d);
+      const h = gregToHijri(date);
+      cells.push({ date, hijri: h, event: getEventForHijri(h, lang) });
+    }
+    while (cells.length % 7 !== 0) cells.push({ date: null, hijri: null, event: null });
+    const firstHijri = gregToHijri(firstDay);
+    const lastHijri = gregToHijri(lastDay);
+    return { cells, firstHijri, lastHijri };
+  }, [calCursor, lang]);
+
+  const monthEvents = useMemo(() => {
+    const seen = new Set<string>();
+    const out: { date: Date; hijri: ReturnType<typeof gregToHijri>; name: string }[] = [];
+    for (const c of calData.cells) {
+      if (c.date && c.event && c.hijri && !seen.has(c.event)) {
+        seen.add(c.event);
+        out.push({ date: c.date, hijri: c.hijri, name: c.event });
+      }
+    }
+    return out;
+  }, [calData]);
+
+  const navMonth = (delta: number) => {
+    setCalCursor(new Date(calCursor.getFullYear(), calCursor.getMonth() + delta, 1));
+  };
+
+  const todayKey = new Date().toDateString();
+  const monthNames = isUrdu
+    ? ["جنوری","فروری","مارچ","اپریل","مئی","جون","جولائی","اگست","ستمبر","اکتوبر","نومبر","دسمبر"]
+    : ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const weekdays = isUrdu ? WEEKDAYS_UR : WEEKDAYS_EN;
+  const hijriMonths = isUrdu ? HIJRI_MONTHS_UR : HIJRI_MONTHS_EN;
 
   return (
     <div className="space-y-6">
@@ -100,6 +138,89 @@ export default function Islamic() {
                 </span>
               </div>
             ))}
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <div className="flex justify-between items-center flex-wrap gap-3">
+              <CardTitle className={`flex items-center gap-2 ${isUrdu ? "urdu-text" : ""}`}>
+                <CalendarDays className="w-5 h-5 text-primary" />
+                {tr("hijriCalendar")}
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => navMonth(-1)} data-testid="btn-cal-prev">
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setCalCursor(new Date(new Date().getFullYear(), new Date().getMonth(), 1))} data-testid="btn-cal-today">
+                  {tr("today")}
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => navMonth(1)} data-testid="btn-cal-next">
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="mt-3 text-center">
+              <p className={`text-xl font-bold ${isUrdu ? "urdu-text" : ""}`}>
+                {hijriMonths[calData.firstHijri.m - 1]}
+                {calData.firstHijri.m !== calData.lastHijri.m && ` / ${hijriMonths[calData.lastHijri.m - 1]}`}
+                {" "}{calData.firstHijri.y}{isUrdu ? " ہجری" : " AH"}
+              </p>
+              <p className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>
+                {monthNames[calCursor.getMonth()]} {calCursor.getFullYear()}
+              </p>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {weekdays.map((d, i) => (
+                <div key={i} className={`text-center text-xs font-semibold text-muted-foreground p-1 ${isUrdu ? "urdu-text" : ""}`}>
+                  {d}
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-7 gap-1">
+              {calData.cells.map((c, i) => {
+                if (!c.date) return <div key={i} className="aspect-square" />;
+                const isToday = c.date.toDateString() === todayKey;
+                const hasEvent = !!c.event;
+                return (
+                  <div
+                    key={i}
+                    className={`aspect-square border rounded-md p-1 flex flex-col items-center justify-between text-xs relative ${
+                      isToday ? "bg-primary text-primary-foreground border-primary font-bold" : "bg-card"
+                    } ${hasEvent && !isToday ? "border-accent bg-accent/10" : ""}`}
+                    title={c.event || ""}
+                  >
+                    <span className="font-medium">{c.date.getDate()}</span>
+                    <span className={`text-[10px] ${isToday ? "opacity-90" : "text-muted-foreground"}`}>
+                      {c.hijri?.d}
+                    </span>
+                    {hasEvent && <Star className="absolute top-0.5 right-0.5 w-2.5 h-2.5 text-accent fill-accent" />}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-4 pt-4 border-t">
+              <h4 className={`font-semibold mb-2 flex items-center gap-2 ${isUrdu ? "urdu-text" : ""}`}>
+                <Star className="w-4 h-4 text-accent fill-accent" />
+                {tr("importantEvents")}
+              </h4>
+              {monthEvents.length === 0 ? (
+                <p className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("noEventsMonth")}</p>
+              ) : (
+                <ul className="space-y-1">
+                  {monthEvents.map((e, i) => (
+                    <li key={i} className={`text-sm flex justify-between ${isUrdu ? "urdu-text" : ""}`}>
+                      <span>{e.name}</span>
+                      <span className="text-muted-foreground">
+                        {e.date.getDate()} {monthNames[e.date.getMonth()]} · {e.hijri.d} {hijriMonths[e.hijri.m - 1]}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </CardContent>
         </Card>
 

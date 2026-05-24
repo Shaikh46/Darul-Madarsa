@@ -18,6 +18,7 @@ import {
   LogOut,
   ShieldCheck,
   Settings,
+  BookMarked,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoImg from "@assets/logo.png_1779548283551.jpeg";
@@ -44,6 +45,7 @@ const navItems: NavItem[] = [
   { key: "salaries",      href: "/salaries",       icon: Wallet,          roles: ["admin"] },
   { key: "donations",     href: "/donations",      icon: HeartHandshake,  roles: ["admin"] },
   { key: "islamic",       href: "/islamic",        icon: MoonStar,        roles: ["admin", "teacher", "parent"] },
+  { key: "hadeesBook",    href: "/hadees",         icon: BookMarked,      roles: ["admin", "teacher", "parent"] },
   { key: "communication", href: "/communication",  icon: MessageSquare,   roles: ["admin"] },
   { key: "settings",      href: "/settings",       icon: Settings,        roles: ["admin"] },
 ];

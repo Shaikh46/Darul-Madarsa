@@ -14,6 +14,22 @@ export function Layout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     initializeData();
+
+    // Sync from loggedInUser if set by WebView direct login/fallback
+    try {
+      const loggedInUserStr = localStorage.getItem('loggedInUser');
+      if (loggedInUserStr) {
+        const user = JSON.parse(loggedInUserStr);
+        const currentRole = localStorage.getItem('app_role');
+        if (user && user.role && (!currentRole || currentRole === 'null')) {
+          localStorage.setItem('app_role', JSON.stringify(user.role));
+          localStorage.setItem('app_user_name', JSON.stringify(user.name || user.role));
+          window.dispatchEvent(new Event("local-storage"));
+        }
+      }
+    } catch (e) {
+      console.error("Error syncing loggedInUser on mount:", e);
+    }
   }, []);
 
   useEffect(() => {

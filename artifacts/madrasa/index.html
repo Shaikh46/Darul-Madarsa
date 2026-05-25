@@ -1,6 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      // WebView compatibility fix for mobile apps
+      (function() {
+        // Enable localStorage if disabled in WebView
+        if (typeof localStorage === 'undefined' || localStorage === null) {
+          window.localStorage = {
+            _data: {},
+            setItem: function(id, val) { this._data[id] = String(val); },
+            getItem: function(id) { return this._data.hasOwnProperty(id) ? this._data[id] : null; },
+            removeItem: function(id) { delete this._data[id]; },
+            clear: function() { this._data = {}; }
+          };
+        }
+        
+        // Safe body styling check for Android WebView
+        if (typeof window !== 'undefined') {
+          if (document.body) {
+            document.body.style.backgroundColor = '#ffffff';
+          } else {
+            document.addEventListener('DOMContentLoaded', function() {
+              if (document.body) document.body.style.backgroundColor = '#ffffff';
+            });
+          }
+        }
+        
+        // Override console errors to prevent crashes
+        if (typeof console === 'undefined') {
+          window.console = {
+            log: function() {},
+            error: function() {},
+            warn: function() {}
+          };
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />

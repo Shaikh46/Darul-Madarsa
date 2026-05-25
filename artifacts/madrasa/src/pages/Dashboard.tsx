@@ -290,8 +290,11 @@ export default function Dashboard() {
   const nextPrayer = getNextPrayer();
 
   useEffect(() => {
-    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-      Notification.requestPermission();
+    const isNotificationSupported = typeof window !== "undefined" && "Notification" in window && window.Notification !== undefined;
+    if (isNotificationSupported) {
+      if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission();
+      }
     }
   }, []);
 
@@ -306,7 +309,8 @@ export default function Dashboard() {
     
     // Trigger notification exactly 10 minutes before
     if (diffMins === 10 && currentTime.getSeconds() === 0) {
-      if (Notification.permission === "granted") {
+      const isNotificationSupported = typeof window !== "undefined" && "Notification" in window && window.Notification !== undefined;
+      if (isNotificationSupported && Notification.permission === "granted") {
         new Notification(isUrdu ? "نماز کا وقت قریب ہے" : "Prayer Time Alert", {
           body: isUrdu
             ? `📢 ${nextPrayer.name} کا وقت 10 منٹ میں شروع ہو رہا ہے۔ نماز کی تیاری کریں۔`
@@ -528,7 +532,7 @@ export default function Dashboard() {
               {Math.floor(((nextPrayer.time.getTime() - currentTime.getTime()) % 60000) / 1000).toString().padStart(2, '0')}
             </p>
           </div>
-          {Notification.permission !== 'granted' && (
+          {typeof window !== "undefined" && "Notification" in window && window.Notification !== undefined && Notification.permission !== 'granted' && (
             <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded max-w-xs text-center border border-amber-200">
               {isUrdu ? "نماز کے الرٹس حاصل کرنے کے لیے اطلاعات کو فعال کریں۔" : "Enable notifications to receive prayer alerts."}
             </p>

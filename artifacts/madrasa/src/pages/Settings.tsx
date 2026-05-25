@@ -190,7 +190,7 @@ export default function Settings() {
             {[
               { role: isUrdu ? "منتظم" : "Admin",   id: "darulum@admin",   pass: "78607860",  cls: "text-primary" },
               { role: isUrdu ? "استاد" : "Teacher",  id: "darulum@teacher", pass: "068706",    cls: "text-emerald-600" },
-              { role: isUrdu ? "والدین" : "Parent",  id: "parent@demo.com", pass: "parent123", cls: "text-blue-600" },
+              { role: isUrdu ? "والدین" : "Parent",  id: "darulum@parent",  pass: "123456",    cls: "text-blue-600" },
             ].map(c => (
               <div key={c.id} className={`flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border ${isUrdu ? "flex-row-reverse" : ""}`}>
                 <span className={`text-sm font-semibold ${c.cls}`}>{c.role}</span>

@@ -51,7 +51,8 @@ export interface Credential {
 export const CREDENTIALS: Credential[] = [
   { username: "darulum@admin",   password: "78607860", role: "admin",   displayName: "Administrator" },
   { username: "darulum@teacher", password: "068706",   role: "teacher", displayName: "Teacher" },
-  { username: "parent@demo.com", password: "parent123",role: "parent",  displayName: "Parent" },
+  { username: "darulum@parent",  password: "123456",   role: "parent",  displayName: "Parent" },
+  { username: "parent@demo.com", password: "123456",   role: "parent",  displayName: "Parent" },
 ];
 
 export function tryLogin(username: string, password: string): Credential | null {
@@ -72,12 +73,28 @@ export const useAuth = () => {
     if (cred.role === "teacher") {
       setTeacherClass(resolvedClass || "");
     }
+    try {
+      const userData = {
+        email: cred.username,
+        role: cred.role,
+        name: cred.displayName,
+        loginTime: new Date().toISOString()
+      };
+      localStorage.setItem('loggedInUser', JSON.stringify(userData));
+    } catch (error) {
+      console.error('Failed to sync loggedInUser to localStorage:', error);
+    }
   };
 
   const logout = () => {
     setRole(null);
     setUserName("");
     setTeacherClass("");
+    try {
+      localStorage.removeItem('loggedInUser');
+    } catch (error) {
+      console.error('Failed to clear loggedInUser from localStorage:', error);
+    }
   };
 
   return { role, userName, teacherClass, login, logout };

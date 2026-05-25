@@ -325,3 +325,64 @@
 .slide-up-stagger > *:nth-child(6) { animation-delay: 0.30s; }
 .slide-up-stagger > *:nth-child(7) { animation-delay: 0.35s; }
 .slide-up-stagger > *:nth-child(8) { animation-delay: 0.40s; }
+
+/* ==========================================
+   Mobile fixes for class dropdowns & selects
+   ========================================== */
+@media (max-width: 768px) {
+  /* Style standard HTML select dropdowns if they exist */
+  .class-dropdown, select {
+    display: block !important;
+    width: 100% !important;
+    min-width: 200px !important;
+    padding: 12px 8px !important;
+    font-size: 16px !important; /* Forces 16px to prevent iOS auto-zoom */
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: 8px !important;
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--foreground)) !important;
+    overflow-y: auto !important;
+    -webkit-appearance: menulist !important;
+    appearance: menulist !important;
+  }
+  
+  select option {
+    padding: 10px 8px !important;
+    font-size: 16px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  .class-dropdown-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  /* Support for Radix UI Select Viewports to not be cut off on mobile */
+  [data-radix-select-viewport], [role="listbox"] {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Trigger elements styling */
+  button[role="combobox"] {
+    padding: 12px !important;
+    font-size: 16px !important;
+    min-height: 44px !important; /* Good touch target */
+  }
+
+  [role="option"] {
+    padding: 12px !important;
+    font-size: 16px !important;
+  }
+
+  /* Class columns wrapping on small screens */
+  .class-column {
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+}

@@ -2,7 +2,7 @@ import { useLS, Student, useAuth } from "@/lib/storage";
 import { useLang } from "@/lib/i18n";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, CalendarCheck, GraduationCap, Users, ArrowRight } from "lucide-react";
+import { BookOpen, CalendarCheck, GraduationCap, Users, ArrowRight, UserPlus } from "lucide-react";
 import { Link } from "wouter";
 
 export default function TeacherPortal() {
@@ -110,41 +110,72 @@ export default function TeacherPortal() {
       </div>
 
       {/* Quick actions */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-3 gap-4">
+        <Link href="/students">
+          <Card className="cursor-pointer hover:shadow-md transition-all border-blue-200 hover:border-blue-400 group h-full">
+            <CardContent className="p-5 flex flex-col justify-between h-full gap-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-blue-100 text-blue-700 rounded-xl group-hover:bg-blue-200 transition-colors">
+                  <UserPlus className="w-7 h-7" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground text-base">
+                    {isUrdu ? "طالب علم شامل کریں" : "Add Student"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {isUrdu ? "اپنی کلاس میں نیا اندراج کریں" : "Register new student in your class"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-blue-600 transition-colors" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
         <Link href="/attendance">
-          <Card className="cursor-pointer hover:shadow-md transition-all border-primary/20 hover:border-primary/40 group">
-            <CardContent className="p-5 flex items-center gap-4">
-              <div className="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary/20 transition-colors">
-                <CalendarCheck className="w-7 h-7" />
+          <Card className="cursor-pointer hover:shadow-md transition-all border-primary/20 hover:border-primary/40 group h-full">
+            <CardContent className="p-5 flex flex-col justify-between h-full gap-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary/20 transition-colors">
+                  <CalendarCheck className="w-7 h-7" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground text-base">
+                    {isUrdu ? "حاضری لگائیں" : "Mark Attendance"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {isUrdu ? "آج کی حاضری درج کریں" : "Record today's attendance for your class"}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground text-base">
-                  {isUrdu ? "حاضری لگائیں" : "Mark Attendance"}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {isUrdu ? "آج کی حاضری درج کریں" : "Record today's attendance for your class"}
-                </p>
+              <div className="flex justify-end">
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
-              <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
             </CardContent>
           </Card>
         </Link>
 
         <Link href="/norani-qaida">
-          <Card className="cursor-pointer hover:shadow-md transition-all border-emerald-200 hover:border-emerald-400 group">
-            <CardContent className="p-5 flex items-center gap-4">
-              <div className="p-3 bg-emerald-100 text-emerald-700 rounded-xl group-hover:bg-emerald-200 transition-colors">
-                <BookOpen className="w-7 h-7" />
+          <Card className="cursor-pointer hover:shadow-md transition-all border-emerald-200 hover:border-emerald-400 group h-full">
+            <CardContent className="p-5 flex flex-col justify-between h-full gap-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-emerald-100 text-emerald-700 rounded-xl group-hover:bg-emerald-200 transition-colors">
+                  <BookOpen className="w-7 h-7" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground text-base">
+                    {isUrdu ? "نورانی قاعدہ" : "Norani Qaida"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {isUrdu ? "طلباء کی پیشرفت درج کریں" : "Track student Qaida progress"}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground text-base">
-                  {isUrdu ? "نورانی قاعدہ" : "Norani Qaida"}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {isUrdu ? "طلباء کی پیشرفت درج کریں" : "Track student Qaida progress"}
-                </p>
+              <div className="flex justify-end">
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-600 transition-colors" />
               </div>
-              <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-600 transition-colors" />
             </CardContent>
           </Card>
         </Link>

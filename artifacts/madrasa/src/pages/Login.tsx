@@ -10,8 +10,7 @@ export default function Login() {
   const isUrdu = lang === "ur";
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isUsernameReadOnly, setIsUsernameReadOnly] = useState(true);
-  const [isPasswordReadOnly, setIsPasswordReadOnly] = useState(true);
+  const [selectedRole, setSelectedRole] = useState<"admin" | "teacher" | "parent">("admin");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,6 +28,15 @@ export default function Login() {
       const cred = tryLogin(u, p);
       if (!cred) {
         setError(tr("invalidCreds"));
+        setLoading(false);
+        return;
+      }
+      if (cred.role !== selectedRole) {
+        setError(
+          isUrdu
+            ? `براہ کرم منتخب کردہ کردار (${selectedRole}) کے لیے درست اسناد درج کریں۔`
+            : `Please enter valid credentials for the selected role (${selectedRole}).`
+        );
         setLoading(false);
         return;
       }
@@ -66,19 +74,10 @@ export default function Login() {
     performLogin(username, password);
   };
 
-  // One-click login buttons: fill fields AND immediately log in
-  const quickLogin = (type: "admin" | "teacher" | "parent") => {
-    let u = "";
-    let p = "";
-    if (type === "admin") { u = "darulum@admin"; p = "78607860"; }
-    if (type === "teacher") { u = "darulum@teacher"; p = "068706"; }
-    if (type === "parent") { u = "parent@demo.com"; p = "parent123"; }
-    setIsUsernameReadOnly(false);
-    setIsPasswordReadOnly(false);
-    setUsername(u);
-    setPassword(p);
+  // Select role but do not auto-fill
+  const selectRole = (type: "admin" | "teacher" | "parent") => {
+    setSelectedRole(type);
     setError("");
-    performLogin(u, p);
   };
 
   return (
@@ -181,8 +180,6 @@ export default function Login() {
                     placeholder={isUrdu ? "ای میل / آئی ڈی" : "Email / ID"}
                     className={`w-full ${isUrdu ? "pr-10 pl-4 text-right" : "pl-10 pr-4"} py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground transition-all`}
                     autoComplete="off"
-                    readOnly={isUsernameReadOnly}
-                    onFocus={() => setIsUsernameReadOnly(false)}
                     data-testid="input-username"
                   />
                 </div>
@@ -209,8 +206,6 @@ export default function Login() {
                     placeholder={tr("enterPasswordPh")}
                     className={`w-full ${isUrdu ? "pr-10 pl-12 text-right" : "pl-10 pr-12"} py-2.5 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground transition-all ${isUrdu ? "urdu-text" : ""}`}
                     autoComplete="new-password"
-                    readOnly={isPasswordReadOnly}
-                    onFocus={() => setIsPasswordReadOnly(false)}
                     data-testid="input-password"
                   />
                   <button
@@ -263,44 +258,59 @@ export default function Login() {
               </button>
             </form>
 
-            {/* One-Click Login Buttons — NO "Quick fill" label */}
+            {/* Role Selection Buttons */}
             <div className="pt-2 border-t border-border">
               <div className="grid grid-cols-3 gap-2">
                 <button
-                  onClick={() => quickLogin("admin")}
+                  type="button"
+                  onClick={() => selectRole("admin")}
                   disabled={loading}
-                  className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                  className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed ${
+                    selectedRole === "admin"
+                      ? "bg-primary/10 border-primary shadow-sm"
+                      : "border-border hover:bg-primary/5 hover:border-primary/30"
+                  }`}
                   data-testid="demo-admin"
                 >
-                  <ShieldCheck className="w-4 h-4 text-primary" />
+                  <ShieldCheck className={`w-4 h-4 ${selectedRole === "admin" ? "text-primary" : "text-muted-foreground"}`} />
                   <span
-                    className={`font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}
+                    className={`font-medium ${selectedRole === "admin" ? "text-primary" : "text-foreground"} ${isUrdu ? "urdu-text" : ""}`}
                   >
                     {tr("roleAdmin")}
                   </span>
                 </button>
                 <button
-                  onClick={() => quickLogin("teacher")}
+                  type="button"
+                  onClick={() => selectRole("teacher")}
                   disabled={loading}
-                  className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                  className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed ${
+                    selectedRole === "teacher"
+                      ? "bg-primary/10 border-primary shadow-sm"
+                      : "border-border hover:bg-primary/5 hover:border-primary/30"
+                  }`}
                   data-testid="demo-teacher"
                 >
-                  <BookOpen className="w-4 h-4 text-primary" />
+                  <BookOpen className={`w-4 h-4 ${selectedRole === "teacher" ? "text-primary" : "text-muted-foreground"}`} />
                   <span
-                    className={`font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}
+                    className={`font-medium ${selectedRole === "teacher" ? "text-primary" : "text-foreground"} ${isUrdu ? "urdu-text" : ""}`}
                   >
                     {tr("roleTeacher")}
                   </span>
                 </button>
                 <button
-                  onClick={() => quickLogin("parent")}
+                  type="button"
+                  onClick={() => selectRole("parent")}
                   disabled={loading}
-                  className="flex flex-col items-center gap-1 p-2.5 rounded-lg border border-border hover:bg-primary/5 hover:border-primary/30 transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                  className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border transition-colors text-xs disabled:opacity-60 disabled:cursor-not-allowed ${
+                    selectedRole === "parent"
+                      ? "bg-primary/10 border-primary shadow-sm"
+                      : "border-border hover:bg-primary/5 hover:border-primary/30"
+                  }`}
                   data-testid="demo-parent"
                 >
-                  <User className="w-4 h-4 text-primary" />
+                  <User className={`w-4 h-4 ${selectedRole === "parent" ? "text-primary" : "text-muted-foreground"}`} />
                   <span
-                    className={`font-medium text-foreground ${isUrdu ? "urdu-text" : ""}`}
+                    className={`font-medium ${selectedRole === "parent" ? "text-primary" : "text-foreground"} ${isUrdu ? "urdu-text" : ""}`}
                   >
                     {tr("roleParent")}
                   </span>

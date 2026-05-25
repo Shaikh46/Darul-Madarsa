@@ -35,21 +35,9 @@ export function formatHijri(h: HijriDate, lang: "en" | "ur"): string {
   return lang === "ur" ? `${h.d} ${m} ${h.y} ہجری` : `${h.d} ${m} ${h.y} AH`;
 }
 
-export const ISLAMIC_EVENTS: { md: string; en: string; ur: string }[] = [
-  { md: "1-1",   en: "Islamic New Year",   ur: "نیا اسلامی سال" },
-  { md: "1-10",  en: "Ashura",             ur: "عاشورہ" },
-  { md: "3-12",  en: "Eid Milad un Nabi",  ur: "عید میلاد النبی" },
-  { md: "7-27",  en: "Al Isra wal Miraj",  ur: "معراج" },
-  { md: "8-15",  en: "Shab e Barat",       ur: "شب برات" },
-  { md: "9-1",   en: "First Ramadan",      ur: "پہلا رمضان" },
-  { md: "9-27",  en: "Laylat al Qadr",     ur: "شب قدر" },
-  { md: "10-1",  en: "Eid ul Fitr",        ur: "عید الفطر" },
-  { md: "12-9",  en: "Day of Arafah",      ur: "یوم عرفہ" },
-  { md: "12-10", en: "Eid ul Adha",        ur: "عید الاضحی" },
-];
-
-export function getEventForHijri(h: HijriDate, lang: "en" | "ur"): string | null {
-  const ev = ISLAMIC_EVENTS.find(e => e.md === `${h.m}-${h.d}`);
+// Events are now managed dynamically via storage.ts
+export function getEventForHijri(h: HijriDate, eventsList: { md: string; en: string; ur: string }[], lang: "en" | "ur"): string | null {
+  const ev = eventsList.find(e => e.md === `${h.m}-${h.d}`);
   if (!ev) return null;
   return lang === "ur" ? ev.ur : ev.en;
 }

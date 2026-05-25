@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { useLS, Student, CLASS_GROUPS, JAMAAT_OPTIONS, exportToCSV, trClass, trClassGroup } from "@/lib/storage";
+import { useLS, Student, CLASS_GROUPS, JAMAAT_OPTIONS, exportToCSV, trClass, trClassGroup, useAuth } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -55,9 +55,10 @@ function validate(form: Omit<Student, "id">): string | null {
 export default function Students() {
   const { lang, tr } = useLang();
   const isUrdu = lang === "ur";
+  const { role, teacherClass } = useAuth();
   const [students, setStudents] = useLS<Student[]>("students", []);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterClass, setFilterClass] = useState("all");
+  const [filterClass, setFilterClass] = useState(role === "teacher" ? teacherClass : "all");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -70,7 +71,9 @@ export default function Students() {
   const csvRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const filtered = students.filter(s => {
+  const myStudents = students;
+
+  const filtered = myStudents.filter(s => {
     const matchSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.className.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.fatherName.toLowerCase().includes(searchTerm.toLowerCase());
@@ -78,11 +81,11 @@ export default function Students() {
     return matchSearch && matchClass;
   });
 
-  const classes = Array.from(new Set(students.map(s => s.className))).filter(Boolean);
+  const classes = Array.from(new Set(myStudents.map(s => s.className))).filter(Boolean);
 
   const openAdd = () => {
     setEditingId(null);
-    setForm(emptyForm());
+    setForm({ ...emptyForm(), className: role === "teacher" ? teacherClass : "" });
     setFormError(null);
     setSuccessMsg(false);
     setIsFormOpen(true);
@@ -221,16 +224,20 @@ export default function Students() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{lang === "ur" ? "تمام کلاسیں" : "All Classes"}</SelectItem>
-            {CLASS_GROUPS.map(group => (
-              <div key={group.label}>
-                <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
-                  {group.icon} {trClassGroup(group.label, lang)}
+            {CLASS_GROUPS.map(group => {
+              const visibleClasses = group.classes;
+              if (visibleClasses.length === 0) return null;
+              return (
+                <div key={group.label}>
+                  <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
+                    {group.icon} {trClassGroup(group.label, lang)}
+                  </div>
+                  {visibleClasses.map(c => (
+                    <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>
+                  ))}
                 </div>
-                {group.classes.map(c => (
-                  <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>
-                ))}
-              </div>
-            ))}
+              );
+            })}
           </SelectContent>
         </Select>
       </div>
@@ -353,16 +360,20 @@ export default function Students() {
                 <Select value={form.className} onValueChange={v => setField("className", v)}>
                   <SelectTrigger><SelectValue placeholder={lang === "ur" ? "کلاس منتخب کریں" : "Select class"} /></SelectTrigger>
                   <SelectContent>
-                    {CLASS_GROUPS.map(group => (
-                      <div key={group.label}>
-                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
-                          {group.icon} {trClassGroup(group.label, lang)}
+                    {CLASS_GROUPS.map(group => {
+                      const visibleClasses = group.classes;
+                      if (visibleClasses.length === 0) return null;
+                      return (
+                        <div key={group.label}>
+                          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 mt-1 mb-0.5">
+                            {group.icon} {trClassGroup(group.label, lang)}
+                          </div>
+                          {visibleClasses.map(c => (
+                            <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>
+                          ))}
                         </div>
-                        {group.classes.map(c => (
-                          <SelectItem key={c} value={c} className="pl-5">{trClass(c, lang)}</SelectItem>
-                        ))}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>

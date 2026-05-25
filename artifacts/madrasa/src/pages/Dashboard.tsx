@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useLS, CLASS_GROUPS, trClass, trClassGroup } from "@/lib/storage";
-import type { Student, Teacher } from "@/lib/storage";
+import { useLS, CLASS_GROUPS, trClass, trClassGroup, usePrayerTimes } from "@/lib/storage";
+import type { Student, Teacher, AttendanceRecord } from "@/lib/storage";
 import { useLang } from "@/lib/i18n";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +29,9 @@ import {
   TrendingDown,
   Calendar,
   UserCog,
+  Clock,
+  CalendarDays,
+  BarChart3,
 } from "lucide-react";
 import {
   LineChart,
@@ -103,11 +106,15 @@ interface Donation {
 
 interface Fee {
   id: string;
+  studentId?: string;
   studentName?: string;
   amount: number;
   date: string;
   status: string;
   receiptNo?: string;
+  month?: string;
+  year?: string;
+  paymentMethod?: string;
 }
 
 interface HifzRecord {
@@ -120,6 +127,8 @@ interface Expense {
   id: string;
   amount: number;
   date: string;
+  category?: string;
+  description?: string;
 }
 
 export default function Dashboard() {
@@ -130,6 +139,7 @@ export default function Dashboard() {
   const [fees, setFees] = useLS<Fee[]>("fees", []);
   const [hifzProgress] = useLS<HifzRecord[]>("hifz_progress", []);
   const [expenses, setExpenses] = useLS<Expense[]>("expenses", []);
+  const [prayerTimes] = usePrayerTimes();
   const [, setLocation] = useLocation();
   const { lang, tr } = useLang();
   const { toast } = useToast();
@@ -182,7 +192,7 @@ export default function Dashboard() {
     if (!feeForm.studentId || !feeForm.month || !feeForm.amount) { toast({ title: tr("errorTitle"), description: tr("studentMonthAmtReq"), variant: "destructive" }); return; }
     const student = students.find(s => s.id === feeForm.studentId);
     const receiptNo = `DSIK/FEE/${feeForm.year}/${String(fees.length + 1).padStart(5, "0")}`;
-    const newFee: Fee = { id: `fee${Date.now()}`, receiptNo, studentId: feeForm.studentId, studentName: student?.name, month: feeForm.month, year: feeForm.year, amount: parseFloat(feeForm.amount), paymentMethod: feeForm.paymentMethod, status: "paid", date: new Date().toISOString() } as Fee & { studentId: string; month: string; year: string; paymentMethod: string };
+    const newFee: Fee = { id: `fee${Date.now()}`, receiptNo, studentId: feeForm.studentId, studentName: student?.name, month: feeForm.month, year: feeForm.year, amount: parseFloat(feeForm.amount), paymentMethod: feeForm.paymentMethod, status: "paid", date: new Date().toISOString() };
     setFees([newFee, ...fees]);
     toast({ title: isUrdu ? "فیس ریکارڈ ہو گئی" : "Fee Recorded", description: `${student?.name} — ${feeForm.month} — ₹${feeForm.amount}` });
     setFeeForm({ studentId: "", month: "", year: new Date().getFullYear().toString(), amount: "1500", paymentMethod: "Cash" });
@@ -191,7 +201,7 @@ export default function Dashboard() {
 
   const saveExpense = () => {
     if (!expenseForm.description.trim() || !expenseForm.amount) { toast({ title: tr("errorTitle"), description: tr("descAmountReq"), variant: "destructive" }); return; }
-    const newExp: Expense = { id: `exp${Date.now()}`, category: expenseForm.category, description: expenseForm.description, amount: parseFloat(expenseForm.amount), date: new Date(expenseForm.date).toISOString() } as Expense & { category: string; description: string };
+    const newExp: Expense = { id: `exp${Date.now()}`, category: expenseForm.category, description: expenseForm.description, amount: parseFloat(expenseForm.amount), date: new Date(expenseForm.date).toISOString() };
     setExpenses([newExp, ...expenses]);
     toast({ title: isUrdu ? "خرچ شامل ہو گیا" : "Expense Added", description: `₹${expenseForm.amount} — ${expenseForm.description}` });
     setExpenseForm({ category: "General", description: "", amount: "", date: new Date().toISOString().slice(0, 10) });
@@ -199,11 +209,113 @@ export default function Dashboard() {
   };
 
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [attendanceLogs] = useLS<AttendanceRecord[]>("attendance", []);
+
+  // Attendance Calculations
+  const calculateAttendanceStat = (daysBack: number) => {
+    if (students.length === 0) return { pct: 0, present: 0, total: 0 };
+    const now = new Date();
+    let totalPresent = 0;
+    let totalRecords = 0;
+    
+    for (let i = 0; i < daysBack; i++) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().slice(0, 10);
+      
+      const logsForDate = attendanceLogs.filter(l => l.date === dateStr);
+      logsForDate.forEach(log => {
+        Object.values(log.records || {}).forEach(rec => {
+          const status = typeof rec === 'string' ? rec : (rec as any).status;
+          totalRecords++;
+          if (status === 'present') totalPresent++;
+        });
+      });
+    }
+    
+    if (totalRecords === 0) return { pct: 0, present: 0, total: 0 };
+    return { 
+      pct: Math.round((totalPresent / totalRecords) * 100), 
+      present: totalPresent, 
+      total: totalRecords 
+    };
+  };
+
+  const todayStat = calculateAttendanceStat(1);
+  const weekStat = calculateAttendanceStat(7);
+  const monthStat = calculateAttendanceStat(30);
+
+  // Prayer Timings logic
+  const getNextPrayer = useCallback(() => {
+    const now = currentTime;
+    let next: { name: string; time: Date; key: string } | null = null;
+    let minDiff = Infinity;
+
+    const prayerEntries = [
+      { key: "fajr", name: isUrdu ? "فجر" : "Fajr" },
+      { key: "dhuhr", name: isUrdu ? "ظہر" : "Dhuhr" },
+      { key: "asr", name: isUrdu ? "عصر" : "Asr" },
+      { key: "maghrib", name: isUrdu ? "مغرب" : "Maghrib" },
+      { key: "isha", name: isUrdu ? "عشاء" : "Isha" },
+    ];
+
+    for (const p of prayerEntries) {
+      const timeStr = prayerTimes[p.key as keyof typeof prayerTimes];
+      if (!timeStr) continue;
+      
+      const [timePart, modifier] = timeStr.split(" ");
+      if (!timePart || !modifier) continue;
+      let [hours, minutes] = timePart.split(":").map(Number);
+      if (modifier.toUpperCase() === "PM" && hours < 12) hours += 12;
+      if (modifier.toUpperCase() === "AM" && hours === 12) hours = 0;
+
+      const pTime = new Date(now);
+      pTime.setHours(hours, minutes, 0, 0);
+
+      let diff = pTime.getTime() - now.getTime();
+      if (diff < 0) {
+        // If it's past today's time, look at tomorrow's time
+        pTime.setDate(pTime.getDate() + 1);
+        diff = pTime.getTime() - now.getTime();
+      }
+
+      if (diff < minDiff) {
+        minDiff = diff;
+        next = { name: p.name, time: pTime, key: p.key };
+      }
+    }
+    return next;
+  }, [currentTime, prayerTimes, isUrdu]);
+
+  const nextPrayer = getNextPrayer();
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (!nextPrayer) return;
+    const diffMins = Math.floor((nextPrayer.time.getTime() - currentTime.getTime()) / 60000);
+    
+    // Trigger notification exactly 10 minutes before
+    if (diffMins === 10 && currentTime.getSeconds() === 0) {
+      if (Notification.permission === "granted") {
+        new Notification(isUrdu ? "نماز کا وقت قریب ہے" : "Prayer Time Alert", {
+          body: isUrdu
+            ? `📢 ${nextPrayer.name} کا وقت 10 منٹ میں شروع ہو رہا ہے۔ نماز کی تیاری کریں۔`
+            : `📢 ${nextPrayer.name} time in 10 minutes. Prepare for Salah.`,
+          icon: "/favicon.ico",
+        });
+      }
+    }
+  }, [currentTime, nextPrayer, isUrdu]);
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
 
@@ -358,9 +470,9 @@ export default function Dashboard() {
         >
           <div className="flex items-start justify-between mb-3">
             <UserCheck className="w-8 h-8 opacity-80" />
-            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">0%</span>
+            <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">{todayStat.pct}%</span>
           </div>
-          <p className="text-3xl font-bold">0</p>
+          <p className="text-3xl font-bold">{todayStat.present}</p>
           <p className={`text-white/70 text-xs mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("presentToday")}</p>
         </div>
 
@@ -393,6 +505,70 @@ export default function Dashboard() {
           </div>
           <p className="text-3xl font-bold">₹{totalDonations.toLocaleString()}</p>
           <p className={`text-white/70 text-xs mt-1 ${isUrdu ? "urdu-text" : ""}`}>{tr("totalDonations")}</p>
+        </div>
+      </div>
+
+      {/* Next Prayer Card */}
+      {nextPrayer && (
+        <div className={`p-4 rounded-xl border border-primary/20 bg-primary/5 flex flex-col sm:flex-row items-center justify-between gap-4 ${isUrdu ? "flex-row-reverse text-right" : ""}`}>
+          <div className={`flex items-center gap-3 ${isUrdu ? "flex-row-reverse" : ""}`}>
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-primary uppercase tracking-wider">{isUrdu ? "اگلی نماز" : "Next Prayer"}</p>
+              <h3 className="text-2xl font-bold">{nextPrayer.name}</h3>
+            </div>
+          </div>
+          <div className="text-center bg-card shadow-sm px-6 py-2 rounded-lg border">
+            <p className="text-xs text-muted-foreground mb-1">{isUrdu ? "وقت باقی ہے" : "Time Remaining"}</p>
+            <p className="text-xl font-bold text-foreground font-mono">
+              {Math.floor((nextPrayer.time.getTime() - currentTime.getTime()) / 3600000).toString().padStart(2, '0')}:
+              {Math.floor(((nextPrayer.time.getTime() - currentTime.getTime()) % 3600000) / 60000).toString().padStart(2, '0')}:
+              {Math.floor(((nextPrayer.time.getTime() - currentTime.getTime()) % 60000) / 1000).toString().padStart(2, '0')}
+            </p>
+          </div>
+          {Notification.permission !== 'granted' && (
+            <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded max-w-xs text-center border border-amber-200">
+              {isUrdu ? "نماز کے الرٹس حاصل کرنے کے لیے اطلاعات کو فعال کریں۔" : "Enable notifications to receive prayer alerts."}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Attendance Quick Stats */}
+      <div>
+        <p className={`text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 ${isUrdu ? "urdu-text text-right" : ""}`}>
+          {isUrdu ? "حاضری کے اعداد و شمار" : "Attendance Quick Stats"}
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-card rounded-xl p-5 border shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-600">
+              <UserCheck className="w-6 h-6" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground">{isUrdu ? "آج کی حاضری" : "Today's Attendance"}</p>
+              <h4 className="text-2xl font-bold">{todayStat.pct}%</h4>
+            </div>
+          </div>
+          <div className="bg-card rounded-xl p-5 border shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-blue-600">
+              <CalendarDays className="w-6 h-6" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground">{isUrdu ? "اس ہفتے کی اوسط" : "This Week Average"}</p>
+              <h4 className="text-2xl font-bold">{weekStat.pct}%</h4>
+            </div>
+          </div>
+          <div className="bg-card rounded-xl p-5 border shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600">
+              <BarChart3 className="w-6 h-6" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground">{isUrdu ? "اس مہینے کی اوسط" : "This Month Average"}</p>
+              <h4 className="text-2xl font-bold">{monthStat.pct}%</h4>
+            </div>
+          </div>
         </div>
       </div>
 

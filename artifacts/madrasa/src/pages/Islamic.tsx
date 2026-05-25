@@ -7,6 +7,17 @@ import {
   gregToHijri, formatHijri, getEventForHijri,
   HIJRI_MONTHS_EN, HIJRI_MONTHS_UR, WEEKDAYS_EN, WEEKDAYS_UR,
 } from "@/lib/hijri";
+import { useIslamicEvents, useAuth } from "@/lib/storage";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Plus, Trash2, Save, Edit } from "lucide-react";
 
 function getHijriDate(lang: "en" | "ur"): string {
   return formatHijri(gregToHijri(new Date()), lang);
@@ -14,8 +25,12 @@ function getHijriDate(lang: "en" | "ur"): string {
 
 export default function Islamic() {
   const { lang, tr } = useLang();
+  const { role } = useAuth();
   const isUrdu = lang === "ur";
   const [time, setTime] = useState(new Date());
+  const [islamicEvents, setIslamicEvents] = useIslamicEvents();
+  const [isEditEventsOpen, setIsEditEventsOpen] = useState(false);
+  const [eventsForm, setEventsForm] = useState(islamicEvents);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -64,13 +79,13 @@ export default function Islamic() {
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(year, month, d);
       const h = gregToHijri(date);
-      cells.push({ date, hijri: h, event: getEventForHijri(h, lang) });
+      cells.push({ date, hijri: h, event: getEventForHijri(h, islamicEvents, lang) });
     }
     while (cells.length % 7 !== 0) cells.push({ date: null, hijri: null, event: null });
     const firstHijri = gregToHijri(firstDay);
     const lastHijri = gregToHijri(lastDay);
     return { cells, firstHijri, lastHijri };
-  }, [calCursor, lang]);
+  }, [calCursor, lang, islamicEvents]);
 
   const monthEvents = useMemo(() => {
     const seen = new Set<string>();
@@ -149,6 +164,12 @@ export default function Islamic() {
                 {tr("hijriCalendar")}
               </CardTitle>
               <div className="flex items-center gap-2">
+                {role === "admin" && (
+                  <Button variant="outline" size="sm" onClick={() => { setEventsForm(islamicEvents); setIsEditEventsOpen(true); }}>
+                    <Edit className="w-4 h-4 mr-2" />
+                    {isUrdu ? "ایونٹس میں ترمیم کریں" : "Edit Events"}
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" onClick={() => navMonth(-1)} data-testid="btn-cal-prev">
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
@@ -183,43 +204,22 @@ export default function Islamic() {
               {calData.cells.map((c, i) => {
                 if (!c.date) return <div key={i} className="aspect-square" />;
                 const isToday = c.date.toDateString() === todayKey;
-                const hasEvent = !!c.event;
+                const hasEvent = false;
                 return (
                   <div
                     key={i}
                     className={`aspect-square border rounded-md p-1 flex flex-col items-center justify-between text-xs relative ${
                       isToday ? "bg-primary text-primary-foreground border-primary font-bold" : "bg-card"
-                    } ${hasEvent && !isToday ? "border-accent bg-accent/10" : ""}`}
+                    }`}
                     title={c.event || ""}
                   >
                     <span className="font-medium">{c.date.getDate()}</span>
                     <span className={`text-[10px] ${isToday ? "opacity-90" : "text-muted-foreground"}`}>
                       {c.hijri?.d}
                     </span>
-                    {hasEvent && <Star className="absolute top-0.5 right-0.5 w-2.5 h-2.5 text-accent fill-accent" />}
                   </div>
                 );
               })}
-            </div>
-            <div className="mt-4 pt-4 border-t">
-              <h4 className={`font-semibold mb-2 flex items-center gap-2 ${isUrdu ? "urdu-text" : ""}`}>
-                <Star className="w-4 h-4 text-accent fill-accent" />
-                {tr("importantEvents")}
-              </h4>
-              {monthEvents.length === 0 ? (
-                <p className={`text-sm text-muted-foreground ${isUrdu ? "urdu-text" : ""}`}>{tr("noEventsMonth")}</p>
-              ) : (
-                <ul className="space-y-1">
-                  {monthEvents.map((e, i) => (
-                    <li key={i} className={`text-sm flex justify-between ${isUrdu ? "urdu-text" : ""}`}>
-                      <span>{e.name}</span>
-                      <span className="text-muted-foreground">
-                        {e.date.getDate()} {monthNames[e.date.getMonth()]} · {e.hijri.d} {hijriMonths[e.hijri.m - 1]}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
           </CardContent>
         </Card>
@@ -246,6 +246,66 @@ export default function Islamic() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Events Dialog */}
+      <Dialog open={isEditEventsOpen} onOpenChange={setIsEditEventsOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className={isUrdu ? "urdu-text" : ""}>{isUrdu ? "اسلامی ایونٹس میں ترمیم کریں" : "Edit Islamic Events"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {eventsForm.map((ev, index) => (
+              <div key={ev.id} className="flex gap-2 items-end border p-3 rounded-lg">
+                <div className="space-y-1.5 w-24 flex-shrink-0">
+                  <Label className={isUrdu ? "urdu-text" : ""}>{isUrdu ? "مہینہ-دن" : "M-D"}</Label>
+                  <Input placeholder="9-1" value={ev.md} onChange={(e) => {
+                    const newForm = [...eventsForm];
+                    newForm[index].md = e.target.value;
+                    setEventsForm(newForm);
+                  }} />
+                </div>
+                <div className="space-y-1.5 flex-1">
+                  <Label className={isUrdu ? "urdu-text" : ""}>{isUrdu ? "نام (انگریزی)" : "Name (En)"}</Label>
+                  <Input placeholder="Event Name" value={ev.en} onChange={(e) => {
+                    const newForm = [...eventsForm];
+                    newForm[index].en = e.target.value;
+                    setEventsForm(newForm);
+                  }} />
+                </div>
+                <div className="space-y-1.5 flex-1" dir="rtl">
+                  <Label className="urdu-text text-right block">نام (اردو)</Label>
+                  <Input placeholder="ایونٹ کا نام" value={ev.ur} onChange={(e) => {
+                    const newForm = [...eventsForm];
+                    newForm[index].ur = e.target.value;
+                    setEventsForm(newForm);
+                  }} className="text-right" />
+                </div>
+                <Button variant="ghost" size="icon" className="text-destructive mb-0.5" onClick={() => {
+                  setEventsForm(eventsForm.filter(e => e.id !== ev.id));
+                }}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+            <Button variant="outline" className="w-full border-dashed" onClick={() => {
+              setEventsForm([...eventsForm, { id: `e${Date.now()}`, md: "", en: "", ur: "" }]);
+            }}>
+              <Plus className="w-4 h-4 mr-2" />
+              {isUrdu ? "نیا ایونٹ شامل کریں" : "Add New Event"}
+            </Button>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditEventsOpen(false)}>{isUrdu ? "منسوخ" : "Cancel"}</Button>
+            <Button onClick={() => {
+              setIslamicEvents(eventsForm);
+              setIsEditEventsOpen(false);
+            }}>
+              <Save className="w-4 h-4 mr-2" />
+              {isUrdu ? "محفوظ کریں" : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

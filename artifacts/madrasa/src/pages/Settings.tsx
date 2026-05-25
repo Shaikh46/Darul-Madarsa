@@ -16,6 +16,7 @@ import {
   Mail,
   MapPin,
   Info,
+  Clock,
 } from "lucide-react";
 import {
   Dialog,
@@ -46,12 +47,15 @@ export default function Settings() {
   const isUrdu = lang === "ur";
   const { toast } = useToast();
   const [madrasaInfo, setMadrasaInfo] = useLS<MadrasaInfo>("madrasa_info", defaultInfo);
+  const [prayerTimes, setPrayerTimes] = useLS<Record<string, string>>("prayer_times", {});
   const [form, setForm] = useState<MadrasaInfo>(madrasaInfo);
+  const [prayerForm, setPrayerForm] = useState<Record<string, string>>(prayerTimes);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [resetTyped, setResetTyped] = useState("");
 
   const handleSave = () => {
     setMadrasaInfo(form);
+    setPrayerTimes(prayerForm);
     toast({ title: isUrdu ? "ترتیبات محفوظ ہو گئیں" : "Settings Saved", description: isUrdu ? "مدرسہ کی معلومات اپ ڈیٹ ہو گئیں۔" : "Madrasa info updated." });
   };
 
@@ -127,6 +131,44 @@ export default function Settings() {
             </div>
           </div>
           <div className={`pt-2 ${isUrdu ? "text-right" : ""}`}>
+            <Button onClick={handleSave} className="gap-2">
+              <Save className="w-4 h-4" />
+              {isUrdu ? "ترتیبات محفوظ کریں" : "Save Settings"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Prayer Times Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className={`flex items-center gap-2 ${isUrdu ? "flex-row-reverse" : ""}`}>
+            <Clock className="w-5 h-5 text-primary" />
+            {isUrdu ? "نماز کے اوقات" : "Prayer Times"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {[
+              { key: "fajr", labelEn: "Fajr", labelUr: "فجر" },
+              { key: "dhuhr", labelEn: "Dhuhr", labelUr: "ظہر" },
+              { key: "asr", labelEn: "Asr", labelUr: "عصر" },
+              { key: "maghrib", labelEn: "Maghrib", labelUr: "مغرب" },
+              { key: "isha", labelEn: "Isha", labelUr: "عشاء" },
+            ].map(p => (
+              <div key={p.key} className="space-y-1.5">
+                <Label className={`flex items-center gap-1.5 ${isUrdu ? "flex-row-reverse" : ""}`}>
+                  {isUrdu ? p.labelUr : p.labelEn}
+                </Label>
+                <Input
+                  value={prayerForm[p.key] || ""}
+                  onChange={e => setPrayerForm(prev => ({ ...prev, [p.key]: e.target.value }))}
+                  placeholder="e.g. 05:00 AM"
+                />
+              </div>
+            ))}
+          </div>
+          <div className={`pt-4 ${isUrdu ? "text-right" : ""}`}>
             <Button onClick={handleSave} className="gap-2">
               <Save className="w-4 h-4" />
               {isUrdu ? "ترتیبات محفوظ کریں" : "Save Settings"}

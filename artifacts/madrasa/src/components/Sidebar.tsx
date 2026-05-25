@@ -18,7 +18,6 @@ import {
   LogOut,
   ShieldCheck,
   Settings,
-  BookMarked,
   ScrollText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,7 +32,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { key: "dashboard",     href: "/dashboard",     icon: LayoutDashboard, roles: ["admin"] },
-  { key: "students",      href: "/students",       icon: Users,           roles: ["admin", "parent"] },
+  { key: "students",      href: "/students",       icon: Users,           roles: ["admin", "parent", "teacher"] },
   { key: "teachers",      href: "/teachers",       icon: UserCog,         roles: ["admin"] },
   { key: "attendance",    href: "/attendance",     icon: CalendarCheck,   roles: ["admin", "teacher", "parent"] },
   { key: "hifzProgress",  href: "/hifz-progress",  icon: BookOpen,        roles: ["admin", "parent"] },
@@ -46,7 +45,6 @@ const navItems: NavItem[] = [
   { key: "salaries",      href: "/salaries",       icon: Wallet,          roles: ["admin"] },
   { key: "donations",     href: "/donations",      icon: HeartHandshake,  roles: ["admin"] },
   { key: "islamic",       href: "/islamic",        icon: MoonStar,        roles: ["admin", "teacher", "parent"] },
-  { key: "hadeesBook",    href: "/hadees",         icon: BookMarked,      roles: ["admin", "teacher", "parent"] },
   { key: "duasAzkar",     href: "/duas",           icon: ScrollText,      roles: ["admin", "teacher", "parent"] },
   { key: "communication", href: "/communication",  icon: MessageSquare,   roles: ["admin"] },
   { key: "settings",      href: "/settings",       icon: Settings,        roles: ["admin"] },
@@ -130,6 +128,49 @@ export function Sidebar({ onClose }: SidebarProps) {
           );
         })}
       </nav>
+
+      {/* Contact Us Section */}
+      <div className={`p-4 border-t border-sidebar-border bg-sidebar-primary/5 ${isUrdu ? "text-right" : ""}`}>
+        <h4 className={`text-xs font-bold text-sidebar-primary mb-2.5 flex items-center gap-2 ${isUrdu ? "flex-row-reverse" : ""}`}>
+          <span className="text-sm">📞</span>
+          <span className={isUrdu ? "urdu-text" : ""}>{tr("contactUs")}</span>
+        </h4>
+        <div className="space-y-3">
+          <div className={`flex flex-col ${isUrdu ? "items-end" : "items-start"}`}>
+            <span className={`text-[10px] text-muted-foreground flex items-center gap-1 ${isUrdu ? "flex-row-reverse font-semibold" : ""}`}>
+              <span>📱</span>
+              <span className={isUrdu ? "urdu-text" : ""}>{tr("phoneLabel")}:</span>
+            </span>
+            <a
+              href="tel:+919011912993"
+              className={`text-xs font-semibold text-sidebar-foreground hover:text-sidebar-primary transition-colors flex items-center gap-1.5 mt-0.5 ${isUrdu ? "flex-row-reverse" : ""}`}
+              data-testid="contact-phone"
+            >
+              <span className="font-mono">+91 90119 12993</span>
+              <span className={`text-[9px] px-1.5 py-0.5 rounded bg-sidebar-primary/10 text-sidebar-primary hover:bg-sidebar-primary/20 ${isUrdu ? "urdu-text font-normal leading-normal" : ""}`}>
+                [{tr("clickToCall")}]
+              </span>
+            </a>
+          </div>
+
+          <div className={`flex flex-col ${isUrdu ? "items-end" : "items-start"}`}>
+            <span className={`text-[10px] text-muted-foreground flex items-center gap-1 ${isUrdu ? "flex-row-reverse font-semibold" : ""}`}>
+              <span>✉️</span>
+              <span className={isUrdu ? "urdu-text" : ""}>{tr("emailLabel")}:</span>
+            </span>
+            <a
+              href="mailto:syedzubair313@gmail.com"
+              className={`text-[11px] font-semibold text-sidebar-foreground hover:text-sidebar-primary transition-colors flex flex-wrap items-center gap-1.5 mt-0.5 ${isUrdu ? "flex-row-reverse" : ""}`}
+              data-testid="contact-email"
+            >
+              <span className="truncate max-w-[150px] font-sans">syedzubair313@gmail.com</span>
+              <span className={`text-[9px] px-1.5 py-0.5 rounded bg-sidebar-primary/10 text-sidebar-primary hover:bg-sidebar-primary/20 ${isUrdu ? "urdu-text font-normal leading-normal" : ""}`}>
+                [{tr("sendEmail")}]
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
 
       <div className="p-4 border-t border-sidebar-border">
         <Button

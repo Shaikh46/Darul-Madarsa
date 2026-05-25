@@ -83,7 +83,7 @@ export const useAuth = () => {
   return { role, userName, teacherClass, login, logout };
 };
 
-// ── Student type ──────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────
 export interface Student {
   id: string;
   name: string;
@@ -99,6 +99,18 @@ export interface Student {
   photo?: string;
   studentAadhar?: string;
   parentAadhar?: string;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  date: string;
+  className: string;
+  lastModifiedBy?: string;
+  timestamp?: number;
+  records: Record<string, {
+    status: "present" | "absent" | "late";
+    remark?: string;
+  }>;
 }
 
 // ── Teacher type ──────────────────────────────────────────────────────────
@@ -124,7 +136,7 @@ export const CLASS_GROUPS: ClassGroup[] = [
   { label: "Deeniyat Classes", icon: "📚", classes: ["Deeniyat Alif", "Deeniyat Baa"] },
   { label: "Farsi Classes",    icon: "📖", classes: ["Farsi Awwal", "Farsi Duwwam"] },
   { label: "Arabic Classes",   icon: "🕌", classes: ["Arbi Awwal", "Arbi Duwwam", "Arbi Suwwam", "Arbi Chahrum", "Arbi Panjum"] },
-  { label: "Hifz Classes",     icon: "🌟", classes: ["Hifz Alif", "Hifz Baa"] },
+  { label: "Hifz Classes",     icon: "🌟", classes: ["Hifz Alif", "Hifz Baa"] }
 ];
 
 export const CLASS_OPTIONS: string[] = CLASS_GROUPS.flatMap(g => g.classes);
@@ -140,7 +152,7 @@ export const CLASS_NAMES_UR: Record<string, string> = {
   "Arbi Chahrum":  "عربی چہارم",
   "Arbi Panjum":   "عربی پنجم",
   "Hifz Alif":     "حفظ الف",
-  "Hifz Baa":      "حفظ ب",
+  "Hifz Baa":      "حفظ ب"
 };
 
 export const CLASS_GROUP_LABELS_UR: Record<string, string> = {
@@ -163,8 +175,7 @@ export const JAMAAT_OPTIONS = ["Hifz", "Nazera", "Alim", "General"];
 // ── Reset all data keys ────────────────────────────────────────────────────
 const DATA_KEYS = [
   "students","teachers","donations","fees","expenses","attendance",
-  "hifz_progress","exam_results","salaries","staff","donors",
-  "notifications","timetable_entries","qaida_progress","salary_records",
+  "notifications","timetable_entries","qaida_progress","salary_records","prayer_times","islamic_events"
 ];
 
 export function resetAllData() {
@@ -216,6 +227,37 @@ export function exportToCSV(headers: string[], rows: string[][], filename: strin
   link.style.visibility = "hidden";
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+
+// ── Prayer Times ───────────────────────────────────────────────────────────
+export interface PrayerTimes {
+  fajr: string;
+  dhuhr: string;
+  asr: string;
+  maghrib: string;
+  isha: string;
+}
+
+export const DEFAULT_PRAYER_TIMES: PrayerTimes = {
+  fajr: "05:00 AM",
+  dhuhr: "12:30 PM",
+  asr: "03:45 PM",
+  maghrib: "06:30 PM",
+  isha: "08:00 PM",
+};
+
+export const usePrayerTimes = () => useLS<PrayerTimes>("prayer_times", DEFAULT_PRAYER_TIMES);
+
+// ── Islamic Events ─────────────────────────────────────────────────────────
+export interface IslamicEvent {
+  id: string;
+  md: string;
+  en: string;
+  ur: string;
+}
+
+export const DEFAULT_ISLAMIC_EVENTS: IslamicEvent[] = [];
+
+export const useIslamicEvents = () => useLS<IslamicEvent[]>("islamic_events", DEFAULT_ISLAMIC_EVENTS);
+

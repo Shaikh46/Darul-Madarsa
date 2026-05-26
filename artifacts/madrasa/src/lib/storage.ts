@@ -48,6 +48,45 @@ export interface Credential {
   displayName: string;
 }
 
+export interface UserCredentials {
+  admin: { email: string; password: string };
+  teacher: { email: string; password: string };
+  parent: { email: string; password: string };
+}
+
+export const DEFAULT_USER_CREDENTIALS: UserCredentials = {
+  admin: { email: 'darulum@admin', password: '78607860' },
+  teacher: { email: 'darulum@teacher', password: '068706' },
+  parent: { email: 'darulum@parent', password: '123456' }
+};
+
+export function getSavedCredentials(): UserCredentials {
+  try {
+    const saved = localStorage.getItem('user_credentials');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Ensure all fields are filled, otherwise fallback to defaults
+      return {
+        admin: {
+          email: parsed.admin?.email || DEFAULT_USER_CREDENTIALS.admin.email,
+          password: parsed.admin?.password || DEFAULT_USER_CREDENTIALS.admin.password
+        },
+        teacher: {
+          email: parsed.teacher?.email || DEFAULT_USER_CREDENTIALS.teacher.email,
+          password: parsed.teacher?.password || DEFAULT_USER_CREDENTIALS.teacher.password
+        },
+        parent: {
+          email: parsed.parent?.email || DEFAULT_USER_CREDENTIALS.parent.email,
+          password: parsed.parent?.password || DEFAULT_USER_CREDENTIALS.parent.password
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Failed to parse saved credentials:', error);
+  }
+  return DEFAULT_USER_CREDENTIALS;
+}
+
 export const CREDENTIALS: Credential[] = [
   { username: "darulum@admin",   password: "78607860", role: "admin",   displayName: "Administrator" },
   { username: "darulum@teacher", password: "068706",   role: "teacher", displayName: "Teacher" },
@@ -56,7 +95,15 @@ export const CREDENTIALS: Credential[] = [
 ];
 
 export function tryLogin(username: string, password: string): Credential | null {
-  return CREDENTIALS.find(
+  const currentCreds = getSavedCredentials();
+  const activeCreds: Credential[] = [
+    { username: currentCreds.admin.email,   password: currentCreds.admin.password, role: "admin",   displayName: "Administrator" },
+    { username: currentCreds.teacher.email, password: currentCreds.teacher.password, role: "teacher", displayName: "Teacher" },
+    { username: currentCreds.parent.email,  password: currentCreds.parent.password, role: "parent",  displayName: "Parent" },
+    { username: "parent@demo.com",          password: currentCreds.parent.password, role: "parent",  displayName: "Parent" },
+  ];
+
+  return activeCreds.find(
     c => c.username.toLowerCase() === username.trim().toLowerCase() && c.password === password
   ) ?? null;
 }

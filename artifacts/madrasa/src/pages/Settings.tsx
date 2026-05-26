@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useLS, resetAllData } from "@/lib/storage";
+import { useLS, resetAllData, getSavedCredentials } from "@/lib/storage";
 import { useLang } from "@/lib/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Settings as SettingsIcon,
   Trash2,
@@ -17,6 +18,10 @@ import {
   MapPin,
   Info,
   Clock,
+  Download,
+  Upload,
+  KeyRound,
+  Lock,
 } from "lucide-react";
 import {
   Dialog,
@@ -52,6 +57,129 @@ export default function Settings() {
   const [prayerForm, setPrayerForm] = useState<Record<string, string>>(prayerTimes);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [resetTyped, setResetTyped] = useState("");
+
+  const [selectedUser, setSelectedUser] = useState<"admin" | "teacher" | "parent">("admin");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [credentialsVersion, setCredentialsVersion] = useState(0);
+
+  const backupAllData = () => {
+    const keys = [
+      'students', 'donations', 'fees', 'expenses', 'teachers',
+      'attendance', 'hifz_progress', 'qaida_progress', 'timetable_entries'
+    ];
+    const backup: Record<string, any> = {};
+    keys.forEach(key => {
+      const data = localStorage.getItem(key);
+      backup[key] = data ? JSON.parse(data) : [];
+    });
+    const dataStr = JSON.stringify(backup, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `madrasa-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({
+      title: isUrdu ? "کامیاب" : "Success",
+      description: isUrdu ? "بیک اپ فائل کامیابی سے ڈاؤن لوڈ ہو گئی۔" : "Backup downloaded successfully!"
+    });
+  };
+
+  const restoreData = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = function (e: any) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (evt: any) {
+        try {
+          const backup = JSON.parse(evt.target.result);
+          for (const [key, value] of Object.entries(backup)) {
+            localStorage.setItem(key, JSON.stringify(value));
+          }
+          toast({
+            title: isUrdu ? "کامیاب" : "Success",
+            description: isUrdu ? "ڈیٹا کامیابی سے بحال ہو گیا! صفحہ دوبارہ لوڈ ہو رہا ہے۔" : "Data restored successfully! Reloading page."
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } catch (error) {
+          toast({
+            title: isUrdu ? "غلطی" : "Error",
+            description: isUrdu ? "غلط بیک اپ فائل۔ براہ کرم درست فائل منتخب کریں۔" : "Invalid backup file. Please select a valid backup.",
+            variant: "destructive"
+          });
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
+  const handleChangePassword = () => {
+    const loggedInUserStr = localStorage.getItem('loggedInUser');
+    if (!loggedInUserStr) {
+      toast({
+        title: isUrdu ? "غلطی" : "Error",
+        description: isUrdu ? "براہ کرم پہلے ایڈمن کے طور پر لاگ ان کریں۔" : "Please login as Admin first.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const user = JSON.parse(loggedInUserStr);
+      if (user.role !== 'admin') {
+        toast({
+          title: isUrdu ? "غلطی" : "Error",
+          description: isUrdu ? "صرف ایڈمن ہی پاس ورڈ تبدیل کر سکتا ہے!" : "Only Admin can change passwords!",
+          variant: "destructive"
+        });
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: isUrdu ? "غلطی" : "Error",
+        description: isUrdu ? "پاس ورڈ کم از کم 6 حروف کا ہونا چاہیے۔" : "Password must be at least 6 characters.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: isUrdu ? "غلطی" : "Error",
+        description: isUrdu ? "پاس ورڈز آپس میں نہیں ملتے!" : "Passwords do not match!",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const currentCreds = getSavedCredentials();
+    currentCreds[selectedUser].password = newPassword;
+
+    localStorage.setItem('user_credentials', JSON.stringify(currentCreds));
+
+    toast({
+      title: isUrdu ? "کامیاب" : "Success",
+      description: isUrdu
+        ? `${selectedUser === 'admin' ? 'ایڈمن' : selectedUser === 'teacher' ? 'استاد' : 'والدین'} کا پاس ورڈ کامیابی سے تبدیل ہو گیا!`
+        : `Password for ${selectedUser} changed successfully!`
+    });
+
+    setNewPassword("");
+    setConfirmPassword("");
+    setCredentialsVersion(v => v + 1);
+  };
 
   const handleSave = () => {
     setMadrasaInfo(form);
@@ -177,8 +305,35 @@ export default function Settings() {
         </CardContent>
       </Card>
 
-      {/* App Info */}
+      {/* Data Backup */}
       <Card>
+        <CardHeader>
+          <CardTitle className={`flex items-center gap-2 ${isUrdu ? "flex-row-reverse" : ""}`}>
+            <Download className="w-5 h-5 text-primary" />
+            {isUrdu ? "📦 ڈیٹا بیک اپ" : "📦 Data Backup"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className={`text-muted-foreground text-sm mb-4 ${isUrdu ? "text-right urdu-text" : ""}`}>
+            {isUrdu
+              ? "مدرسہ کا تمام ڈیٹا ڈاؤن لوڈ کریں یا پہلے سے محفوظ کردہ بیک اپ فائل سے بحال کریں۔"
+              : "Download all madrasa data as a backup or restore from a previously saved backup file."}
+          </p>
+          <div className={`flex flex-wrap gap-4 ${isUrdu ? "flex-row-reverse" : ""}`}>
+            <Button onClick={backupAllData} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium">
+              <Download className="w-4 h-4" />
+              {isUrdu ? "📥 ڈیٹا بیک اپ کریں" : "📥 Backup Data"}
+            </Button>
+            <Button onClick={restoreData} className="gap-2 bg-amber-500 hover:bg-amber-600 text-amber-950 font-medium border border-amber-600">
+              <Upload className="w-4 h-4" />
+              {isUrdu ? "📤 ڈیٹا بحال کریں" : "📤 Restore Data"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* App Info */}
+      <Card key={`creds-${credentialsVersion}`}>
         <CardHeader>
           <CardTitle className={`flex items-center gap-2 ${isUrdu ? "flex-row-reverse" : ""}`}>
             <Info className="w-5 h-5 text-primary" />
@@ -188,9 +343,9 @@ export default function Settings() {
         <CardContent>
           <div className="space-y-3">
             {[
-              { role: isUrdu ? "منتظم" : "Admin",   id: "darulum@admin",   pass: "78607860",  cls: "text-primary" },
-              { role: isUrdu ? "استاد" : "Teacher",  id: "darulum@teacher", pass: "068706",    cls: "text-emerald-600" },
-              { role: isUrdu ? "والدین" : "Parent",  id: "darulum@parent",  pass: "123456",    cls: "text-blue-600" },
+              { role: isUrdu ? "منتظم" : "Admin",   id: "darulum@admin",   pass: getSavedCredentials().admin.password,  cls: "text-primary" },
+              { role: isUrdu ? "استاد" : "Teacher",  id: "darulum@teacher", pass: getSavedCredentials().teacher.password,    cls: "text-emerald-600" },
+              { role: isUrdu ? "والدین" : "Parent",  id: "darulum@parent",  pass: getSavedCredentials().parent.password,    cls: "text-blue-600" },
             ].map(c => (
               <div key={c.id} className={`flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border ${isUrdu ? "flex-row-reverse" : ""}`}>
                 <span className={`text-sm font-semibold ${c.cls}`}>{c.role}</span>
@@ -200,6 +355,75 @@ export default function Settings() {
                 </div>
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Change Password */}
+      <Card>
+        <CardHeader>
+          <CardTitle className={`flex items-center gap-2 ${isUrdu ? "flex-row-reverse" : ""}`}>
+            <KeyRound className="w-5 h-5 text-primary" />
+            {isUrdu ? "🔐 پاس ورڈ تبدیل کریں (صرف ایڈمن)" : "🔐 Change Password (Admin Only)"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-1.5">
+            <Label className={`flex items-center gap-1.5 ${isUrdu ? "flex-row-reverse" : ""}`}>
+              {isUrdu ? "صارف منتخب کریں:" : "Select User:"}
+            </Label>
+            <Select value={selectedUser} onValueChange={(v: any) => setSelectedUser(v)}>
+              <SelectTrigger className={isUrdu ? "text-right" : ""}>
+                <SelectValue placeholder={isUrdu ? "صارف منتخب کریں" : "Select User"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="admin">
+                  {isUrdu ? "منتظم (darulum@admin)" : "Admin (darulum@admin)"}
+                </SelectItem>
+                <SelectItem value="teacher">
+                  {isUrdu ? "استاد (darulum@teacher)" : "Teacher (darulum@teacher)"}
+                </SelectItem>
+                <SelectItem value="parent">
+                  {isUrdu ? "والدین (darulum@parent)" : "Parent (darulum@parent)"}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label className={`flex items-center gap-1.5 ${isUrdu ? "flex-row-reverse" : ""}`}>
+                <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+                {isUrdu ? "نیا پاس ورڈ:" : "New Password:"}
+              </Label>
+              <Input
+                type="password"
+                placeholder={isUrdu ? "نیا پاس ورڈ درج کریں (کم از کم 6 ہندسے)" : "Enter new password (min 6 characters)"}
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                className={isUrdu ? "text-right placeholder:text-right" : ""}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className={`flex items-center gap-1.5 ${isUrdu ? "flex-row-reverse" : ""}`}>
+                <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+                {isUrdu ? "پاس ورڈ کی تصدیق کریں:" : "Confirm Password:"}
+              </Label>
+              <Input
+                type="password"
+                placeholder={isUrdu ? "دوبارہ پاس ورڈ درج کریں" : "Confirm new password"}
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                className={isUrdu ? "text-right placeholder:text-right" : ""}
+              />
+            </div>
+          </div>
+
+          <div className={`pt-2 ${isUrdu ? "text-right" : ""}`}>
+            <Button onClick={handleChangePassword} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium">
+              <Save className="w-4 h-4" />
+              {isUrdu ? "پاس ورڈ تبدیل کریں" : "Update Password"}
+            </Button>
           </div>
         </CardContent>
       </Card>
